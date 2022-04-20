@@ -1,11 +1,18 @@
-const loginRoutes = require("./login"); //TO GO
+const adminRoutes = require('./admin');
+const authRoutes = require('./auth');
 
 const constructorMethod = (app) => {
-    app.use("/", loginRoutes);
-  
-    app.use("*", (req, res) => {
-      res.status(404).render("pages/404", { message: "Not found" });
-    });
-  };
-  
-  module.exports = constructorMethod;
+
+  app.get('/', async (req, res) => {
+    res.render('index', { title: 'Welcome to Unisell' });
+  });
+
+  app.use('/admin', adminRoutes);
+  app.use('/auth', authRoutes);
+
+  app.use('*', (req, res) => {
+    res.status(404).render('errors/404', { message: 'Not found' });
+  });
+};
+
+module.exports = constructorMethod;
