@@ -105,12 +105,12 @@ module.exports = {
     {
         if (!validation.isValidUsername(username))
         {
-            throw 'Invalid username passed to create!'
+            throw 'Invalid username passed to checkUser!'
         }
 
         if (!validation.isValidPassword(password))
         {
-            throw 'Invalid password passed to create!'
+            throw 'Invalid password passed to checkUser!'
         }
     
         // Get user
