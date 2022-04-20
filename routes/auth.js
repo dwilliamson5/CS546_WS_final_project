@@ -7,6 +7,13 @@ const users = data.users;
 const validation = require('../validation');
 
 router.get('/login', async (req, res) => {
+
+    if (req.session.user) 
+    {
+        return res.redirect('/');
+    }
+
+    res.render('auth/login', {title: "Login"});
 });
 
 router.get('/logout', async (req, res) => {
@@ -35,7 +42,14 @@ router.post('/signup', async (req, res) => {
     
     try
     {
+        // Check parameters
         validation.isValidUserParameters(username, password, name, email, imageURL, bio);
+
+        // Check if user already exists
+        if (await users.getUser(username) !== null)
+        {
+            throw 'That username already exists!';
+        }
     }
     catch (e)
     {
@@ -72,6 +86,50 @@ router.post('/signup', async (req, res) => {
             title: "Sign Up",
             error_status_code: "HTTP 500 status code",
             error_messages: "Internal Server Error: " + e
+        });
+    }
+})
+
+router.post('/login', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    try
+    {
+        if (!validation.isValidUsername(username))
+        {
+            throw 'Invalid username!'
+        }
+
+        if (!validation.isValidPassword(password))
+        {
+            throw 'Invalid password!'
+        }
+
+        const response = await users.checkUser(username, password);
+
+        if (response === null || response.authenticated !== true)
+        {
+            res.status(500).render('auth/login', {
+                title: "Login",
+                error_status_code: "HTTP 500 status code",
+                error_messages: "Internal Server Error"
+            });
+        }
+
+        if (response.authenticated === true)
+        {
+            req.session.user = {username: username};
+
+            res.redirect('/');
+        }
+    }
+    catch (e)
+    {
+        res.status(400).render('auth/login', {
+            title: "Login",
+            error_status_code: "HTTP 400 status code",
+            error_messages: e
         });
     }
 })
