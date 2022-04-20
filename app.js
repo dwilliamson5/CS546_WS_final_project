@@ -1,8 +1,9 @@
 const express = require('express');
+const app = express();
+const static = express.static(__dirname + '/public');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
 const configRoutes = require('./routes');
-const exphbs = require('express-handlebars');
 
 app.use('/public', static);
 app.use(express.json());
