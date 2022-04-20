@@ -1,0 +1,12 @@
+{{#if universities}}
+<ul>
+    {{#each universities}}
+    <li>
+        {{ this.id }}
+        Link to edit page
+    </li>
+    {{/each}}
+</ul>
+{{else}}
+<p>There are no universities yet. Click "Add" to create one.</p>
+{{/if}}
