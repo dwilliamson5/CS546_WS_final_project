@@ -1,38 +1,43 @@
 body {
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: 15pt;
-  }
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 15pt;
+}
   
-  main {
-    max-width: 75%;
-    margin: auto;
-  }
-  input[type=text]{
-    width: 70%;
-    margin: 8px 0;
-    box-sizing: border-box;
-  }
-  label {
-    font-weight: bold;
-  }
-  p{
-    font-size: 1rem;  
-  }
+main {
+  max-width: 75%;
+  margin: auto;
+}
 
-  h1 {
-    font-size: 1.5rem;
-    padding-right: 10px;
-  }
+input[type=text]{
+  width: 70%;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
 
-  button{
-    color: white;
-    background-color:rgba(15, 141, 179, 0.629);
-  }
-  li{
-    list-style-type: circle;
-    font-size: 1rem;
-  }
-  #error-container{
-    color:#FF3D00;
-  }
+label {
+  font-weight: bold;
+}
+
+p{
+  font-size: 1rem;  
+}
+
+h1 {
+  font-size: 1.5rem;
+  padding-right: 10px;
+}
+
+button{
+  color: white;
+  background-color:rgba(15, 141, 179, 0.629);
+}
+
+li{
+  list-style-type: circle;
+  font-size: 1rem;
+}
+
+#error-container{
+  color:#FF3D00;
+}
 
