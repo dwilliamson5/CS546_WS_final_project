@@ -4,7 +4,7 @@ const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
 
-const validation = require('../validation');
+const validation = require('../data/validations/userValidations');
 
 router.get('/login', async (req, res) => {
 
