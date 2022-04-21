@@ -2,13 +2,13 @@ body {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 15pt;
 }
-  
+
 main {
   max-width: 75%;
   margin: auto;
 }
 
-input[type=text]{
+input[type=text] {
   width: 70%;
   margin: 8px 0;
   box-sizing: border-box;
@@ -18,8 +18,8 @@ label {
   font-weight: bold;
 }
 
-p{
-  font-size: 1rem;  
+p {
+  font-size: 1rem;
 }
 
 h1 {
@@ -27,28 +27,26 @@ h1 {
   padding-right: 10px;
 }
 
-button{
+button {
   color: white;
   background-color:rgba(15, 141, 179, 0.629);
 }
 
-li{
+li {
   list-style-type: circle;
   font-size: 1rem;
 }
 
-#error-container{
+#error-container {
   color:#FF3D00;
 }
 
-.error-status
-{
+.error-status {
     color: darkred;
     font-size: larger;
     font-weight: bolder;
 }
 
-.error-message
-{
+.error-message {
     color: red;
 }
