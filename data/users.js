@@ -2,7 +2,7 @@ const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 
 const bcrypt = require('bcrypt');
-const validation = require('./validations/userValidation');
+const validation = require('./validations/userValidations');
 
 module.exports = {
 
