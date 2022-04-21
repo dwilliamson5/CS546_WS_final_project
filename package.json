@@ -4,9 +4,10 @@
   "description": "Final project for CS-546",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "seed": "node ./tasks/seed.js"
   },
-  "author": "Derek Williamson, GaYoung Park, MattTarantino, Sean Hicks, Sydney Cardy",
+  "author": "Derek Williamson, GaYoung Park, Matt Tarantino, Sean Hicks, Sydney Cardy",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

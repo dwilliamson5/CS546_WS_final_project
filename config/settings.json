@@ -1,6 +1,8 @@
 {
   "mongoConfig": {
     "serverUrl": "mongodb://127.0.0.1:27017/",
-    "database": "CS546_WS_final_project"
+    "database": "CS546_WS_final_project",
+        "collections": ["items", "universities", "users"]
+
   }
 }

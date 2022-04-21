@@ -1,5 +1,6 @@
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const unis = mongoCollections.universities;
 
 const bcrypt = require('bcrypt');
 const validation = require('./validations/userValidations');
@@ -30,17 +31,20 @@ module.exports = {
         // Check if username already exists
         const user = await this.getUser(username);
 
-        if (user != null)
-        {
-            throw 'Cannot create username since it already exists!'
-        }
+        if (user != null) throw 'Cannot create username since it already exists!';
 
-        // @todo check if email matches a university's email domain
+        //get Email domain
+        email = email.trim();
+        email = email.split("@")[1];
+        // check if email matches a university's email domain
         // and if so retrieve university id 
-        const universityId = "todo";
+        const findUniversity = await unis();
+        const university = await findUniversity.findOne({ emailDomain: email});
+        if(!university) throw "Invalid university domain!";
+        universityId = university["_id"].toString();
 
         // Hash password
-        const SALT_ROUNDS = 16;
+        const SALT_ROUNDS = 10;
         const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
         let newUser = 
