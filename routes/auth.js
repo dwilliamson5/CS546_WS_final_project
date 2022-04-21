@@ -53,7 +53,7 @@ router.post('/signup', async (req, res) => {
     }
     catch (e)
     {
-        res.status(400).render('auth/signup', {
+        return res.status(400).render('auth/signup', {
             title: "Sign Up",
             error_status_code: "HTTP 400 status code",
             error_messages: e
@@ -66,7 +66,7 @@ router.post('/signup', async (req, res) => {
 
         if (response === null || response.userInserted === false)
         {
-            res.status(500).render('auth/signup', {
+            return res.status(500).render('auth/signup', {
                 title: "Sign Up",
                 error_status_code: "HTTP 500 status code",
                 error_messages: "Internal Server Error: " + e
@@ -82,7 +82,7 @@ router.post('/signup', async (req, res) => {
     }
     catch (e)
     {
-        res.status(500).render('auth/signup', {
+        return res.status(500).render('auth/signup', {
             title: "Sign Up",
             error_status_code: "HTTP 500 status code",
             error_messages: "Internal Server Error: " + e
@@ -96,21 +96,17 @@ router.post('/login', async (req, res) => {
 
     try
     {
-        if (!validation.isValidUsername(username))
+        if (!validation.isValidUsername(username) ||
+            !validation.isValidPassword(password))
         {
-            throw 'Invalid username!'
-        }
-
-        if (!validation.isValidPassword(password))
-        {
-            throw 'Invalid password!'
+            throw 'Invalid username or password!'
         }
 
         const response = await users.checkUser(username, password);
 
         if (response === null || response.authenticated !== true)
         {
-            res.status(500).render('auth/login', {
+            return res.status(500).render('auth/login', {
                 title: "Login",
                 error_status_code: "HTTP 500 status code",
                 error_messages: "Internal Server Error"
@@ -126,7 +122,7 @@ router.post('/login', async (req, res) => {
     }
     catch (e)
     {
-        res.status(400).render('auth/login', {
+        return res.status(400).render('auth/login', {
             title: "Login",
             error_status_code: "HTTP 400 status code",
             error_messages: e

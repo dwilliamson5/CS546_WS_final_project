@@ -103,14 +103,10 @@ module.exports = {
      */
     async checkUser(username, password)
     {
-        if (!validation.isValidUsername(username))
+        if (!validation.isValidUsername(username) ||
+            !validation.isValidPassword(password))
         {
-            throw 'Invalid username passed to checkUser!'
-        }
-
-        if (!validation.isValidPassword(password))
-        {
-            throw 'Invalid password passed to checkUser!'
+            throw 'Either the username or password is invalid!'
         }
     
         // Get user
