@@ -7,12 +7,11 @@ const constructorMethod = (app) => {
 
     let title = 'Welcome to Unisell';
 
-    if (req.session.user) 
-    {
+    if (req.session.user) {
       title += ', ' + req.session.user.username;
     }
 
-    res.render('index', { title: title });
+    res.render('index', { title: title, user: req.session.user });
   });
 
   app.use('/admin', adminRoutes);
