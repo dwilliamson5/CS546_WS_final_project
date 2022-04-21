@@ -4,7 +4,15 @@ const authRoutes = require('./auth');
 const constructorMethod = (app) => {
 
   app.get('/', async (req, res) => {
-    res.render('index', { title: 'Welcome to Unisell' });
+
+    let title = 'Welcome to Unisell';
+
+    if (req.session.user) 
+    {
+      title += ', ' + req.session.user.username;
+    }
+
+    res.render('index', { title: title });
   });
 
   app.use('/admin', adminRoutes);

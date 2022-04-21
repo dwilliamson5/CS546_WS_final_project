@@ -1,0 +1,15 @@
+
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
+
+<form action="/auth/login" method="POST" id="login-form">
+    <label id="user-label" for="username">Username</label>
+    <input id="username" name="username" value=""/>
+
+    <label id="password-label" for="password">Password</label>
+    <input id="password" type="password" name="password" value=""/>
+
+    <button type="submit">Login</button>
+</form>
+
+<a href="/auth/signup">Don't have an account? Signup here!</a>

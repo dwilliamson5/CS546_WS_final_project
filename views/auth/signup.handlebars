@@ -1,0 +1,27 @@
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
+
+<form action="/auth/signup" method="POST" id="signup-form">
+    <label id="user-label" for="username">Username</label>
+    <input id="username" name="username" value=""/>
+
+    <label id="password-label" for="password">Password</label>
+    <input id="password" type="password" name="password" value=""/>
+
+    <label id="name-label" for="name">Name</label>
+    <input id="name" name="name" value=""/>
+
+    <label id="email-label" for="email">Email</label>
+    <input id="email" type="email" name="email" value=""/>
+
+    <label id="bio-label" for="bio">Bio</label>
+    <textarea id="bio" name="bio" rows="10" cols="30"></textarea>
+
+    <!-- TODO -->
+    <label id="image-label" for="image">Profile image</label>
+    <input id="image" type="image" name="image" value=""/>
+
+    <button type="submit">Sign up</button>
+</form>
+
+<a class="sign-up-link" href="/auth/login">Already have an account? Click here to log-in</a>

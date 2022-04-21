@@ -41,3 +41,14 @@ li{
   color:#FF3D00;
 }
 
+.error-status
+{
+    color: darkred;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.error-message
+{
+    color: red;
+}
