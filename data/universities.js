@@ -1,4 +1,4 @@
-const mongoCollections = require("../config/mongoCollections");
+const mongoCollections = require('../config/mongoCollections');
 const universities = mongoCollections.universities;
 const validation = require('./validations/universityValidations');
 
