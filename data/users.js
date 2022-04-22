@@ -119,9 +119,6 @@ module.exports = {
 
     // Get user
     const user = await this.getUser(username);
-
-    if (user === null) {
-      throw "Either the username or password is invalid!";
     }
 
     let passwordsMatch = false;
