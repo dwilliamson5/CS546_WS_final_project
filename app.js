@@ -4,6 +4,8 @@ const static = express.static(__dirname + '/public');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
 const configRoutes = require('./routes');
+const data = require('./data/index');
+const users = data.users;
 
 app.use('/public', static);
 app.use(express.json());
@@ -15,6 +17,20 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
+app.use('/admin', async (req, res, next) => {
+  if (req.session.user) {
+
+    let user = await users.getUser(req.session.user.username);
+    if (user.super_admin) {
+      next();
+    } else {
+      return res.status(403).render('errors/403', { message: 'Admin permission required!' });
+    }
+  } else {
+    return res.redirect('/');
+  }
+});
 
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
