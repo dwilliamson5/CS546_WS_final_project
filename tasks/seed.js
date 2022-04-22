@@ -24,6 +24,7 @@ async function testUniversities() {
     console.log(e);
   }
 }
+
 async function testUsers() {
   try {
     await users.createUser(
