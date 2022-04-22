@@ -11,7 +11,7 @@ router.get('/new', async (req, res) => {
 
 router.get('/edit/:id', async (req, res) => {
     // find university. Redirect if it doesnt exist
-    res.render('admin/new', { title: 'Edit University' });
+    res.render('admin/edit', { title: 'Edit University' });
 });
 
 router.post('/', async (req, res) => {
