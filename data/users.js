@@ -116,13 +116,12 @@ module.exports = {
     ) {
       throw "Either the username or password is invalid!";
     }
-
     // Get user
     const user = await this.getUser(username);
+    if (user === null) {
+      throw "Either the username or password is invalid!";
     }
-
     let passwordsMatch = false;
-
     try {
       passwordsMatch = await bcrypt.compare(password, user.password);
     } catch (e) {
