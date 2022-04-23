@@ -43,8 +43,52 @@ router.get('/universities/:id/edit', async (req, res) => {
     });
 });
 
-router.post('/', async (req, res) => {
-    // create university, redirect to index once done
+router.post('/universities/', async (req, res) => {
+    let body = req.body;
+
+    if (!body) {
+        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
+
+        res.status(400).render('errors/400', {
+            message: 'You must provide a body to your request'
+        });
+        return;
+    }
+
+    let { name, emailDomain } = body;
+
+    if (!name || !emailDomain) {
+        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
+
+        res.status(400).render('errors/400', {
+            message: 'You must provide both the name and emailDomain'
+        });
+        return;
+    }
+
+    try {
+        validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
+    } catch (e) {
+        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
+
+        res.status(400).render('errors/400', {
+            message: e
+        });
+        return;
+    }
+
+    try {
+        let university = await universities.createUniversity(name, emailDomain);
+
+        res.redirect('/admin');
+    } catch (e) {
+        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
+        // res.status(500).render('error', {
+        //     error_message: 'Something went wrong. Please try again.',
+        //     title: 'Oops 500',
+        //     class_name: 'error'
+        // });
+    }
 });
 
 router.put('/:id', async (req, res) => {
