@@ -1,6 +1,40 @@
 const mongoCollections = require('../config/mongoCollections');
 const universities = mongoCollections.universities;
 const validation = require('./validations/universityValidations');
+const { ObjectId } = require('mongodb');
+
+async function getAll() {
+    // checkArgumentLength(arguments, 0);
+
+    const universityCollection = await universities();
+    let universitiesList = await universityCollection.find({}).toArray();
+
+    if (!universitiesList) {
+        throw 'Could not get all universities';
+    }
+
+    universitiesList.forEach(university => {
+        university._id = university._id.toString();
+    });
+
+    return universitiesList;
+}
+
+async function getUniversityById(id) {
+  // checkArgumentLength(arguments, 0);
+  // check is string
+  
+  if (!ObjectId.isValid(id)) {
+      throw 'invalid object ID';
+  }
+
+  const universityCollection = await universities();
+  const university = await universityCollection.findOne({ _id: ObjectId(id) });
+
+  // ERROR IF NOT FOUND
+
+  return university;
+}
 
 /**
  * Adds a university to the University collection.
@@ -87,6 +121,8 @@ async function deleteUniversity(id) {
 }
 
 module.exports = {
+  getAll,
+  getUniversityById,
   createUniversity,
   updateUniversity,
   deleteUniversity
