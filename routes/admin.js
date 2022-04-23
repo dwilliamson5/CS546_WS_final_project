@@ -91,11 +91,11 @@ router.post('/universities/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/universities/:id', async (req, res) => {
     // update university, redirect to index once done
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/universities/:id', async (req, res) => {
     // delete university, redirect to index once done
 });
 
