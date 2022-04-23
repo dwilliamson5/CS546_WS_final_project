@@ -10,7 +10,9 @@ router.get('/login', async (req, res) => {
         return res.redirect('/');
     }
 
-    res.render('auth/login', { title: 'Login' });
+    const universities = await universities.getAll();
+
+    res.render('auth/login', { title: 'Login', universities: universities });
 });
 
 router.get('/logout', async (req, res) => {
