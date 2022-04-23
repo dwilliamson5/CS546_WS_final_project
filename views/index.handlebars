@@ -1,12 +1,15 @@
-Welcome to Unisell. This is the about page.
-
-
 {{#if user}}
+Welcome to Unisell. Take a look at today's items:
+
+(show items here w/ search)
+
 <a href="/auth/logout">Logout</a>
 {{#if super_admin}}
 <a href="/admin">Admin Panel</a>
 {{/if}}
 {{else}}
+Welcome to Unisell. This is the about page.
+
 <a href="/auth/signup">Create an account</a>
 <a href="/auth/login">Login</a>
 {{/if}}

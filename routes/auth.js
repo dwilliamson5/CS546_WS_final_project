@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
-
 const validation = require('../data/validations/userValidations');
 
 router.get('/login', async (req, res) => {
@@ -104,9 +103,7 @@ router.post('/login', async (req, res) => {
         }
 
         if (response.authenticated === true) {
-            let user = await users.getUser(username);
-
-            req.session.user = { username: username, admin: user.super_admin };
+            req.session.user = { username: username };
 
             res.redirect('/');
         }

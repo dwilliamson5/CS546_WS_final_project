@@ -1,9 +1,9 @@
+
 function isValidString(string) {
   if (
     string === undefined ||
-    typeof string !== "string" ||
-    string.trim().length === 0
-  ) {
+    typeof string !== 'string' ||
+    string.trim().length === 0) {
     return false;
   }
 
@@ -19,12 +19,14 @@ function isValidEmail(email) {
   let emailRegex = new RegExp(
     "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:[A-Z]{2}|edu)\\b"
   );
+
   return emailRegex.test(email);
 }
 
 function isValidUniversityParameters(name, emailDomain) {
-  if (!isValidString(name)) throw "Invalid university name!";
-  if (!isValidEmail(emailDomain)) throw "Invalid email domain!";
+  if (!isValidString(name)) throw 'Invalid university name!';
+  if (!isValidEmail(emailDomain)) throw 'Invalid email domain!';
+  
   return true;
 }
 
