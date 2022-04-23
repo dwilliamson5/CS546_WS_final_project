@@ -8,6 +8,7 @@ function isValidString(string) {
 
   return true;
 }
+
 function isValidEmail(email) {
   if (!isValidString(email)) {
     return false;
