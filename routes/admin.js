@@ -14,9 +14,33 @@ router.get('/universities/new', async (req, res) => {
     res.render('admin/new', { title: 'New University' });
 });
 
-router.get('/edit/:id', async (req, res) => {
-    // find university. Redirect if it doesnt exist
-    res.render('admin/edit', { title: 'Edit University' });
+router.get('/universities/:id/edit', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        res.status(404).render('errors/404', {
+            message: 'Could not find that university'
+        });
+        return;
+    }
+
+    let universityId = params.id;
+
+    let university = await universities.getUniversityById(universityId);
+
+    if (!university) {
+        res.status(404).render('errors/404', {
+            message: 'Could not find that university'
+        });
+        return;
+    }
+
+    res.render('admin/edit', {
+        title: 'Edit ' + university.name,
+        id: university._id,
+        name: university.name,
+        emailDomain: university.emailDomain
+    });
 });
 
 router.post('/', async (req, res) => {
