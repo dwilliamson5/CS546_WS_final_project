@@ -1,6 +1,6 @@
-const data = require('../index');
-const users = data.users;
-const universities = data.universities;
+const users = require('../users');
+const universities = require('../universities');
+const { ObjectId } = require('mongodb');
 
 function isValidString(string) {
     if (string === undefined ||
@@ -102,30 +102,19 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-function isValidUniversity(universityId) {
+function isValidUniversityId(universityId) {
     if (!isValidString(universityId)) {
         return false;
     }
 
-    await universities.getUniversityById(universityId);
-}
-
-function isValidUniversityWithEmail(universityId, email) {
-    if (!isValidString(universityId)) {
+    if (!ObjectId.isValid(universityId)) {
         return false;
     }
 
-    let university = isValidUniversity(universityId);
-
-    //get Email domain
-    let emailDomain = email.trim().split('@')[1];
-
-    if (university.emailDomain != emailDomain) {
-        throw 'Invalid university domain!';
-    }
+    return true;
 }
 
-function isValidUserParameters(universityId, username, password, name, email, imageURL, bio) {
+async function isValidUserParameters(universityId, username, password, name, email, imageURL, bio) {
 
     if (!isValidUsername(username)) {
         throw 'Invalid username!';
@@ -143,8 +132,17 @@ function isValidUserParameters(universityId, username, password, name, email, im
         throw 'Invalid email!';
     }
 
-    if (!isValidUniversityWithEmail(universityId, email)) {
-        throw 'Invalid university!';
+    if (!isValidUniversityId(universityId)) {
+        throw 'Invalid universityId!';
+    }
+
+    let university = await universities.getUniversityById(ObjectId(universityId));
+
+    //get Email domain
+    let emailDomain = email.trim().split('@')[1];
+
+    if (university.emailDomain != emailDomain) {
+        throw 'Invalid university domain!';
     }
 
     if (!isValidString(imageURL)) {
@@ -171,6 +169,5 @@ module.exports = {
     isValidPassword,
     isValidEmail,
     isValidUserParameters,
-    isValidUniversity,
-    isValidUniversityWithEmail
+    isValidUniversityId
 };
