@@ -2,9 +2,9 @@
 <p class="error-message">{{error_messages}}</p>
 
 <form action="/auth/signup" method="POST" id="signup-form">
-    <label for="university">Select your university:</label>
+    <label for="universityId">Select your university:</label>
 
-    <select name="university" id="university">
+    <select name="universityId" id="universityId">
         {{#each universities}}
             <option value="{{this._id}}">{{ this.name }}</option>
         {{/each}}
