@@ -3,6 +3,14 @@
 <p class="error-message">{{error_messages}}</p>
 
 <form action="/auth/login" method="POST" id="login-form">
+    <label for="university">Select your university:</label>
+
+    <select name="university" id="university">
+        {{#each universities}}
+            <option value="{{this._id}}">{{ this.name }}</option>
+        {{/each}}
+    </select>
+
     <label id="user-label" for="username">Username</label>
     <input id="username" name="username" value=""/>
 
