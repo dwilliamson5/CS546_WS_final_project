@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const data = require('../data/index');
+const universities = data.universities;
+const validation = require('../data/validations/universityValidations');
 
 router.get('/', async (req, res) => {
-    res.render('admin/index', { title: 'Unisell Admin', universities: [] });
+    const universitiesList = await universities.getAll();
+
+    res.render('admin/index', { title: 'Unisell Admin', universities: universitiesList });
 });
 
 router.get('/new', async (req, res) => {
