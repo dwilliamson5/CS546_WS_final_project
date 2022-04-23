@@ -5,7 +5,6 @@ const users = data.users;
 const validation = require('../data/validations/userValidations');
 
 router.get('/login', async (req, res) => {
-
     if (req.session.user) {
         return res.redirect('/');
     }
@@ -24,7 +23,6 @@ router.get('/logout', async (req, res) => {
 });
 
 router.get('/signup', async (req, res) => {
-
     if (req.session.user) {
         return res.redirect('/');
     }
