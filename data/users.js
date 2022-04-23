@@ -1,8 +1,9 @@
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const universities = mongoCollections.universities;
+const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const validation = require('./validations/userValidations');
+const { ObjectId } = require('mongodb');
 
 /**
  * Adds a user to the Users collection.
@@ -20,7 +21,8 @@ const validation = require('./validations/userValidations');
  */
 async function createUser(universityId, username, password, name, email, imageURL, bio) {
   // Throws if there is an invalid parameter
-  validation.isValidUserParameters(
+  await validation.isValidUserParameters(
+    universityId,
     username,
     password,
     name,
@@ -99,8 +101,17 @@ async function checkUser(universityId, username, password) {
     throw 'Either the username or password is invalid!';
   }
 
-  if (!validation.isValidUniversityWithEmail(universityId, user.email) {
-      throw 'Invalid university!'
+  if (!validation.isValidUniversityId(universityId)) {
+      return false;
+  }
+
+  let university = await universities.getUniversityById(ObjectId(universityId));
+
+  //get Email domain
+  let emailDomain = user.email.trim().split('@')[1];
+
+  if (university.emailDomain != emailDomain) {
+      throw 'Invalid university domain!';
   }
 
   let passwordsMatch = false;
