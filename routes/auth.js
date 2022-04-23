@@ -66,8 +66,6 @@ router.post('/signup', async (req, res) => {
         }
 
         if (response.userInserted === true) {
-            req.session.user = { username: username };
-
             res.redirect('/');
         }
     }
