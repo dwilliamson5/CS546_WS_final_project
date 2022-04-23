@@ -1,14 +1,16 @@
 {{#if user}}
-Welcome to Unisell. Take a look at today's items:
+<p>Welcome to Unisell!</p>
 
-(show items here w/ search)
+<p>Browsing at {{universityName}}</p>
+
+Take a look at today's items: (show items here w/ search)
 
 <a href="/auth/logout">Logout</a>
 {{#if super_admin}}
 <a href="/admin">Admin Panel</a>
 {{/if}}
 {{else}}
-Welcome to Unisell. This is the about page.
+<p>Welcome to Unisell! This is the about page.</p>
 
 <a href="/auth/signup">Create an account</a>
 <a href="/auth/login">Login</a>
