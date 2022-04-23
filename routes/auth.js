@@ -36,6 +36,7 @@ router.get('/signup', async (req, res) => {
 })
 
 router.post('/signup', async (req, res) => {
+    const universityId = req.body.universityId;
     const username = req.body.username;
     const password = req.body.password;
     const name = req.body.name;
@@ -45,12 +46,7 @@ router.post('/signup', async (req, res) => {
 
     try {
         // Check parameters
-        validation.isValidUserParameters(username, password, name, email, imageURL, bio);
-
-        // Check if user already exists
-        if (await users.getUser(username) !== null) {
-            throw 'That username already exists!';
-        }
+        validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
     } catch (e) {
         return res.status(400).render('auth/signup', {
             title: 'Sign Up',
@@ -60,7 +56,7 @@ router.post('/signup', async (req, res) => {
     }
 
     try {
-        const response = await users.createUser(username, password, name, email, imageURL, bio);
+        const response = await users.createUser(universityId, username, password, name, email, imageURL, bio);
 
         if (response === null || response.userInserted === false) {
             return res.status(500).render('auth/signup', {
@@ -84,6 +80,7 @@ router.post('/signup', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
+    const universityId = req.body.universityId;
     const username = req.body.username;
     const password = req.body.password;
 
@@ -93,7 +90,11 @@ router.post('/login', async (req, res) => {
             throw 'Invalid username or password!'
         }
 
-        const response = await users.checkUser(username, password);
+        if (!validation.isValidUniversity(universityId) {
+            throw 'Invalid university!'
+        }
+
+        const response = await users.checkUser(universityId, username, password);
 
         if (response === null || response.authenticated !== true) {
             return res.status(500).render('auth/login', {
