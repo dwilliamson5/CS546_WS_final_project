@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
+const universities = data.universities;
 const validation = require('../data/validations/userValidations');
 
 router.get('/login', async (req, res) => {
