@@ -1,3 +1,7 @@
+const data = require('../index');
+const users = data.users;
+const universities = data.universities;
+
 function isValidString(string) {
     if (string === undefined ||
         typeof string !== 'string' ||
@@ -98,7 +102,31 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-function isValidUserParameters(username, password, name, email, imageURL, bio) {
+function isValidUniversity(universityId) {
+    if (!isValidString(universityId)) {
+        return false;
+    }
+
+    await universities.getUniversityById(universityId);
+}
+
+function isValidUniversityWithEmail(universityId, email) {
+    if (!isValidString(universityId)) {
+        return false;
+    }
+
+    let university = isValidUniversity(universityId);
+
+    //get Email domain
+    let emailDomain = email.trim().split('@')[1];
+
+    if (university.emailDomain != emailDomain) {
+        throw 'Invalid university domain!';
+    }
+}
+
+function isValidUserParameters(universityId, username, password, name, email, imageURL, bio) {
+
     if (!isValidUsername(username)) {
         throw 'Invalid username!';
     }
@@ -115,12 +143,21 @@ function isValidUserParameters(username, password, name, email, imageURL, bio) {
         throw 'Invalid email!';
     }
 
+    if (!isValidUniversityWithEmail(universityId, email)) {
+        throw 'Invalid university!';
+    }
+
     if (!isValidString(imageURL)) {
         throw 'Invalid image URL!';
     }
 
     if (!isValidString(bio)) {
         throw 'Invalid bio!';
+    }
+
+    // Check if user already exists
+    if (await users.getUser(username) !== null) {
+        throw 'That username already exists!';
     }
 
     return true;
@@ -133,5 +170,7 @@ module.exports = {
     isValidUsername,
     isValidPassword,
     isValidEmail,
-    isValidUserParameters
+    isValidUserParameters,
+    isValidUniversity,
+    isValidUniversityWithEmail
 };
