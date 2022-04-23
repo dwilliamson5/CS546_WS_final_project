@@ -27,6 +27,7 @@ async function getUniversityById(id) {
   if (!ObjectId.isValid(id)) {
       throw 'Invalid object ID';
   }
+  // should be moved to a validation file
 
   const universityCollection = await universities();
   const university = await universityCollection.findOne({ _id: ObjectId(id) });
@@ -80,7 +81,7 @@ async function updateUniversity(name, emailDomain) {
 
   const universitiesCollection = await universities();
   const university = await universitiesCollection.findOne({
-    emailDomain: emailDomain,
+    emailDomain: emailDomain
   });
 
   if (university == null) {
@@ -89,7 +90,7 @@ async function updateUniversity(name, emailDomain) {
 
   let updateUniversity = {
     name: name.trim(),
-    emailDomain: emailDomain.trim(),
+    emailDomain: emailDomain.trim()
   };
 
   const update = await universitiesCollection.updateOne(
