@@ -1,0 +1,11 @@
+<form action="/admin/universities/{{id}}" method="PUT" id="edit-university-form">
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{name}}"/>
+
+    <label for="emailDomain">Email Domain</label>
+    <input id="emailDomain" name="emailDomain" value="{{emailDomain}}"/>
+
+    <button type="submit">Update</button>
+</form>
+
+<a href="/admin">Back</a>
