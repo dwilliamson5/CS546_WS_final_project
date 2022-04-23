@@ -1,21 +1,23 @@
-{{#if universities}}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Domain</th>
-    <th>Edit</th>
-  </tr>
-  {{#each universities}}
+<div class="container">
+  {{#if universities}}
+  <table class="table">
     <tr>
-        <td>{{ this.name }}</td>
-        <td>{{ this.emailDomain }}</td>
-        <td><a href="/admin/universities/{{this._id}}/edit">Edit</a></td>
+      <th>Name</th>
+      <th>Domain</th>
+      <th>Edit</th>
     </tr>
-  {{/each}}
-</table>
-{{else}}
-<p>There are no universities yet. Click "Add" to create one.</p>
-{{/if}}
+    {{#each universities}}
+      <tr>
+          <td>{{ this.name }}</td>
+          <td>{{ this.emailDomain }}</td>
+          <td><a href="/admin/universities/{{this._id}}/edit">Edit</a></td>
+      </tr>
+    {{/each}}
+  </table>
+  {{else}}
+  <p>There are no universities yet. Click "Add" to create one.</p>
+  {{/if}}
 
-<a href="/admin/universities/new">Add</a>
-<a href="/">Exit Admin</a>
+  <a href="/admin/universities/new" class="btn btn-success">Add</a>
+  <a href="/" class="btn btn-secondary">Exit Admin</a>
+</div>
