@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     res.render('admin/index', { title: 'Unisell Admin', universities: universitiesList });
 });
 
-router.get('/new', async (req, res) => {
+router.get('/universities/new', async (req, res) => {
     res.render('admin/new', { title: 'New University' });
 });
 
