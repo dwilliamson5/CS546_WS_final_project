@@ -2,6 +2,16 @@
 <p class="error-message">{{error_messages}}</p>
 
 <form action="/auth/signup" method="POST" id="signup-form">
+    <label for="university">Select your university:</label>
+
+    <select name="university" id="university">
+        {{#each universities}}
+            <option value="{{this._id}}">{{ this.name }}</option>
+        {{/each}}
+    </select>
+
+    <p>Don't see your university on this list? Tell your school to join Unisell!</p>
+
     <label id="user-label" for="username">Username</label>
     <input id="username" name="username" value=""/>
 
