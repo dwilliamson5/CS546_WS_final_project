@@ -30,7 +30,9 @@ router.get('/signup', async (req, res) => {
         return res.redirect('/');
     }
 
-    res.render('auth/signup', { title: 'Sign Up' });
+    const universitiesList = await universities.getAll();
+
+    res.render('auth/signup', { title: 'Sign Up', universities: universities });
 })
 
 router.post('/signup', async (req, res) => {
