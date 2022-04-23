@@ -1,4 +1,3 @@
-
 function isValidString(string) {
   if (
     string === undefined ||
@@ -26,7 +25,7 @@ function isValidEmail(email) {
 function isValidUniversityParameters(name, emailDomain) {
   if (!isValidString(name)) throw 'Invalid university name!';
   if (!isValidEmail(emailDomain)) throw 'Invalid email domain!';
-  
+
   return true;
 }
 
