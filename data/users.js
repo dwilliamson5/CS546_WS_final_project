@@ -42,7 +42,7 @@ async function createUser(username, password, name, email, imageURL, bio) {
   // and if so retrieve university id
   const universitiesCollection = await universities();
   const university = await universitiesCollection.findOne({
-    emailDomain: emailDomain,
+    emailDomain: emailDomain
   });
 
   if (!university) throw 'Invalid university domain!';
@@ -157,7 +157,7 @@ async function makeSuperAdmin(username) {
 
   return { userUpdated: true };
 }
-  
+
 module.exports = {
   createUser,
   getUser,
