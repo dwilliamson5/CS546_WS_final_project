@@ -23,15 +23,17 @@ async function getAll() {
 async function getUniversityById(id) {
   // checkArgumentLength(arguments, 0);
   // check is string
-  
+
   if (!ObjectId.isValid(id)) {
-      throw 'invalid object ID';
+      throw 'Invalid object ID';
   }
 
   const universityCollection = await universities();
   const university = await universityCollection.findOne({ _id: ObjectId(id) });
 
-  // ERROR IF NOT FOUND
+  if (!university) {
+    throw 'University does not exist!'
+  }
 
   return university;
 }
@@ -48,7 +50,7 @@ async function getUniversityById(id) {
 async function createUniversity(name, emailDomain) {
   //validation
   validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
-  
+
   // Check if university already exists
   const universityCollection = await universities();
   const university = await universityCollection.findOne({
@@ -72,10 +74,10 @@ async function createUniversity(name, emailDomain) {
 
   return { universityInserted: true };
 }
-  
+
 async function updateUniversity(name, emailDomain) {
   validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
-  
+
   const universitiesCollection = await universities();
   const university = await universitiesCollection.findOne({
     emailDomain: emailDomain,
@@ -105,7 +107,7 @@ async function updateUniversity(name, emailDomain) {
 async function deleteUniversity(id) {
   const universitiesCollection = await universities();
   const university = await universities.findOne({ _id: id });
-  
+
   if (!university) {
     throw 'No university with given id exists!';
   }
