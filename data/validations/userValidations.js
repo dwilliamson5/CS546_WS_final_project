@@ -1,5 +1,3 @@
-const users = require('../users');
-const universities = require('../universities');
 const { ObjectId } = require('mongodb');
 
 function isValidString(string) {
@@ -136,26 +134,12 @@ async function isValidUserParameters(universityId, username, password, name, ema
         throw 'Invalid universityId!';
     }
 
-    let university = await universities.getUniversityById(ObjectId(universityId));
-
-    //get Email domain
-    let emailDomain = email.trim().split('@')[1];
-
-    if (university.emailDomain != emailDomain) {
-        throw 'Invalid university domain!';
-    }
-
     if (!isValidString(imageURL)) {
         throw 'Invalid image URL!';
     }
 
     if (!isValidString(bio)) {
         throw 'Invalid bio!';
-    }
-
-    // Check if user already exists
-    if (await users.getUser(username) !== null) {
-        throw 'That username already exists!';
     }
 
     return true;

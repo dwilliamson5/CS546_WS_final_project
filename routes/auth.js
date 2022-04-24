@@ -4,6 +4,7 @@ const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
 const validation = require('../data/validations/userValidations');
+const { ObjectId } = require('mongodb');
 
 router.get('/login', async (req, res) => {
     if (req.session.user) {
@@ -81,6 +82,20 @@ router.post('/signup', async (req, res) => {
     try {
         // Check parameters
         await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
+
+        let university = await universities.getUniversityById(ObjectId(universityId));
+
+        //get Email domain
+        let emailDomain = email.trim().split('@')[1];
+
+        if (university.emailDomain != emailDomain) {
+            throw 'Email domain does not match selected university domain!';
+        }
+
+        // Check if user already exists
+        if (await users.getUser(username) !== null) {
+            throw 'That username already exists!';
+        }
     } catch (e) {
         return res.status(400).render('auth/signup', {
             title: 'Sign Up',

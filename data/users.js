@@ -31,6 +31,20 @@ async function createUser(universityId, username, password, name, email, imageUR
     bio
   );
 
+  let university = await universities.getUniversityById(ObjectId(universityId));
+
+  //get Email domain
+  let emailDomain = email.trim().split('@')[1];
+
+  if (university.emailDomain != emailDomain) {
+      throw 'Email domain does not match selected university domain!';
+  }
+
+  // Check if user already exists
+  if (await getUser(username) !== null) {
+      throw 'That username already exists!';
+  }
+
   // Hash password
   const SALT_ROUNDS = 10;
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
