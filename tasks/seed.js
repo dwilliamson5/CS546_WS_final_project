@@ -25,10 +25,11 @@ async function testUniversities() {
 
 async function testUsers() {
   try {
-    let university = await universities.getAll()[0]
+    let universityList = await universities.getAll();
+    let university = universityList[0];
 
     await users.createUser(
-      university._id,
+      university['_id'],
       'superadmin',
       'super_admin_password',
       'Super Admin User',
