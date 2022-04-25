@@ -4,10 +4,8 @@ const users = data.users;
 const universities = data.universities;
 
 async function testUniversities() {
-  let uni1;
-
   try {
-    uni1 = await universities.createUniversity(
+    await universities.createUniversity(
       'Stevens Institute of Technology',
       'stevens.edu'
     );
@@ -16,7 +14,7 @@ async function testUniversities() {
   }
 
   try {
-    uni1 = await universities.updateUniversity(
+    await universities.updateUniversity(
       'Stevens Institute',
       'stevens.edu'
     );
@@ -27,7 +25,10 @@ async function testUniversities() {
 
 async function testUsers() {
   try {
+    let university = await universities.getAll()[0]
+
     await users.createUser(
+      university._id,
       'superadmin',
       'super_admin_password',
       'Super Admin User',

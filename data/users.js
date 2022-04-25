@@ -1,12 +1,14 @@
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const universities = mongoCollections.universities;
+const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const validation = require('./validations/userValidations');
+const { ObjectId } = require('mongodb');
 
 /**
  * Adds a user to the Users collection.
  *
+ * @param {String} universityId
  * @param {String} username
  * @param {String} password
  * @param {String} name
@@ -17,9 +19,10 @@ const validation = require('./validations/userValidations');
  * @throws Will throw if parameters are invalid, user already exists,
  *         or there is an issue with the db.
  */
-async function createUser(username, password, name, email, imageURL, bio) {
+async function createUser(universityId, username, password, name, email, imageURL, bio) {
   // Throws if there is an invalid parameter
-  validation.isValidUserParameters(
+  await validation.isValidUserParameters(
+    universityId,
     username,
     password,
     name,
@@ -28,31 +31,26 @@ async function createUser(username, password, name, email, imageURL, bio) {
     bio
   );
 
-  // Check if username already exists
-  const user = await getUser(username);
-
-  if (user != null) {
-    throw 'Cannot create username since it already exists!';
-  }
+  let university = await universities.getUniversityById(ObjectId(universityId));
 
   //get Email domain
   let emailDomain = email.trim().split('@')[1];
 
-  // check if email matches a university's email domain
-  // and if so retrieve university id
-  const universitiesCollection = await universities();
-  const university = await universitiesCollection.findOne({
-    emailDomain: emailDomain,
-  });
+  if (university.emailDomain != emailDomain) {
+      throw 'Email domain does not match selected university domain!';
+  }
 
-  if (!university) throw 'Invalid university domain!';
+  // Check if user already exists
+  if (await getUser(username) !== null) {
+      throw 'That username already exists!';
+  }
 
   // Hash password
   const SALT_ROUNDS = 10;
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
   let newUser = {
-    universityId: university._id.toString(),
+    universityId: universityId.trim(),
     username: username.trim(),
     name: name.trim(),
     email: email.trim(),
@@ -103,7 +101,7 @@ async function getUser(username) {
  * @throws Will throw if the parameters are invalid, username doesn't
  *         exist, or the credentials do not match.
  */
-async function checkUser(username, password) {
+async function checkUser(universityId, username, password) {
   if (
     !validation.isValidUsername(username) ||
     !validation.isValidPassword(password)
@@ -115,6 +113,19 @@ async function checkUser(username, password) {
   const user = await getUser(username);
   if (user === null) {
     throw 'Either the username or password is invalid!';
+  }
+
+  if (!validation.isValidUniversityId(universityId)) {
+      return false;
+  }
+
+  let university = await universities.getUniversityById(ObjectId(universityId));
+
+  //get Email domain
+  let emailDomain = user.email.trim().split('@')[1];
+
+  if (university.emailDomain != emailDomain) {
+      throw 'Invalid university domain!';
   }
 
   let passwordsMatch = false;
@@ -157,7 +168,7 @@ async function makeSuperAdmin(username) {
 
   return { userUpdated: true };
 }
-  
+
 module.exports = {
   createUser,
   getUser,

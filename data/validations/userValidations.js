@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 function isValidString(string) {
     if (string === undefined ||
         typeof string !== 'string' ||
@@ -98,7 +100,20 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-function isValidUserParameters(username, password, name, email, imageURL, bio) {
+function isValidUniversityId(universityId) {
+    if (!isValidString(universityId)) {
+        return false;
+    }
+
+    if (!ObjectId.isValid(universityId)) {
+        return false;
+    }
+
+    return true;
+}
+
+async function isValidUserParameters(universityId, username, password, name, email, imageURL, bio) {
+
     if (!isValidUsername(username)) {
         throw 'Invalid username!';
     }
@@ -113,6 +128,10 @@ function isValidUserParameters(username, password, name, email, imageURL, bio) {
 
     if (!isValidEmail(email)) {
         throw 'Invalid email!';
+    }
+
+    if (!isValidUniversityId(universityId)) {
+        throw 'Invalid universityId!';
     }
 
     if (!isValidString(imageURL)) {
@@ -133,5 +152,6 @@ module.exports = {
     isValidUsername,
     isValidPassword,
     isValidEmail,
-    isValidUserParameters
+    isValidUserParameters,
+    isValidUniversityId
 };

@@ -1,15 +1,17 @@
-{{#if user}}
-Welcome to Unisell. Take a look at today's items:
+<div class="container">
+    {{#if user}}
+        <p>Welcome to Unisell!</p>
 
-(show items here w/ search)
+        <p>Browsing {{universityName}} items:</p>
+        
+        {{#if super_admin}}
+            <a href="/admin" class="btn btn-warning">Admin Panel</a>
+        {{/if}}
+        <a href="/auth/logout" class="btn btn-danger">Logout</a>
+    {{else}}
+        <p>Welcome to Unisell! This is the about page.</p>
 
-<a href="/auth/logout">Logout</a>
-{{#if super_admin}}
-<a href="/admin">Admin Panel</a>
-{{/if}}
-{{else}}
-Welcome to Unisell. This is the about page.
-
-<a href="/auth/signup">Create an account</a>
-<a href="/auth/login">Login</a>
-{{/if}}
+        <a href="/auth/login" class="btn btn-success">Login</a>
+        <a href="/auth/signup" class="btn btn-primary">Create an account</a>
+    {{/if}}
+</div>

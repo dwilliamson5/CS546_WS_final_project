@@ -1,12 +1,23 @@
-{{#if universities}}
-<ul>
+<div class="container">
+  {{#if universities}}
+  <table class="table">
+    <tr>
+      <th>Name</th>
+      <th>Domain</th>
+      <th>Edit</th>
+    </tr>
     {{#each universities}}
-    <li>
-        {{ this.id }}
-        Link to edit page
-    </li>
+      <tr>
+          <td>{{ this.name }}</td>
+          <td>{{ this.emailDomain }}</td>
+          <td><a href="/admin/universities/{{this._id}}/edit">Edit</a></td>
+      </tr>
     {{/each}}
-</ul>
-{{else}}
-<p>There are no universities yet. Click "Add" to create one.</p>
-{{/if}}
+  </table>
+  {{else}}
+  <p>There are no universities yet. Click "Add" to create one.</p>
+  {{/if}}
+
+  <a href="/admin/universities/new" class="btn btn-success">Add</a>
+  <a href="/" class="btn btn-secondary">Exit Admin</a>
+</div>
