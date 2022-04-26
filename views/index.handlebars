@@ -1,17 +1,33 @@
-<div class="container">
-    {{#if user}}
-        <p>Welcome to Unisell!</p>
+{{#if user}}
+    <p>Welcome to Unisell!</p>
 
-        <p>Browsing {{universityName}} items:</p>
-        
-        {{#if super_admin}}
-            <a href="/admin" class="btn btn-warning">Admin Panel</a>
-        {{/if}}
-        <a href="/auth/logout" class="btn btn-danger">Logout</a>
-    {{else}}
-        <p>Welcome to Unisell! This is the about page.</p>
+    <p>Browsing {{universityName}} items:</p>
 
-        <a href="/auth/login" class="btn btn-success">Login</a>
-        <a href="/auth/signup" class="btn btn-primary">Create an account</a>
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="/items/123" class="btn btn-primary">See More</a>
+        </div>
+    </div>
+
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="/items/456" class="btn btn-primary">See More</a>
+        </div>
+    </div>
+    
+    {{#if super_admin}}
+        <a href="/admin" class="btn btn-warning">Admin Panel</a>
     {{/if}}
-</div>
+    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+{{else}}
+    <p>Welcome to Unisell! This is the about page.</p>
+
+    <a href="/auth/login" class="btn btn-success">Login</a>
+    <a href="/auth/signup" class="btn btn-primary">Create an account</a>
+{{/if}}
