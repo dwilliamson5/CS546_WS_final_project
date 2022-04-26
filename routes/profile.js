@@ -9,10 +9,6 @@ const validation = require('../data/validations/userValidations');
 
 router.get('/edit', async (req, res) => {
 
-    if (!req.session.user) {
-        return res.redirect('/');
-    }
-
     try {
         let user = await users.getUser(req.session.user.username);
 
@@ -99,7 +95,7 @@ router.post('/edit/', async (req, res) => {
             res.status(500).render('profile/edit', {
                 title: 'Edit User',
                 error_status_code: 'HTTP 500 status code',
-                error_messages: e,
+                error_messages: 'Internal Server Error',
                 universities: universitiesList,
                 user: user
             });
@@ -107,6 +103,7 @@ router.post('/edit/', async (req, res) => {
         }
 
         if (response.userUpdated === true) {
+            // Update username since it could have changed
             req.session.user = { username: username };
 
             res.redirect('/');

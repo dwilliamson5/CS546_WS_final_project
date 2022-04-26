@@ -116,7 +116,7 @@ async function createUser(universityId, username, password, name, email, imageUR
   let user = await getUser(existingUsername);
 
   if (user === null) {
-    throw 'Could not find user with username: ' + username;
+    throw 'Could not find user with username: ' + existingUsername;
   }
 
   let updatedUser = {
