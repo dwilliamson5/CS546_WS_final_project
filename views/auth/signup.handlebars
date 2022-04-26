@@ -1,55 +1,53 @@
-<div class="container">
-    <p class="error-status">{{error_status_code}}</p>
-    <p class="error-message">{{error_messages}}</p>
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
 
-    <form action="/auth/signup" method="POST" id="signup-form">
-        <div class="mb-3">
-            <label for="universityId" class="form-label">Select your university:</label>
+<form action="/auth/signup" method="POST" id="signup-form">
+    <div class="mb-3">
+        <label for="universityId" class="form-label">Select your university:</label>
 
-            <select name="universityId" id="universityId" class="form-select">
-                {{#each universities}}
-                    <option value="{{this._id}}">{{ this.name }}</option>
-                {{/each}}
-            </select>
-            <div class="form-text">Don't see your university on this list? Tell your school to join Unisell!</div>
-        </div>
+        <select name="universityId" id="universityId" class="form-select">
+            {{#each universities}}
+                <option value="{{this._id}}">{{ this.name }}</option>
+            {{/each}}
+        </select>
+        <div class="form-text">Don't see your university on this list? Tell your school to join Unisell!</div>
+    </div>
 
-        <div class="mb-3">
-            <label id="user-label" for="username" class="form-label">Username</label>
-            <input id="username" name="username" class="form-control" />
-            <div class="form-text">USERNAME REQUIREMENTS HERE</div>
-        </div>
+    <div class="mb-3">
+        <label id="user-label" for="username" class="form-label">Username</label>
+        <input id="username" name="username" class="form-control" />
+        <div class="form-text">USERNAME REQUIREMENTS HERE</div>
+    </div>
 
-        <div class="mb-3">
-            <label id="password-label" for="password" class="form-label">Password</label>
-            <input id="password" type="password" name="password" class="form-control" />
-            <div class="form-text">PASSWORD REQUIREMENTS HERE</div>
-        </div>
+    <div class="mb-3">
+        <label id="password-label" for="password" class="form-label">Password</label>
+        <input id="password" type="password" name="password" class="form-control" />
+        <div class="form-text">PASSWORD REQUIREMENTS HERE</div>
+    </div>
 
-        <div class="mb-3">
-            <label id="name-label" for="name" class="form-label">Name</label>
-            <input id="name" name="name" class="form-control" />
-        </div>
+    <div class="mb-3">
+        <label id="name-label" for="name" class="form-label">Name</label>
+        <input id="name" name="name" class="form-control" />
+    </div>
 
-        <div class="mb-3">
-            <label id="email-label" for="email" class="form-label">Email</label>
-            <input id="email" type="email" name="email" class="form-control" />
-        </div>
+    <div class="mb-3">
+        <label id="email-label" for="email" class="form-label">Email</label>
+        <input id="email" type="email" name="email" class="form-control" />
+    </div>
 
-        <div class="mb-3">
-            <label id="bio-label" for="bio" class="form-label">Bio</label>
-            <textarea id="bio" name="bio" rows="5" cols="30" class="form-control"></textarea>
-        </div>
+    <div class="mb-3">
+        <label id="bio-label" for="bio" class="form-label">Bio</label>
+        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control"></textarea>
+    </div>
 
-        <div class="mb-3">
-            <!-- TODO -->
-            <label id="image-label" for="image">Profile image</label>
-            <input id="image" type="image" name="image" value=""/>
-        </div>
+    <div class="mb-3">
+        <!-- TODO -->
+        <label id="image-label" for="image">Profile image</label>
+        <input id="image" type="image" name="image" value=""/>
+    </div>
 
-        <button type="submit" class="btn btn-success">Sign Up</button>
-    </form>
+    <button type="submit" class="btn btn-success">Sign Up</button>
+</form>
 
-    <a href="/auth/login" class="btn btn-primary">Already have an account? Click here to log-in</a>
-    <a href="/" class="btn btn-secondary">Home</a>
-</div>
+<a href="/auth/login" class="btn btn-primary">Already have an account? Click here to log-in</a>
+<a href="/" class="btn btn-secondary">Home</a>
