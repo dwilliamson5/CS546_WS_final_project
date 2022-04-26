@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const { ObjectId } = require('mongodb');
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
 
-const validation = require('../data/validations/sharedValidations');
+const validation = require('../data/validations/userValidations');
 
 router.get('/edit', async (req, res) => {
 
@@ -50,11 +51,20 @@ router.post('/edit/', async (req, res) => {
         return;
     }
 
-    let { universityId, username, password, name, email, imageURL, bio } = body;
+    if (!req.session.user) {
+        res.status(403).render('errors/403', {
+            message: 'Forbidden'
+        });
+        return;
+    }
+
+    let { universityId, username, name, email, image, bio } = body;
+    let existingUsername = req.session.user.username;
+    image = 'todo'; // TODO
 
     const universitiesList = await universities.getAll();
 
-    if (!universityId || !username || !password || !name || !email || !imageURL || !bio) {
+    if (!universityId || !username || !name || !email || !image || !bio) {
         res.status(400).render('profile/edit', {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
@@ -65,7 +75,16 @@ router.post('/edit/', async (req, res) => {
     }
 
     try {
-        await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
+        await validation.isValidUserUpdateParameters(universityId, existingUsername, username, name, email, image, bio);
+
+        let university = await universities.getUniversityById(ObjectId(universityId));
+
+        //get Email domain
+        let emailDomain = email.trim().split('@')[1];
+
+        if (university.emailDomain != emailDomain) {
+            throw 'Email domain does not match selected university domain!';
+        }
     } catch (e) {
         res.status(400).render('profile/edit', {
             title: 'Edit User',
@@ -77,7 +96,7 @@ router.post('/edit/', async (req, res) => {
     }
 
     try {
-        let response = await updateUser.updateUser(universityId, username, password, name, email, imageURL, bio);
+        let response = await users.updateUser(universityId, existingUsername, username, name, email, image, bio);
 
         if (response === null || response.userUpdated !== true) {
             res.status(500).render('profile/edit', {
@@ -90,11 +109,13 @@ router.post('/edit/', async (req, res) => {
         }
 
         if (response.userUpdated === true) {
+            req.session.user = { username: username };
+
             res.redirect('/');
         }
     } catch (e) {
         res.status(500).render('errors/500', {
-            message: 'Internal server error'
+            message: 'Internal server error' + e
         });
         return;
     }

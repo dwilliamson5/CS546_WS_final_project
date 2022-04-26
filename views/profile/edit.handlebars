@@ -7,11 +7,7 @@
 
         <select name="universityId" id="universityId" class="form-select">
             {{#each universities}}
-                {{#ifEquals desired=this._id type=user.universityId}}
-                    <option value="{{this._id}}" selected>{{ this.name }}</option>
-                {{else}}
-                    <option value="{{this._id}}">{{ this.name }}</option>
-                {{/ifEquals}}
+                <option value="{{this._id}}">{{ this.name }}</option>
             {{/each}}
         </select>
         <div class="form-text">Don't see your university on this list? Tell your school to join Unisell!</div>
@@ -21,12 +17,6 @@
         <label id="user-label" for="username" class="form-label">Username</label>
         <input id="username" name="username" class="form-control" value="{{user.username}}" />
         <div class="form-text">USERNAME REQUIREMENTS HERE</div>
-    </div>
-
-    <div class="mb-3">
-        <label id="password-label" for="password" class="form-label">Password</label>
-        <input id="password" type="password" name="password" class="form-control" value="{{user.password}}"/>
-        <div class="form-text">PASSWORD REQUIREMENTS HERE</div>
     </div>
 
     <div class="mb-3">
@@ -41,18 +31,21 @@
 
     <div class="mb-3">
         <label id="bio-label" for="bio" class="form-label">Bio</label>
-        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">
-            {{user.bio}}
-        </textarea>
+        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">{{user.bio}}</textarea>
     </div>
 
     <div class="mb-3">
         <!-- TODO -->
         <label id="image-label" for="image">Profile image</label>
-        <input id="image" type="image" name="image" value=""/>
+        <input id="image" type="image" name="image" value="todo"/>
     </div>
 
     <button type="submit" class="btn btn-success">Update</button>
 </form> 
 
-<script src="/public/js/profile.js"></script>
+<script>
+    window.onload = function ()
+    {
+        $('#universityId').val('{{{user.universityId}}}');
+    }
+</script>

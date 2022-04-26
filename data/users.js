@@ -72,11 +72,11 @@ async function createUser(universityId, username, password, name, email, imageUR
 }
 
 /**
- * Updates a user int the Users collection.
+ * Updates a user in the Users collection.
  *
  * @param {String} universityId
+ * @param {String} existingUsername
  * @param {String} username
- * @param {String} password
  * @param {String} name
  * @param {String} email
  * @param {String} imageURL
@@ -85,13 +85,13 @@ async function createUser(universityId, username, password, name, email, imageUR
  * @throws Will throw if parameters are invalid, user doesn't exist,
  *         or there was an issue with the db.
  */
- async function updateUser(universityId, username, password, name, email, imageURL, bio) {
+ async function updateUser(universityId, existingUsername, username, name, email, imageURL, bio) {
   
   // Throws if there is an invalid parameter
-  await validation.isValidUserParameters(
+  await validation.isValidUserUpdateParameters(
     universityId,
+    existingUsername,
     username,
-    password,
     name,
     email,
     imageURL,
@@ -102,25 +102,21 @@ async function createUser(universityId, username, password, name, email, imageUR
 
   if (university === null)
   {
-      throw 'Could not find university for id: ' + universityId;
+    throw 'Could not find university for id: ' + universityId;
   }
 
   // Get Email domain
   let emailDomain = email.trim().split('@')[1];
 
   if (university.emailDomain != emailDomain) {
-      throw 'Email domain does not match selected university domain!';
+    throw 'Email domain does not match selected university domain!';
   }
 
-  let user = await getUser(username);
+  let user = await getUser(existingUsername);
 
   if (user === null) {
-      throw 'Could not find user with username: ' + username;
+    throw 'Could not find user with username: ' + username;
   }
-
-  // Hash password
-  const SALT_ROUNDS = 10;
-  const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
   let updatedUser = {
     universityId: universityId.trim(),
@@ -129,7 +125,6 @@ async function createUser(universityId, username, password, name, email, imageUR
     email: email.trim(),
     profileImageUrl: imageURL.trim(),
     bio: bio.trim(),
-    password: hash,
     super_admin: false,
     ratings: [],
   };
@@ -247,6 +242,7 @@ async function makeSuperAdmin(username) {
 
 module.exports = {
   createUser,
+  updateUser,
   getUser,
   checkUser,
   makeSuperAdmin

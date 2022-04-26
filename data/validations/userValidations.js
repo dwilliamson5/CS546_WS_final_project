@@ -145,6 +145,39 @@ async function isValidUserParameters(universityId, username, password, name, ema
     return true;
 }
 
+async function isValidUserUpdateParameters(universityId, existingUsername, username, name, email, imageURL, bio) {
+
+    if (!isValidUsername(username)) {
+        throw 'Invalid username!';
+    }
+
+    if (!isValidUsername(existingUsername)) {
+        throw 'Invalid existing username!';
+    }
+
+    if (!isValidString(name)) {
+        throw 'Invalid name!';
+    }
+
+    if (!isValidEmail(email)) {
+        throw 'Invalid email!';
+    }
+
+    if (!isValidUniversityId(universityId)) {
+        throw 'Invalid universityId!';
+    }
+
+    if (!isValidString(imageURL)) {
+        throw 'Invalid image URL!';
+    }
+
+    if (!isValidString(bio)) {
+        throw 'Invalid bio!';
+    }
+
+    return true;
+}
+
 module.exports = {
     isValidString,
     isAlphaNumeric,
@@ -153,5 +186,6 @@ module.exports = {
     isValidPassword,
     isValidEmail,
     isValidUserParameters,
+    isValidUserUpdateParameters,
     isValidUniversityId
 };
