@@ -72,6 +72,82 @@ async function createUser(universityId, username, password, name, email, imageUR
 }
 
 /**
+ * Updates a user int the Users collection.
+ *
+ * @param {String} universityId
+ * @param {String} username
+ * @param {String} password
+ * @param {String} name
+ * @param {String} email
+ * @param {String} imageURL
+ * @param {String} bio
+ * @returns An object containing { userUpdated: true } if successful.
+ * @throws Will throw if parameters are invalid, user doesn't exist,
+ *         or there was an issue with the db.
+ */
+ async function updateUser(universityId, username, password, name, email, imageURL, bio) {
+  
+  // Throws if there is an invalid parameter
+  await validation.isValidUserParameters(
+    universityId,
+    username,
+    password,
+    name,
+    email,
+    imageURL,
+    bio
+  );
+
+  let university = await universities.getUniversityById(ObjectId(universityId));
+
+  if (university === null)
+  {
+      throw 'Could not find university for id: ' + universityId;
+  }
+
+  // Get Email domain
+  let emailDomain = email.trim().split('@')[1];
+
+  if (university.emailDomain != emailDomain) {
+      throw 'Email domain does not match selected university domain!';
+  }
+
+  let user = await getUser(username);
+
+  if (user === null) {
+      throw 'Could not find user with username: ' + username;
+  }
+
+  // Hash password
+  const SALT_ROUNDS = 10;
+  const hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+  let updatedUser = {
+    universityId: universityId.trim(),
+    username: username.trim(),
+    name: name.trim(),
+    email: email.trim(),
+    profileImageUrl: imageURL.trim(),
+    bio: bio.trim(),
+    password: hash,
+    super_admin: false,
+    ratings: [],
+  };
+
+  const userCollection = await users();
+  const updateInfo = await userCollection.updateOne(
+    { _id: user._id },
+    { $set: updatedUser }
+  );
+
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw 'Could not update user!';
+  }
+
+  return { userUpdated: true };
+}
+
+/**
  * Retrieve user from Users collection.
  *
  * @param {String} username

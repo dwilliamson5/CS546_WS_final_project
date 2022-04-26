@@ -1,0 +1,103 @@
+const express = require('express');
+const router = express.Router();
+const data = require('../data/index');
+const users = data.users;
+const universities = data.universities;
+
+const validation = require('../data/validations/sharedValidations');
+
+router.get('/edit', async (req, res) => {
+
+    if (!req.session.user) {
+        return res.redirect('/');
+    }
+
+    try {
+        let user = await users.getUser(req.session.user.username);
+
+        if (user === null) {
+            res.status(404).render('errors/404', {
+                message: 'Could not find that user'
+            });
+            return;
+        }
+
+        const universitiesList = await universities.getAll();
+
+        res.render('profile/edit', { 
+            title: 'Edit User', 
+            universities: universitiesList, 
+            user: user 
+        });
+    } catch (e) {
+        res.status(500).render('errors/500', {
+            message: 'Internal server error'
+        });
+        return;
+    }
+});
+
+router.post('/edit/', async (req, res) => {
+    let body = req.body;
+
+    if (!body) {
+        res.status(400).render('profile/edit', {
+            title: 'Edit User',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request',
+            universities: universitiesList
+        });
+        return;
+    }
+
+    let { universityId, username, password, name, email, imageURL, bio } = body;
+
+    const universitiesList = await universities.getAll();
+
+    if (!universityId || !username || !password || !name || !email || !imageURL || !bio) {
+        res.status(400).render('profile/edit', {
+            title: 'Edit User',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide all required parameters',
+            universities: universitiesList
+        });
+        return;
+    }
+
+    try {
+        await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
+    } catch (e) {
+        res.status(400).render('profile/edit', {
+            title: 'Edit User',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: e,
+            universities: universitiesList
+        });
+        return;
+    }
+
+    try {
+        let response = await updateUser.updateUser(universityId, username, password, name, email, imageURL, bio);
+
+        if (response === null || response.userUpdated !== true) {
+            res.status(500).render('profile/edit', {
+                title: 'Edit User',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: e,
+                universities: universitiesList
+            });
+            return;
+        }
+
+        if (response.userUpdated === true) {
+            res.redirect('/');
+        }
+    } catch (e) {
+        res.status(500).render('errors/500', {
+            message: 'Internal server error'
+        });
+        return;
+    }
+});
+
+module.exports = router; 
