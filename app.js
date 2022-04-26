@@ -32,6 +32,14 @@ app.use('/admin', async (req, res, next) => {
   }
 });
 
+app.use('/profile', async (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+});
+
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 

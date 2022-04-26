@@ -2,7 +2,7 @@ const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
-const validation = require('./validations/userValidations');
+const userValidation = require('./validations/userValidations');
 const { ObjectId } = require('mongodb');
 
 /**
@@ -20,8 +20,9 @@ const { ObjectId } = require('mongodb');
  *         or there is an issue with the db.
  */
 async function createUser(universityId, username, password, name, email, imageURL, bio) {
+
   // Throws if there is an invalid parameter
-  await validation.isValidUserParameters(
+  await userValidation.isValidUserParameters(
     universityId,
     username,
     password,
@@ -88,7 +89,7 @@ async function createUser(universityId, username, password, name, email, imageUR
  async function updateUser(universityId, existingUsername, username, name, email, imageURL, bio) {
   
   // Throws if there is an invalid parameter
-  await validation.isValidUserUpdateParameters(
+  await userValidation.isValidUserUpdateParameters(
     universityId,
     existingUsername,
     username,
@@ -150,7 +151,7 @@ async function createUser(universityId, username, password, name, email, imageUR
  * @throws Will throw if username parameter is invalid.
  */
 async function getUser(username) {
-  if (!validation.isValidUsername(username)) {
+  if (!userValidation.isValidUsername(username)) {
     throw 'Invalid username passed to getUser!';
   }
 
@@ -174,8 +175,8 @@ async function getUser(username) {
  */
 async function checkUser(universityId, username, password) {
   if (
-    !validation.isValidUsername(username) ||
-    !validation.isValidPassword(password)
+    !userValidation.isValidUsername(username) ||
+    !userValidation.isValidPassword(password)
   ) {
     throw 'Either the username or password is invalid!';
   }
@@ -186,7 +187,7 @@ async function checkUser(universityId, username, password) {
     throw 'Either the username or password is invalid!';
   }
 
-  if (!validation.isValidUniversityId(universityId)) {
+  if (!userValidation.isValidUniversityId(universityId)) {
       return false;
   }
 
@@ -214,7 +215,7 @@ async function checkUser(universityId, username, password) {
 }
 
 async function makeSuperAdmin(username) {
-  if (!validation.isValidUsername(username)) {
+  if (!userValidation.isValidUsername(username)) {
     throw 'The username is invalid!';
   }
 

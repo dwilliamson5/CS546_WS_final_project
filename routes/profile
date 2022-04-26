@@ -41,19 +41,16 @@ router.get('/edit', async (req, res) => {
 router.post('/edit/', async (req, res) => {
     let body = req.body;
 
+    const universitiesList = await universities.getAll();
+    const user = await users.getUser(req.session.user.username);
+
     if (!body) {
         res.status(400).render('profile/edit', {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: 'You must provide a body to your request',
-            universities: universitiesList
-        });
-        return;
-    }
-
-    if (!req.session.user) {
-        res.status(403).render('errors/403', {
-            message: 'Forbidden'
+            universities: universitiesList,
+            user: user
         });
         return;
     }
@@ -62,14 +59,13 @@ router.post('/edit/', async (req, res) => {
     let existingUsername = req.session.user.username;
     image = 'todo'; // TODO
 
-    const universitiesList = await universities.getAll();
-
     if (!universityId || !username || !name || !email || !image || !bio) {
         res.status(400).render('profile/edit', {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: 'You must provide all required parameters',
-            universities: universitiesList
+            universities: universitiesList,
+            user: user
         });
         return;
     }
@@ -90,7 +86,8 @@ router.post('/edit/', async (req, res) => {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
-            universities: universitiesList
+            universities: universitiesList,
+            user: user
         });
         return;
     }
@@ -103,7 +100,8 @@ router.post('/edit/', async (req, res) => {
                 title: 'Edit User',
                 error_status_code: 'HTTP 500 status code',
                 error_messages: e,
-                universities: universitiesList
+                universities: universitiesList,
+                user: user
             });
             return;
         }
@@ -115,7 +113,7 @@ router.post('/edit/', async (req, res) => {
         }
     } catch (e) {
         res.status(500).render('errors/500', {
-            message: 'Internal server error' + e
+            message: 'Internal server error'
         });
         return;
     }
