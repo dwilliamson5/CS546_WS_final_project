@@ -1,5 +1,4 @@
-<div class="container">
-  {{#if universities}}
+{{#if universities}}
   <table class="table">
     <tr>
       <th>Name</th>
@@ -14,10 +13,9 @@
       </tr>
     {{/each}}
   </table>
-  {{else}}
+{{else}}
   <p>There are no universities yet. Click "Add" to create one.</p>
-  {{/if}}
+{{/if}}
 
-  <a href="/admin/universities/new" class="btn btn-success">Add</a>
-  <a href="/" class="btn btn-secondary">Exit Admin</a>
-</div>
+<a href="/admin/universities/new" class="btn btn-success">Add</a>
+<a href="/" class="btn btn-secondary">Exit Admin</a>
