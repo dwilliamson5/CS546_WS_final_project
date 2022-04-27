@@ -10,7 +10,6 @@ const constructorMethod = (app) => {
   app.get('/', async (req, res) => {
 
     let title = 'Welcome to Unisell';
-    let super_admin = false;
     let universityName;
 
     if (req.session.user) {
@@ -19,13 +18,11 @@ const constructorMethod = (app) => {
       let user = await users.getUser(req.session.user.username);
       let university = await universities.getUniversityById(user.universityId);
       universityName = university.name;
-      super_admin = user.super_admin;
     }
 
     res.render('index', {
       title: title,
       user: req.session.user,
-      super_admin: super_admin,
       universityName: universityName
     });
   });
