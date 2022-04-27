@@ -18,11 +18,27 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use('*', async (req, res, next) => {
+  if (req.session.user) {
+    res.locals.user = true;
+    
+    let user = await users.getUser(req.session.user.username);
+    
+    if (user.super_admin) {
+      res.locals.superAdmin = true;
+    }
+  }
+
+  next();
+});
+
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 
     let user = await users.getUser(req.session.user.username);
     if (user.super_admin) {
+      res.locals.inAdmin = true;
+
       next();
     } else {
       return res.status(403).render('errors/403', { message: 'Admin permission required!' });
