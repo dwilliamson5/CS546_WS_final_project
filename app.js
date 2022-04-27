@@ -32,6 +32,13 @@ app.use('*', async (req, res, next) => {
   next();
 });
 
+app.use('/admin/universities/:id', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 

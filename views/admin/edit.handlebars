@@ -1,7 +1,7 @@
 <p class="error-status">{{error_status_code}}</p>
 <p class="error-message">{{error_messages}}</p>
 
-<form action="/admin/universities/{{id}}" method="PUT" id="edit-university-form">
+<form action="/admin/universities/{{id}}" method="POST" id="edit-university-form">
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input id="name" name="name" value="{{name}}" class="form-control"/>
