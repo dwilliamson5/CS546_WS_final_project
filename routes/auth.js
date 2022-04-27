@@ -50,8 +50,7 @@ router.post('/login', async (req, res) => {
 
             res.redirect('/');
         }
-    }
-    catch (e) {
+    } catch (e) {
         return res.status(400).render('auth/login', {
             title: 'Login',
             error_status_code: 'HTTP 400 status code',
@@ -87,7 +86,7 @@ router.post('/signup', async (req, res) => {
         // Check parameters
         await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
 
-        let university = await universities.getUniversityById(ObjectId(universityId));
+        let university = await universities.getUniversityById(universityId);
 
         //get Email domain
         let emailDomain = email.trim().split('@')[1];
