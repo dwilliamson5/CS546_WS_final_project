@@ -1,10 +1,12 @@
 const mongoCollections = require('../config/mongoCollections');
 const universities = mongoCollections.universities;
 const validation = require('./validations/universityValidations');
+const sharedValidation = require('./validations/sharedValidations');
+
 const { ObjectId } = require('mongodb');
 
 async function getAll() {
-    // checkArgumentLength(arguments, 0);
+    sharedValidation.checkArgumentLength(arguments.length, 0);
 
     const universityCollection = await universities();
     let universitiesList = await universityCollection.find({}).toArray();
@@ -21,19 +23,15 @@ async function getAll() {
 }
 
 async function getUniversityById(id) {
-  // checkArgumentLength(arguments, 0);
-  // check is string
-
-  if (!ObjectId.isValid(id)) {
-      throw 'Invalid object ID';
-  }
-  // should be moved to a validation file
-
+  sharedValidation.checkArgumentLength(arguments.length, 1);
+  sharedValidation.checkIsString(id);
+  validation.isValidUniversityId(id);
+  
   const universityCollection = await universities();
   const university = await universityCollection.findOne({ _id: ObjectId(id) });
 
   if (!university) {
-    throw 'University does not exist!'
+    throw 'University does not exist!';
   }
 
   return university;
@@ -50,8 +48,8 @@ async function getUniversityById(id) {
  */
 async function createUniversity(name, emailDomain) {
   //validation
+  sharedValidation.checkArgumentLength(arguments.length, 2);
   validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
-
   // Check if university already exists
   const universityCollection = await universities();
   const university = await universityCollection.findOne({
@@ -59,7 +57,7 @@ async function createUniversity(name, emailDomain) {
   });
 
   if (university != null) {
-    throw 'Cannot create university since it already exists!';
+    throw 'Cannot add a university that already exists!';
   }
 
   let newUniversity = {
@@ -77,6 +75,7 @@ async function createUniversity(name, emailDomain) {
 }
 
 async function updateUniversity(name, emailDomain) {
+  sharedValidation.checkArgumentLength(arguments.length, 2);
   validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
 
   const universitiesCollection = await universities();
@@ -106,15 +105,18 @@ async function updateUniversity(name, emailDomain) {
 }
 
 async function deleteUniversity(id) {
+  sharedValidation.checkArgumentLength(arguments.length, 1);
+  validation.isValidUniversityId(id);
+
   const universitiesCollection = await universities();
-  const university = await universities.findOne({ _id: id });
+  const university = await universityCollection.findOne({ _id: ObjectId(id) });
 
   if (!university) {
     throw 'No university with given id exists!';
   }
 
   const deleteUniversity = await universitiesCollection.deleteOne({
-    _id: id
+    _id: ObjectId(id)
   });
 
   if (deleteUniversity.deletedCount == 0) {

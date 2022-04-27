@@ -3,6 +3,7 @@ const users = mongoCollections.users;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const validation = require('./validations/userValidations');
+const sharedValidation = require('./validations/sharedValidations');
 const { ObjectId } = require('mongodb');
 
 /**
@@ -21,7 +22,8 @@ const { ObjectId } = require('mongodb');
  */
 async function createUser(universityId, username, password, name, email, imageURL, bio) {
   // Throws if there is an invalid parameter
-  await validation.isValidUserParameters(
+  sharedValidation.checkArgumentLength(arguments.length, 7);
+  validation.isValidUserParameters(
     universityId,
     username,
     password,
@@ -31,11 +33,10 @@ async function createUser(universityId, username, password, name, email, imageUR
     bio
   );
 
-  let university = await universities.getUniversityById(ObjectId(universityId));
+  let university = await universities.getUniversityById(universityId);
 
   //get Email domain
   let emailDomain = email.trim().split('@')[1];
-
   if (university.emailDomain != emailDomain) {
       throw 'Email domain does not match selected university domain!';
   }
@@ -79,6 +80,7 @@ async function createUser(universityId, username, password, name, email, imageUR
  * @throws Will throw if username parameter is invalid.
  */
 async function getUser(username) {
+  sharedValidation.checkArgumentLength(arguments.length, 1);
   if (!validation.isValidUsername(username)) {
     throw 'Invalid username passed to getUser!';
   }
@@ -88,7 +90,7 @@ async function getUser(username) {
 
   const userCollection = await users();
   const user = await userCollection.findOne({ username: usernameRegex });
-
+  
   return user;
 }
 
@@ -102,6 +104,7 @@ async function getUser(username) {
  *         exist, or the credentials do not match.
  */
 async function checkUser(universityId, username, password) {
+  sharedValidation.checkArgumentLength(arguments.length, 3);
   if (
     !validation.isValidUsername(username) ||
     !validation.isValidPassword(password)
@@ -119,8 +122,10 @@ async function checkUser(universityId, username, password) {
       return false;
   }
 
-  let university = await universities.getUniversityById(ObjectId(universityId));
-
+  let university = await universities.getUniversityById(universityId);
+  if(!university){
+    throw 'Cannot find university!';
+  }
   //get Email domain
   let emailDomain = user.email.trim().split('@')[1];
 
@@ -143,6 +148,7 @@ async function checkUser(universityId, username, password) {
 }
 
 async function makeSuperAdmin(username) {
+  sharedValidation.checkArgumentLength(arguments.length, 1);
   if (!validation.isValidUsername(username)) {
     throw 'The username is invalid!';
   }

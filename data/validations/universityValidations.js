@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 function isValidString(string) {
   if (
     string === undefined ||
@@ -22,6 +24,12 @@ function isValidEmail(email) {
 
   return emailRegex.test(email);
 }
+ 
+function isValidUniversityId(id){
+    if (!ObjectId.isValid(id)) {
+      throw 'Invalid university ID';
+  }
+}
 
 function isValidUniversityParameters(name, emailDomain) {
   if (!isValidString(name)) throw 'Invalid university name!';
@@ -33,5 +41,6 @@ function isValidUniversityParameters(name, emailDomain) {
 module.exports = {
   isValidString,
   isValidEmail,
+  isValidUniversityId,
   isValidUniversityParameters,
 };

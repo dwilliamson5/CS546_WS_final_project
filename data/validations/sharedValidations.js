@@ -1,6 +1,4 @@
-function checkArgumentLength(args, length) {
-    let argLength = args.length;
-
+function checkArgumentLength(argLength, length) {
     if (argLength > length) {
         throw `Too many arguments passed to function. Expecting ${length}, got ${argLength}`;
     } else if (argLength < length) {
@@ -8,9 +6,9 @@ function checkArgumentLength(args, length) {
     }
 }
 
-function checkIsString(string, variableName) {
-    if (typeof string !== 'string') {
-        throw `${variableName || 'provided variable'} is not a string`;
+function checkIsString(variable) {
+    if (typeof variable !== 'string') {
+        throw `${variable || 'provided variable'} is not a string`;
     }
 }
 
