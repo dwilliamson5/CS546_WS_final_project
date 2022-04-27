@@ -12,6 +12,20 @@
         <header>
             <div class="container">
                 <h1 class="title">{{ title }}</h1>
+
+                {{#if user}}
+                    {{#if superAdmin}}
+                        {{#if inAdmin}}
+                            <a href="/" class="btn btn-secondary">Exit Admin</a>
+                        {{else}}
+                            <a href="/admin" class="btn btn-warning">Admin Panel</a>
+                        {{/if}}
+                    {{/if}}
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                {{else}}
+                    <a href="/auth/login" class="btn btn-success">Login</a>
+                    <a href="/auth/signup" class="btn btn-primary">Create an account</a>
+                {{/if}}
             </div>
         </header>
 
