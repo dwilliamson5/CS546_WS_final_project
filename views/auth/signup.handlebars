@@ -15,7 +15,7 @@
 
     <div class="mb-3">
         <label id="user-label" for="username" class="form-label">Username</label>
-        <input id="username" name="username" class="form-control" />
+        <input id="username" name="username" class="form-control" value="{{username}}" />
         <div class="form-text">USERNAME REQUIREMENTS HERE</div>
     </div>
 
@@ -26,25 +26,30 @@
     </div>
 
     <div class="mb-3">
+        <label id="password-confirmation-label" for="password-confirmation" class="form-label">Confirm Password</label>
+        <input id="password-confirmation" type="password" name="password-confirmation" class="form-control" />
+    </div>
+
+    <div class="mb-3">
         <label id="name-label" for="name" class="form-label">Name</label>
-        <input id="name" name="name" class="form-control" />
+        <input id="name" name="name" class="form-control" value="{{name}}" />
     </div>
 
     <div class="mb-3">
         <label id="email-label" for="email" class="form-label">Email</label>
-        <input id="email" type="email" name="email" class="form-control" />
+        <input id="email" type="email" name="email" class="form-control" value="{{email}}" />
     </div>
 
     <div class="mb-3">
         <label id="bio-label" for="bio" class="form-label">Bio</label>
-        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control"></textarea>
+        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">{{bio}}</textarea>
     </div>
 
-    <div class="mb-3">
+    {{!-- <div class="mb-3">
         <!-- TODO -->
         <label id="image-label" for="image">Profile image</label>
-        <input id="image" type="image" name="image" value=""/>
-    </div>
+        <input id="image" type="image" name="image" />
+    </div> --}}
 
     <button type="submit" class="btn btn-success">Sign Up</button>
 </form>
