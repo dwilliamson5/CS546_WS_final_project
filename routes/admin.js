@@ -87,7 +87,7 @@ router.post('/universities/', async (req, res) => {
     }
 
     try {
-        let university = await universities.createUniversity(name, emailDomain);
+        await universities.createUniversity(name, emailDomain);
 
         res.redirect('/admin');
     } catch (e) {
@@ -166,7 +166,7 @@ router.put('/universities/:id', async (req, res) => {
     }
 
     try {
-        let university = await universities.updateUniversity(name, emailDomain);
+        await universities.updateUniversity(name, emailDomain);
 
         res.redirect('/admin');
     } catch (e) {
