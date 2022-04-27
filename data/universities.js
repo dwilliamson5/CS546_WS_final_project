@@ -105,28 +105,28 @@ async function updateUniversity(name, emailDomain) {
   return { universityUpdated: true };
 }
 
-async function deleteUniversity(id) {
-  const universitiesCollection = await universities();
-  const university = await universities.findOne({ _id: id });
+// async function deleteUniversity(id) {
+//   const universitiesCollection = await universities();
+//   const university = await universities.findOne({ _id: id });
 
-  if (!university) {
-    throw 'No university with given id exists!';
-  }
+//   if (!university) {
+//     throw 'No university with given id exists!';
+//   }
 
-  const deleteUniversity = await universitiesCollection.deleteOne({
-    _id: id
-  });
+//   const deleteUniversity = await universitiesCollection.deleteOne({
+//     _id: id
+//   });
 
-  if (deleteUniversity.deletedCount == 0) {
-    throw 'Cannot delete university';
-  }
-  return { universityDeleted: true };
-}
+//   if (deleteUniversity.deletedCount == 0) {
+//     throw 'Cannot delete university';
+//   }
+//   return { universityDeleted: true };
+// }
 
 module.exports = {
   getAll,
   getUniversityById,
   createUniversity,
   updateUniversity,
-  deleteUniversity
+  // deleteUniversity
 };
