@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
 
     //NEED MORE HERE
 
-    res.render('items/show', { title: 'Item for ' + itemId });
+    res.render('items/show', { title: 'Item for ' + itemId, itemId: itemId });
 });
 
 module.exports = router;
