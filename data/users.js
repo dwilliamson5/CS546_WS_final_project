@@ -31,7 +31,7 @@ async function createUser(universityId, username, password, name, email, imageUR
     bio
   );
 
-  let university = await universities.getUniversityById(ObjectId(universityId));
+  let university = await universities.getUniversityById(universityId);
 
   //get Email domain
   let emailDomain = email.trim().split('@')[1];
@@ -119,7 +119,7 @@ async function checkUser(universityId, username, password) {
       return false;
   }
 
-  let university = await universities.getUniversityById(ObjectId(universityId));
+  let university = await universities.getUniversityById(universityId);
 
   //get Email domain
   let emailDomain = user.email.trim().split('@')[1];
