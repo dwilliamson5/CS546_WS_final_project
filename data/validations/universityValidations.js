@@ -70,6 +70,8 @@ function isValidUniversityParameters(name, emailDomain) {
 
   name = cleanUpString(name);
   emailDomain = cleanUpString(emailDomain);
+    
+  emailDomain = emailDomain.toLowerCase();
 
   checkStringLength(name);
   checkStringLength(emailDomain);
