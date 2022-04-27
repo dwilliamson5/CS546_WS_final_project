@@ -145,7 +145,7 @@ async function isValidUserParameters(universityId, username, password, name, ema
     return true;
 }
 
-async function isValidUserUpdateParameters(universityId, existingUsername, username, name, email, imageURL, bio) {
+async function isValidUserUpdateParameters(existingUsername, username, name, email, imageURL, bio) {
 
     if (!isValidUsername(username)) {
         throw 'Invalid username!';
@@ -161,10 +161,6 @@ async function isValidUserUpdateParameters(universityId, existingUsername, usern
 
     if (!isValidEmail(email)) {
         throw 'Invalid email!';
-    }
-
-    if (!isValidUniversityId(universityId)) {
-        throw 'Invalid universityId!';
     }
 
     if (!isValidString(imageURL)) {

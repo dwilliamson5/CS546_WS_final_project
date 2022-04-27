@@ -86,11 +86,10 @@ async function createUser(universityId, username, password, name, email, imageUR
  * @throws Will throw if parameters are invalid, user doesn't exist,
  *         or there was an issue with the db.
  */
- async function updateUser(universityId, existingUsername, username, name, email, imageURL, bio) {
+ async function updateUser(existingUsername, username, name, email, imageURL, bio) {
   
   // Throws if there is an invalid parameter
   await userValidation.isValidUserUpdateParameters(
-    universityId,
     existingUsername,
     username,
     name,
@@ -99,7 +98,13 @@ async function createUser(universityId, username, password, name, email, imageUR
     bio
   );
 
-  let university = await universities.getUniversityById(ObjectId(universityId));
+  let user = await getUser(existingUsername);
+
+  if (user === null) {
+    throw 'Could not find user with username: ' + existingUsername;
+  }
+
+  let university = await universities.getUniversityById(ObjectId(user.universityId));
 
   if (university === null)
   {
@@ -113,14 +118,7 @@ async function createUser(universityId, username, password, name, email, imageUR
     throw 'Email domain does not match selected university domain!';
   }
 
-  let user = await getUser(existingUsername);
-
-  if (user === null) {
-    throw 'Could not find user with username: ' + existingUsername;
-  }
-
   let updatedUser = {
-    universityId: universityId.trim(),
     username: username.trim(),
     name: name.trim(),
     email: email.trim(),

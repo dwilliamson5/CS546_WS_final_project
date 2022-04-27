@@ -37,7 +37,6 @@ router.get('/edit', async (req, res) => {
 router.post('/edit/', async (req, res) => {
     let body = req.body;
 
-    const universitiesList = await universities.getAll();
     const user = await users.getUser(req.session.user.username);
 
     if (!body) {
@@ -45,31 +44,29 @@ router.post('/edit/', async (req, res) => {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: 'You must provide a body to your request',
-            universities: universitiesList,
             user: user
         });
         return;
     }
 
-    let { universityId, username, name, email, image, bio } = body;
+    let { username, name, email, image, bio } = body;
     let existingUsername = req.session.user.username;
     image = 'todo'; // TODO
 
-    if (!universityId || !username || !name || !email || !image || !bio) {
+    if (!username || !name || !email || !image || !bio) {
         res.status(400).render('profile/edit', {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: 'You must provide all required parameters',
-            universities: universitiesList,
             user: user
         });
         return;
     }
 
     try {
-        await validation.isValidUserUpdateParameters(universityId, existingUsername, username, name, email, image, bio);
+        await validation.isValidUserUpdateParameters(existingUsername, username, name, email, image, bio);
 
-        let university = await universities.getUniversityById(ObjectId(universityId));
+        let university = await universities.getUniversityById(ObjectId(user.universityId));
 
         //get Email domain
         let emailDomain = email.trim().split('@')[1];
@@ -82,21 +79,19 @@ router.post('/edit/', async (req, res) => {
             title: 'Edit User',
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
-            universities: universitiesList,
             user: user
         });
         return;
     }
 
     try {
-        let response = await users.updateUser(universityId, existingUsername, username, name, email, image, bio);
+        let response = await users.updateUser(existingUsername, username, name, email, image, bio);
 
         if (response === null || response.userUpdated !== true) {
             res.status(500).render('profile/edit', {
                 title: 'Edit User',
                 error_status_code: 'HTTP 500 status code',
                 error_messages: 'Internal Server Error',
-                universities: universitiesList,
                 user: user
             });
             return;

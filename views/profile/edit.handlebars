@@ -3,17 +3,6 @@
 
 <form action="/profile/edit" method="POST" id="signup-form">
     <div class="mb-3">
-        <label for="universityId" class="form-label">Select your university:</label>
-
-        <select name="universityId" id="universityId" class="form-select">
-            {{#each universities}}
-                <option value="{{this._id}}">{{ this.name }}</option>
-            {{/each}}
-        </select>
-        <div class="form-text">Don't see your university on this list? Tell your school to join Unisell!</div>
-    </div>
-
-    <div class="mb-3">
         <label id="user-label" for="username" class="form-label">Username</label>
         <input id="username" name="username" class="form-control" value="{{user.username}}" />
         <div class="form-text">USERNAME REQUIREMENTS HERE</div>
@@ -41,11 +30,4 @@
     </div>
 
     <button type="submit" class="btn btn-success">Update</button>
-</form> 
-
-<script>
-    window.onload = function ()
-    {
-        $('#universityId').val('{{{user.universityId}}}');
-    }
-</script>
+</form>
