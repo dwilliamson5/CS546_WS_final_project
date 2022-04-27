@@ -98,6 +98,13 @@ async function createUser(universityId, username, password, name, email, imageUR
     bio
   );
 
+  if (existingUsername !== username) {
+    // Check if user already exists
+    if (await getUser(username) !== null) {
+      throw 'The new username is already in use!';
+    }
+}
+
   let user = await getUser(existingUsername);
 
   if (user === null) {

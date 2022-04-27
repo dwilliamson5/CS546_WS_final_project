@@ -67,12 +67,17 @@ router.post('/edit/', async (req, res) => {
         await validation.isValidUserUpdateParameters(existingUsername, username, name, email, image, bio);
 
         let university = await universities.getUniversityById(ObjectId(user.universityId));
-
-        //get Email domain
         let emailDomain = email.trim().split('@')[1];
 
         if (university.emailDomain != emailDomain) {
             throw 'Email domain does not match selected university domain!';
+        }
+
+        if (existingUsername !== username) {
+            // Check if user already exists
+            if (await users.getUser(username) !== null) {
+                throw 'The new username is already in use!';
+            }
         }
     } catch (e) {
         res.status(400).render('profile/edit', {
@@ -105,7 +110,7 @@ router.post('/edit/', async (req, res) => {
         }
     } catch (e) {
         res.status(500).render('errors/500', {
-            message: 'Internal server error'
+            message: 'Internal server error' + e
         });
         return;
     }
