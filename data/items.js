@@ -16,18 +16,9 @@ const { ObjectId } = require('mongodb');
  * @param {objectId} universityId
  * @param {String} pickup_method
  * @param {Sub-document} bids
- *      id of the bid
- *      user'sID 
- *      price
- *      accepted
  * @param {Sub-document} photos //to do
  * @param {Sub-document} comments
- *      commenter's userID
- *      text
  * @param {Sub-document} rating
- *      raters userID
- *      rating
- * 
  * @returns An object containing { itemInserted: true } if successful.
  * @throws Will throw if parameters are invalid or there is an issue with the db.
  */
