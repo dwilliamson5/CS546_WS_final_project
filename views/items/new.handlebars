@@ -1,0 +1,35 @@
+<div class="container">
+    <form action="/items/universities" method="POST" id="new-university-form">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input id="title" name="title" value="" class="form-control"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input id="description" name="description" value="" class="form-control"/>
+        </div>
+
+         <div class="mb-3">
+            <label for="keywords" class="form-label">Keywords</label>
+            <input id="keywords" name="keywords" value="" class="form-control"/>
+            <button type="submit" class="btn btn-success">Add Keyword</button>
+        </div>
+
+         <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input id="price" name="price" value="" class="form-control"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="pickUpMethod" class="form-label">Pick Up Method</label>
+            <input id="pickUpMethod" name="pickUpMethod" value="" class="form-control"/>
+        </div>
+
+        <!--photos -->
+        
+        <button type="submit" class="btn btn-success">Create New Item</button>
+    </form>
+
+    <a href="/admin" class="btn btn-secondary">Back</a>
+</div>
