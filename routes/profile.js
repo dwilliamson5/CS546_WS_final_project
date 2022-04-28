@@ -127,7 +127,7 @@ router.post('/edit/', async (req, res) => {
         res.redirect('/');
     } catch (e) {
         res.status(500).render('errors/500', {
-            message: 'Internal server error' + e
+            message: 'Internal server error'
         });
         return;
     }
