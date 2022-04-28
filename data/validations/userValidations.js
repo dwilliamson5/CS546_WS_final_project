@@ -174,6 +174,26 @@ async function isValidUserUpdateParameters(existingUsername, username, name, ema
     return true;
 }
 
+async function shouldUpdatePassword(passwordl, passwordr) {
+
+    // If the passwords are empty, then just return
+    if (passwordl === '' && passwordr === '') {
+        return false;
+    }
+
+    // Check they are valid
+    if (!isValidPassword(passwordl) || !isValidPassword(passwordr)) {
+        throw 'New password is invalid!';
+    }
+
+    // Check they match
+    if (passwordl !== passwordr) {
+        throw 'New passwords don\'t match';
+    }
+
+    return true;
+}
+
 module.exports = {
     isValidString,
     isAlphaNumeric,
@@ -183,5 +203,6 @@ module.exports = {
     isValidEmail,
     isValidUserParameters,
     isValidUserUpdateParameters,
-    isValidUniversityId
+    isValidUniversityId,
+    shouldUpdatePassword
 };

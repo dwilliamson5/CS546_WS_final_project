@@ -103,7 +103,7 @@ async function createUser(universityId, username, password, name, email, imageUR
     if (await getUser(username) !== null) {
       throw 'The new username is already in use!';
     }
-}
+  }
 
   let user = await getUser(existingUsername);
 
@@ -146,6 +146,48 @@ async function createUser(universityId, username, password, name, email, imageUR
   }
 
   return { userUpdated: true };
+}
+
+/**
+ * Updates a user's password in the Users collection.
+ *
+ * @param {String} username
+ * @param {String} password
+ * @returns An object containing { passwordUpdated: true } if successful.
+ * @throws Will throw if parameters are invalid, user doesn't exist,
+ *         or there was an issue with the db.
+ */
+ async function updatePassword(username, password) {
+
+  let user = await getUser(username);
+
+  if (user === null) {
+    throw 'Could not find user with username: ' + username;
+  }
+
+  if (!userValidation.isValidPassword(password)) {
+    throw 'Invalid password!';
+  }
+
+  // Hash password
+  const SALT_ROUNDS = 10;
+  const hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+  let updatedUser = {
+    password: hash
+  };
+
+  const userCollection = await users();
+  const updateInfo = await userCollection.updateOne(
+    { _id: user._id },
+    { $set: updatedUser }
+  );
+
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw 'Could not update user password!';
+  }
+
+  return { passwordUpdated: true };
 }
 
 /**
@@ -206,6 +248,7 @@ async function checkUser(universityId, username, password) {
   }
 
   let passwordsMatch = false;
+
   try {
     passwordsMatch = await bcrypt.compare(password, user.password);
   } catch (e) {
@@ -249,6 +292,7 @@ async function makeSuperAdmin(username) {
 module.exports = {
   createUser,
   updateUser,
+  updatePassword,
   getUser,
   checkUser,
   makeSuperAdmin

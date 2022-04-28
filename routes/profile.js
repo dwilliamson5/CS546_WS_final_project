@@ -37,6 +37,7 @@ router.get('/edit', async (req, res) => {
 router.post('/edit/', async (req, res) => {
     let body = req.body;
 
+    let shouldUpdatePassword = false;
     const user = await users.getUser(req.session.user.username);
 
     if (!body) {
@@ -49,7 +50,7 @@ router.post('/edit/', async (req, res) => {
         return;
     }
 
-    let { username, name, email, image, bio } = body;
+    let { username, password, passwordConfirm, name, email, image, bio } = body;
     let existingUsername = req.session.user.username;
     image = 'todo'; // TODO
 
@@ -64,6 +65,8 @@ router.post('/edit/', async (req, res) => {
     }
 
     try {
+        shouldUpdatePassword = await validation.shouldUpdatePassword(password, passwordConfirm);
+
         await validation.isValidUserUpdateParameters(existingUsername, username, name, email, image, bio);
 
         let university = await universities.getUniversityById(ObjectId(user.universityId));
@@ -90,9 +93,9 @@ router.post('/edit/', async (req, res) => {
     }
 
     try {
-        let response = await users.updateUser(existingUsername, username, name, email, image, bio);
+        let updateResponse = await users.updateUser(existingUsername, username, name, email, image, bio);
 
-        if (response === null || response.userUpdated !== true) {
+        if (updateResponse === null || updateResponse.userUpdated !== true) {
             res.status(500).render('profile/edit', {
                 title: 'Edit User',
                 error_status_code: 'HTTP 500 status code',
@@ -102,12 +105,26 @@ router.post('/edit/', async (req, res) => {
             return;
         }
 
-        if (response.userUpdated === true) {
+        if (updateResponse.userUpdated === true) {
             // Update username since it could have changed
             req.session.user = { username: username };
-
-            res.redirect('/');
         }
+
+        if (shouldUpdatePassword) {
+            let passwordResponse = await users.updatePassword(username, password);
+
+            if (passwordResponse === null || passwordResponse.passwordUpdated !== true) {
+                res.status(500).render('profile/edit', {
+                    title: 'Edit User',
+                    error_status_code: 'HTTP 500 status code',
+                    error_messages: 'Internal Server Error',
+                    user: user
+                });
+                return;
+            }
+        }
+
+        res.redirect('/');
     } catch (e) {
         res.status(500).render('errors/500', {
             message: 'Internal server error' + e
