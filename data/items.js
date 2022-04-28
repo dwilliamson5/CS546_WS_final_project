@@ -23,7 +23,7 @@ const { ObjectId } = require('mongodb');
  * @throws Will throw if parameters are invalid or there is an issue with the db.
  */
 async function createItem(title, description, keywords, price, sold, userId, universtiyId, pickup_method, photos, bids, comments) {
-    sharedValidation.checkArgumentLength(arguments.length, 11);
+    sharedValidation.checkArgumentLength(arguments, 11);
     validation.isValidItemParameters(title, description, keywords, price, sold, userId, universtiyId, pickup_method, photos, bids, comments);
 
     const itemsCollection = await items();
@@ -49,7 +49,7 @@ async function createItem(title, description, keywords, price, sold, userId, uni
 }
 
 async function createBids(itemId, bid, userId, accepted) {
-    sharedValidation.checkArgumentLength(arguments.length, 4);
+    sharedValidation.checkArgumentLength(arguments, 4);
     validation.isValidCreateBids(itemId, bid, userId, accepted);
     const itemsCollection = await items();
     const newBid = {
@@ -64,7 +64,7 @@ async function createBids(itemId, bid, userId, accepted) {
 }
 
 async function createComment(itemId, comment, userId) {
-    sharedValidation.checkArgumentLength(arguments.length, 3);
+    sharedValidation.checkArgumentLength(arguments, 3);
     validation.isValidCreateComment(itemId, comment, userId);
     const itemsCollection = await items();
     const newComment = {
@@ -78,7 +78,7 @@ async function createComment(itemId, comment, userId) {
 }
 
 async function createRating(itemId, rating, userId) {
-    sharedValidation.checkArgumentLength(arguments.length, 3);
+    sharedValidation.checkArgumentLength(arguments, 3);
     validation.isValidCreateRating(itemId, rating, userId);
     const itemsCollection = await items();
     const newRating = {
