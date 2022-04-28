@@ -22,10 +22,15 @@ app.use('*', async (req, res, next) => {
   if (req.session.user) {
     res.locals.user = true;
     
-    let user = await users.getUser(req.session.user.username);
-    
-    if (user.super_admin) {
-      res.locals.superAdmin = true;
+    try {
+      let user = await users.getUser(req.session.user.username);
+
+      if (user.super_admin) {
+        res.locals.superAdmin = true;
+      }
+    } catch (e) {
+      next();
+      return;
     }
   }
 
@@ -42,13 +47,19 @@ app.use('/admin/universities/:id', async (req, res, next) => {
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 
-    let user = await users.getUser(req.session.user.username);
-    if (user.super_admin) {
-      res.locals.inAdmin = true;
+    try {
+      let user = await users.getUser(req.session.user.username);
 
+      if (user.super_admin) {
+        res.locals.inAdmin = true;
+
+        next();
+      } else {
+        return res.status(403).render('errors/403', { message: 'Admin permission required!' });
+      }
+    } catch (e) {
       next();
-    } else {
-      return res.status(403).render('errors/403', { message: 'Admin permission required!' });
+      return;
     }
   } else {
     return res.redirect('/');
