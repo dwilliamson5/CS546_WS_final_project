@@ -6,9 +6,8 @@ const universities = data.universities;
 const items = data.items;
 
 async function testUniversities() {
-  let stevens, rutgers;
   try {
-    stevens = await universities.createUniversity(
+    await universities.createUniversity(
       'Stevens Institute of Technology',
       'stevens.edu'
     );
@@ -16,7 +15,7 @@ async function testUniversities() {
     console.log(e);
   }
   try {
-    rutgers = await universities.createUniversity(
+    await universities.createUniversity(
       'Rutgers University',
       'rutgers.edu'
     );
