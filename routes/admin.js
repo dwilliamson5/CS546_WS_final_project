@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data/index');
 const universities = data.universities;
-const validation = require('../data/validations/universityValidations');
+const universityValidation = require('../data/validations/universityValidations');
 
 router.get('/', async (req, res) => {
     const universitiesList = await universities.getAll();
@@ -18,19 +18,41 @@ router.get('/universities/:id/edit', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        res.status(404).render('errors/404', {
-            message: 'Could not find that university'
+        res.status(404).render('admin/index', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No params provided!'
         });
         return;
     }
 
     let universityId = params.id;
 
-    let university = await universities.getUniversityById(universityId);
+    if (!universityId) {
+        res.status(404).render('admin/index', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No ID param provided!'
+        });
+        return;
+    }
 
-    if (!university) {
-        res.status(404).render('errors/404', {
-            message: 'Could not find that university'
+    try {
+        universityValidation.isValidUniversityId(universityId);
+    } catch (e) {
+        res.status(404).render('admin/index', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Bad university ID!'
+        });
+        return;
+    }
+
+    let university;
+    
+    try {
+        university = await universities.getUniversityById(universityId);
+    } catch (e) {
+        res.status(404).render('admin/index', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that university!'
         });
         return;
     }
@@ -47,10 +69,9 @@ router.post('/universities/', async (req, res) => {
     let body = req.body;
 
     if (!body) {
-        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
-
-        res.status(400).render('errors/400', {
-            message: 'You must provide a body to your request'
+        res.status(400).render('admin/new', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request'
         });
         return;
     }
@@ -58,45 +79,117 @@ router.post('/universities/', async (req, res) => {
     let { name, emailDomain } = body;
 
     if (!name || !emailDomain) {
-        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
-
-        res.status(400).render('errors/400', {
-            message: 'You must provide both the name and emailDomain'
+        res.status(400).render('admin/new', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide both the name and emailDomain'
         });
         return;
     }
 
     try {
-        validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
+        universityValidation.isValidUniversityParameters(name, emailDomain);
     } catch (e) {
-        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
-
-        res.status(400).render('errors/400', {
-            message: e
+        res.status(400).render('admin/new', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: e,
+            name: name,
+            emailDomain: emailDomain
         });
         return;
     }
 
     try {
-        let university = await universities.createUniversity(name, emailDomain);
+        await universities.createUniversity(name, emailDomain);
 
         res.redirect('/admin');
     } catch (e) {
-        // NEED TO LOAD THE NEW PAGE AGAIN WITH ERROR
-        // res.status(500).render('error', {
-        //     error_message: 'Something went wrong. Please try again.',
-        //     title: 'Oops 500',
-        //     class_name: 'error'
-        // });
+        res.status(500).render('admin/new', {
+            error_status_code: 'HTTP 500 status code',
+            error_messages: e,
+            name: name,
+            emailDomain: emailDomain
+        });
     }
 });
 
 router.put('/universities/:id', async (req, res) => {
-    // update university, redirect to index once done
-});
+    let params = req.params;
 
-router.delete('/universities/:id', async (req, res) => {
-    // delete university, redirect to index once done
+    if (!params) {
+        res.status(404).render('admin/edit', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that university!'
+        });
+        return;
+    }
+
+    let universityId = params.id;
+
+    if (!universityId) {
+        res.status(404).render('admin/edit', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that university!'
+        });
+        return;
+    }
+
+    let university = await universities.getUniversityById(universityId);
+
+    if (!university) {
+        res.status(404).render('admin/edit', {
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that university!'
+        });
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        res.status(400).render('admin/edit', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request'
+        });
+        return;
+    }
+
+    let { name, emailDomain } = body;
+
+    if (!name || !emailDomain) {
+        res.status(400).render('admin/edit', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide both the name and emailDomain',
+            name: name,
+            emailDomain: emailDomain
+        });
+        return;
+    }
+
+    try {
+        universityValidation.isValidUniversityId(universityId);
+        universityValidation.isValidUniversityParameters(name, emailDomain);
+    } catch (e) {
+        res.status(400).render('admin/edit', {
+            error_status_code: 'HTTP 400 status code',
+            error_messages: e,
+            name: name,
+            emailDomain: emailDomain
+        });
+        return;
+    }
+
+    try {
+        await universities.updateUniversity(universityId, name, emailDomain);
+
+        res.redirect('/admin');
+    } catch (e) {
+        res.status(500).render('admin/edit', {
+            error_status_code: 'HTTP 500 status code',
+            error_messages: e,
+            name: name,
+            emailDomain: emailDomain
+        });
+    }
 });
 
 module.exports = router;

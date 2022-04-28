@@ -39,7 +39,9 @@ router.post('/login', async (req, res) => {
                 title: 'Login',
                 error_status_code: 'HTTP 500 status code',
                 error_messages: 'Internal Server Error',
-                universities: universitiesList
+                universities: universitiesList,
+                universityId: universityId,
+                username: username
             });
         }
 
@@ -48,13 +50,14 @@ router.post('/login', async (req, res) => {
 
             res.redirect('/');
         }
-    }
-    catch (e) {
+    } catch (e) {
         return res.status(400).render('auth/login', {
             title: 'Login',
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
-            universities: universitiesList
+            universities: universitiesList,
+            universityId: universityId,
+            username: username
         });
     }
 })
@@ -83,7 +86,7 @@ router.post('/signup', async (req, res) => {
         // Check parameters
         await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
 
-        let university = await universities.getUniversityById(ObjectId(universityId));
+        let university = await universities.getUniversityById(universityId);
 
         //get Email domain
         let emailDomain = email.trim().split('@')[1];
@@ -101,7 +104,12 @@ router.post('/signup', async (req, res) => {
             title: 'Sign Up',
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
-            universities: universitiesList
+            universities: universitiesList,
+            universityId: universityId,
+            username: username,
+            name: name,
+            email: email,
+            bio: bio
         });
     }
 
@@ -112,7 +120,13 @@ router.post('/signup', async (req, res) => {
             return res.status(500).render('auth/signup', {
                 title: 'Sign Up',
                 error_status_code: 'HTTP 500 status code',
-                error_messages: 'Internal Server Error: ' + e
+                error_messages: 'Internal Server Error: ' + e,
+                universities: universitiesList,
+                universityId: universityId,
+                username: username,
+                name: name,
+                email: email,
+                bio: bio
             });
         }
 
@@ -124,7 +138,13 @@ router.post('/signup', async (req, res) => {
         return res.status(500).render('auth/signup', {
             title: 'Sign Up',
             error_status_code: 'HTTP 500 status code',
-            error_messages: 'Internal Server Error: ' + e
+            error_messages: 'Internal Server Error: ' + e,
+            universities: universitiesList,
+            universityId: universityId,
+            username: username,
+            name: name,
+            email: email,
+            bio: bio
         });
     }
 })

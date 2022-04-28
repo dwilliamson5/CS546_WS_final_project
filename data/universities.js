@@ -1,10 +1,10 @@
 const mongoCollections = require('../config/mongoCollections');
 const universities = mongoCollections.universities;
-const validation = require('./validations/universityValidations');
+const universityValidation = require('./validations/universityValidations');
 const { ObjectId } = require('mongodb');
 
 async function getAll() {
-    // checkArgumentLength(arguments, 0);
+    universityValidation.checkArgumentLength(arguments, 0);
 
     const universityCollection = await universities();
     let universitiesList = await universityCollection.find({}).toArray();
@@ -14,20 +14,15 @@ async function getAll() {
     }
 
     universitiesList.forEach(university => {
-        university._id = university._id.toString();
+      university._id = universityValidation.stringifyId(university._id);
     });
 
     return universitiesList;
 }
 
 async function getUniversityById(id) {
-  // checkArgumentLength(arguments, 0);
-  // check is string
-
-  if (!ObjectId.isValid(id)) {
-      throw 'Invalid object ID';
-  }
-  // should be moved to a validation file
+  universityValidation.checkArgumentLength(arguments, 1);
+  id = universityValidation.isValidUniversityId(id);
 
   const universityCollection = await universities();
   const university = await universityCollection.findOne({ _id: ObjectId(id) });
@@ -39,33 +34,19 @@ async function getUniversityById(id) {
   return university;
 }
 
-/**
- * Adds a university to the University collection.
- *
- * @param {String} name
- * @param {String} emailDomain
- * @returns An object containing { universityInserted: true } if successful.
- * @throws Will throw if parameters are invalid, university already exists,
- *         or there is an issue with the db.
- */
 async function createUniversity(name, emailDomain) {
-  //validation
-  validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
+  universityValidation.checkArgumentLength(arguments, 2);
 
-  // Check if university already exists
-  const universityCollection = await universities();
-  const university = await universityCollection.findOne({
-    emailDomain: emailDomain,
-  });
+  let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  if (university != null) {
-    throw 'Cannot create university since it already exists!';
-  }
+  await verifyUniversityIsUnique(sanitizedData.name, sanitizedData.emailDomain);
 
   let newUniversity = {
-    name: name.trim(),
-    emailDomain: emailDomain.trim(),
+    name: sanitizedData.name,
+    emailDomain: sanitizedData.emailDomain
   };
+
+  const universityCollection = await universities();
 
   const insertInfo = await universityCollection.insertOne(newUniversity);
 
@@ -76,25 +57,23 @@ async function createUniversity(name, emailDomain) {
   return { universityInserted: true };
 }
 
-async function updateUniversity(name, emailDomain) {
-  validation.isValidUniversityParameters(name.trim(), emailDomain.trim());
+async function updateUniversity(id, name, emailDomain) {
+  universityValidation.checkArgumentLength(arguments, 3);
 
-  const universitiesCollection = await universities();
-  const university = await universitiesCollection.findOne({
-    emailDomain: emailDomain
-  });
+  id = universityValidation.isValidUniversityId(id);
+  let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  if (university == null) {
-    throw 'University with given emailDomain does not exist!';
-  }
+  await verifyUniversityIsUniqueExisting(id, sanitizedData.name, sanitizedData.emailDomain);
 
   let updateUniversity = {
-    name: name.trim(),
-    emailDomain: emailDomain.trim()
+    name: sanitizedData.name,
+    emailDomain: sanitizedData.emailDomain
   };
 
-  const update = await universitiesCollection.updateOne(
-    { _id: university._id },
+  const universityCollection = await universities();
+
+  const update = await universityCollection.updateOne(
+    { _id: ObjectId(id) },
     { $set: updateUniversity }
   );
 
@@ -105,28 +84,85 @@ async function updateUniversity(name, emailDomain) {
   return { universityUpdated: true };
 }
 
-async function deleteUniversity(id) {
-  const universitiesCollection = await universities();
-  const university = await universities.findOne({ _id: id });
+async function verifyUniversityIsUnique(name, emailDomain) {
+  universityValidation.checkArgumentLength(arguments, 2);
+  
+  let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  if (!university) {
-    throw 'No university with given id exists!';
-  }
+  const universityCollection = await universities();
 
-  const deleteUniversity = await universitiesCollection.deleteOne({
-    _id: id
+  let university = await universityCollection.findOne({
+    name: sanitizedData.name
   });
 
-  if (deleteUniversity.deletedCount == 0) {
-    throw 'Cannot delete university';
+  if (university != null) {
+    throw 'Cannot create university since name is taken!';
   }
-  return { universityDeleted: true };
+
+  university = await universityCollection.findOne({
+    emailDomain: sanitizedData.emailDomain
+  });
+
+  if (university != null) {
+    throw 'Cannot create university since emailDomain is taken!';
+  }
 }
+
+async function verifyUniversityIsUniqueExisting(id, name, emailDomain) {
+  universityValidation.checkArgumentLength(arguments, 3);
+  
+  id = universityValidation.isValidUniversityId(id);
+  let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
+
+  const universityCollection = await universities();
+
+  let universityOriginal = await universityCollection.findOne({
+    _id: ObjectId(id)
+  });
+
+  if (!universityOriginal) {
+    throw 'University does not exist!'
+  }
+
+  let university = await universityCollection.findOne({
+    name: sanitizedData.name
+  });
+
+  if (university != null && university._id.toString() != universityOriginal._id.toString()) {
+    throw 'Cannot update university since name is taken!';
+  }
+
+  university = await universityCollection.findOne({
+    emailDomain: sanitizedData.emailDomain
+  });
+
+  if (university != null && university._id.toString() != universityOriginal._id.toString()) {
+    throw 'Cannot update university since emailDomain is taken!';
+  }
+}
+
+// async function deleteUniversity(id) {
+//   const universitiesCollection = await universities();
+//   const university = await universities.findOne({ _id: id });
+
+//   if (!university) {
+//     throw 'No university with given id exists!';
+//   }
+
+//   const deleteUniversity = await universitiesCollection.deleteOne({
+//     _id: id
+//   });
+
+//   if (deleteUniversity.deletedCount == 0) {
+//     throw 'Cannot delete university';
+//   }
+//   return { universityDeleted: true };
+// }
 
 module.exports = {
   getAll,
   getUniversityById,
   createUniversity,
   updateUniversity,
-  deleteUniversity
+  // deleteUniversity
 };
