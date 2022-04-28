@@ -39,12 +39,14 @@ async function createUniversity(name, emailDomain) {
 
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  verifyUniversityIsUnique(sanitizedData.name, sanitizedData.emailDomain);
+  await verifyUniversityIsUnique(sanitizedData.name, sanitizedData.emailDomain);
 
   let newUniversity = {
     name: sanitizedData.name,
     emailDomain: sanitizedData.emailDomain
   };
+
+  const universityCollection = await universities();
 
   const insertInfo = await universityCollection.insertOne(newUniversity);
 
@@ -58,17 +60,20 @@ async function createUniversity(name, emailDomain) {
 async function updateUniversity(id, name, emailDomain) {
   universityValidation.checkArgumentLength(arguments, 3);
 
+  id = universityValidation.isValidUniversityId(id);
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  verifyUniversityIsUnique(sanitizedData.name, sanitizedData.emailDomain);
+  await verifyUniversityIsUniqueExisting(id, sanitizedData.name, sanitizedData.emailDomain);
 
   let updateUniversity = {
     name: sanitizedData.name,
     emailDomain: sanitizedData.emailDomain
   };
 
-  const update = await universitiesCollection.updateOne(
-    { _id: university._id },
+  const universityCollection = await universities();
+
+  const update = await universityCollection.updateOne(
+    { _id: ObjectId(id) },
     { $set: updateUniversity }
   );
 
@@ -81,13 +86,11 @@ async function updateUniversity(id, name, emailDomain) {
 
 async function verifyUniversityIsUnique(name, emailDomain) {
   universityValidation.checkArgumentLength(arguments, 2);
-
+  
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
-  // add ID and dont throw if ID matches the result
-
   const universityCollection = await universities();
-  
+
   let university = await universityCollection.findOne({
     name: sanitizedData.name
   });
@@ -102,6 +105,39 @@ async function verifyUniversityIsUnique(name, emailDomain) {
 
   if (university != null) {
     throw 'Cannot create university since emailDomain is taken!';
+  }
+}
+
+async function verifyUniversityIsUniqueExisting(id, name, emailDomain) {
+  universityValidation.checkArgumentLength(arguments, 3);
+  
+  id = universityValidation.isValidUniversityId(id);
+  let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
+
+  const universityCollection = await universities();
+
+  let universityOriginal = await universityCollection.findOne({
+    _id: ObjectId(id)
+  });
+
+  if (!universityOriginal) {
+    throw 'University does not exist!'
+  }
+
+  let university = await universityCollection.findOne({
+    name: sanitizedData.name
+  });
+
+  if (university != null && university._id.toString() != universityOriginal._id.toString()) {
+    throw 'Cannot update university since name is taken!';
+  }
+
+  university = await universityCollection.findOne({
+    emailDomain: sanitizedData.emailDomain
+  });
+
+  if (university != null && university._id.toString() != universityOriginal._id.toString()) {
+    throw 'Cannot update university since emailDomain is taken!';
   }
 }
 
