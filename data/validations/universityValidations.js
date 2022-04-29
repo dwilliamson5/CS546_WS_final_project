@@ -1,9 +1,5 @@
 const { ObjectId } = require('mongodb');
 
-function objectifyId(id) {
-    return ObjectId(id);
-}
-
 function stringifyId(id) {
     return id.toString();
 }
