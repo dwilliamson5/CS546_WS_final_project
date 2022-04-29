@@ -4,7 +4,6 @@ const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
 const validation = require('../data/validations/userValidations');
-const { ObjectId } = require('mongodb');
 
 router.get('/login', async (req, res) => {
     if (req.session.user) {
