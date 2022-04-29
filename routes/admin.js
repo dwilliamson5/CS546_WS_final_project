@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require('../data/index');
 const universities = data.universities;
 const universityValidation = require('../data/validations/universityValidations');
+const sharedValidation = require('../data/validations/sharedValidations');
 
 router.get('/', async (req, res) => {
     const universitiesList = await universities.getAll();
@@ -36,7 +37,7 @@ router.get('/universities/:id/edit', async (req, res) => {
     }
 
     try {
-        universityValidation.isValidUniversityId(universityId);
+        sharedValidation.isValidUniversityId(universityId);
     } catch (e) {
         res.status(404).render('admin/index', {
             error_status_code: 'HTTP 404 status code',
@@ -46,7 +47,7 @@ router.get('/universities/:id/edit', async (req, res) => {
     }
 
     let university;
-    
+
     try {
         university = await universities.getUniversityById(universityId);
     } catch (e) {
@@ -166,7 +167,7 @@ router.put('/universities/:id', async (req, res) => {
     }
 
     try {
-        universityValidation.isValidUniversityId(universityId);
+        sharedValidation.isValidUniversityId(universityId);
         universityValidation.isValidUniversityParameters(name, emailDomain);
     } catch (e) {
         res.status(400).render('admin/edit', {
