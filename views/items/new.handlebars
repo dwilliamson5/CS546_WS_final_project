@@ -1,0 +1,29 @@
+<h1>List a New Item</h1>
+<form method="POST">
+    {{!-- Item Name --}}
+    <label for="itemName">Item Name</label>
+    <input type="text" name="itemName" id="itemName" class="form-control">
+    {{!-- Item Description --}}
+    <label for="itemDescription">Item Description</label>
+    <input type="text" name="itemDescription" id="itemDescription" class="form-control">
+    {{!-- Item Price --}}
+    <label for="itemPrice">Item Price</label>
+    <input type="text" name="itemPrice" id="itemPrice" class="form-control">
+    {{!-- Item Keywords --}}
+    {{!-- How to submit multiple keywords? --}}
+    <label for="itemKeywords">Item Keywords</label>
+    <input type="text" name="itemKeywords" id="itemKeywords" class="form-control">
+    {{!-- Pickup Method Dropdown --}}
+    <label for="itemPickupMethod">Item Pickup Method</label>
+    <select name="itemPickupMethod" id="itemPickupMethod" class="form-control">
+        <option value="deliver">deliver</option>
+        <option value="pickup">pickup</option>
+    </select>
+    {{!-- Input Item Image --}}
+    {{!-- How to submit multiple images? --}}
+    <label for="itemImage">Item Image URL</label>
+    <input type="file" id="itemImage" name="itemImage">
+    {{!-- Submit Button --}}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+

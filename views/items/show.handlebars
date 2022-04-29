@@ -1,1 +1,21 @@
-THIS IS AN ITEM SHOW FOR {{ itemId }}
+<h1>{{itemName}}</h1>
+<p>{{itemDescription}}</p>
+<p>{{itemPrice}}</p>
+<p>Highest Bid: {{highest-bid}}</p>
+{{!-- For each keyword --}}
+{{#each itemKeywords}}
+<p>{{this}}</p>
+{{/each}}
+<p>Status: {{itemStatus}}</p>
+<p>Listed by: {{user}}</p>
+<p>University: {{university}}</p>
+<p>Pick Up Method: {{itemPickupMethod}}</p>
+{{!-- For each image upload --}}
+{{#each itemImage}}
+<img src="{{this}}" alt="{{this}}">
+{{/each}}
+<p>Rating: {{rating}}</p>
+{{#each comments}}
+<p>{{this}}</p>
+{{/each}}
+
