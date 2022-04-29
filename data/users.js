@@ -3,7 +3,6 @@ const users = mongoCollections.users;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const validation = require('./validations/userValidations');
-const { ObjectId } = require('mongodb');
 
 /**
  * Adds a user to the Users collection.
