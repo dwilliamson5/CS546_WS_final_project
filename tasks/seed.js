@@ -14,6 +14,15 @@ async function testUniversities() {
   }
 
   try {
+    await universities.createUniversity(
+      'Fashion Institute of Technology',
+      'fit.edu'
+    );
+  } catch (e) {
+    console.log(e);
+  }
+
+  try {
     await universities.updateUniversity(
       'Stevens Institute',
       'stevens.edu'
