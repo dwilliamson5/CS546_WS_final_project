@@ -1,10 +1,11 @@
 const mongoCollections = require('../config/mongoCollections');
 const universities = mongoCollections.universities;
 const universityValidation = require('./validations/universityValidations');
+const sharedValidation = require('./validations/sharedValidations');
 const { ObjectId } = require('mongodb');
 
 async function getAll() {
-    universityValidation.checkArgumentLength(arguments, 0);
+    sharedValidation.checkArgumentLength(arguments, 0);
 
     const universityCollection = await universities();
     let universitiesList = await universityCollection.find({}).toArray();
@@ -14,15 +15,15 @@ async function getAll() {
     }
 
     universitiesList.forEach(university => {
-      university._id = universityValidation.stringifyId(university._id);
+      university._id = sharedValidation.stringifyId(university._id);
     });
 
     return universitiesList;
 }
 
 async function getUniversityById(id) {
-  universityValidation.checkArgumentLength(arguments, 1);
-  id = universityValidation.isValidUniversityId(id);
+  sharedValidation.checkArgumentLength(arguments, 1);
+  id = sharedValidation.isValidUniversityId(id);
 
   const universityCollection = await universities();
   const university = await universityCollection.findOne({ _id: ObjectId(id) });
@@ -35,7 +36,7 @@ async function getUniversityById(id) {
 }
 
 async function createUniversity(name, emailDomain) {
-  universityValidation.checkArgumentLength(arguments, 2);
+  sharedValidation.checkArgumentLength(arguments, 2);
 
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
@@ -58,9 +59,9 @@ async function createUniversity(name, emailDomain) {
 }
 
 async function updateUniversity(id, name, emailDomain) {
-  universityValidation.checkArgumentLength(arguments, 3);
+  sharedValidation.checkArgumentLength(arguments, 3);
 
-  id = universityValidation.isValidUniversityId(id);
+  id = sharedValidation.isValidUniversityId(id);
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
   await verifyUniversityIsUniqueExisting(id, sanitizedData.name, sanitizedData.emailDomain);
@@ -85,8 +86,8 @@ async function updateUniversity(id, name, emailDomain) {
 }
 
 async function verifyUniversityIsUnique(name, emailDomain) {
-  universityValidation.checkArgumentLength(arguments, 2);
-  
+  sharedValidation.checkArgumentLength(arguments, 2);
+
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
   const universityCollection = await universities();
@@ -109,9 +110,9 @@ async function verifyUniversityIsUnique(name, emailDomain) {
 }
 
 async function verifyUniversityIsUniqueExisting(id, name, emailDomain) {
-  universityValidation.checkArgumentLength(arguments, 3);
-  
-  id = universityValidation.isValidUniversityId(id);
+  sharedValidation.checkArgumentLength(arguments, 3);
+
+  id = sharedValidation.isValidUniversityId(id);
   let sanitizedData = universityValidation.isValidUniversityParameters(name, emailDomain);
 
   const universityCollection = await universities();
