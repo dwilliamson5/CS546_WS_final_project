@@ -9,28 +9,42 @@
 
 <body>
     <main>
-        <header>
+        <header class="p-3 bg-dark text-white">
             <div class="container">
-                <h1 class="title">{{ title }}</h1>
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                        <h3>Unisell</h3>
+                    </a>
 
-                {{#if user}}
-                    {{#if superAdmin}}
-                        {{#if inAdmin}}
-                            <a href="/" class="btn btn-secondary">Exit Admin</a>
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    </ul>
+
+                    <div class="text-end">
+                        {{#if user}}
+                            <a href="/items/new" class="btn btn-success">List New Item</a>
+
+                            {{#if superAdmin}}
+                                {{#if inAdmin}}
+                                    <a href="/" class="btn btn-outline-danger">Exit Admin</a>
+                                {{else}}
+                                    <a href="/admin" class="btn btn-outline-warning">Admin Panel</a>
+                                {{/if}}
+                            {{/if}}
+                            <a href="/profile/edit" class="btn btn-outline-light">Edit Profile</a>
+                            <a href="/auth/logout" class="btn btn-outline-danger">Logout</a>
                         {{else}}
-                            <a href="/admin" class="btn btn-warning">Admin Panel</a>
+                            <a href="/auth/login" class="btn btn-success">Login</a>
+                            <a href="/auth/signup" class="btn btn-primary">Create an account</a>
                         {{/if}}
-                    {{/if}}
-                    <a href="/profile/edit" class="btn btn-info">Edit Profile</a>
-                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
-                {{else}}
-                    <a href="/auth/login" class="btn btn-success">Login</a>
-                    <a href="/auth/signup" class="btn btn-primary">Create an account</a>
-                {{/if}}
+                    </div>
+                </div>
             </div>
         </header>
 
         <div class="container">
+          <br>
+          <h1 class="title">{{ title }}</h1>
+
           {{{body}}}
         </div>
 
