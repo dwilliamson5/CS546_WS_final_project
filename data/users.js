@@ -3,6 +3,8 @@ const users = mongoCollections.users;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const userValidation = require('./validations/userValidations');
+const sharedValidation = require('./validations/sharedValidations');
+const { ObjectId } = require('mongodb');
 
 /**
  * Adds a user to the Users collection.
@@ -10,6 +12,7 @@ const userValidation = require('./validations/userValidations');
  * @param {String} universityId
  * @param {String} username
  * @param {String} password
+ * @param {String} password_confirmation
  * @param {String} name
  * @param {String} email
  * @param {String} imageURL
@@ -18,43 +21,44 @@ const userValidation = require('./validations/userValidations');
  * @throws Will throw if parameters are invalid, user already exists,
  *         or there is an issue with the db.
  */
-async function createUser(universityId, username, password, name, email, imageURL, bio) {
-  // Throws if there is an invalid parameter
-  await userValidation.isValidUserParameters(
+async function createUser(universityId, username, password, password_confirmation, name, email, imageURL, bio) {
+  sharedValidation.checkArgumentLength(arguments, 8);
+
+  let sanitizedData = userValidation.isValidUserParameters(
     universityId,
     username,
     password,
+    password_confirmation,
     name,
     email,
     imageURL,
     bio
   );
 
-  let university = await universities.getUniversityById(universityId);
+  let university = await universities.getUniversityById(sanitizedData.universityId);
 
-  //get Email domain
-  let emailDomain = email.trim().split('@')[1];
+  let emailDomain = userValidation.getEmailDomain(sanitizedData.email);
 
-  if (university.emailDomain != emailDomain) {
-      throw 'Email domain does not match selected university domain!';
+  userValidation.validateDomainsMatch(university.emailDomain, emailDomain);
+
+  try {
+    await getUser(sanitizedData.username)
+
+    throw 'That username already exists!';
+  } catch (e) {
+    // user was not found
   }
 
-  // Check if user already exists
-  if (await getUser(username) !== null) {
-      throw 'That username already exists!';
-  }
-
-  // Hash password
   const SALT_ROUNDS = 10;
-  const hash = await bcrypt.hash(password, SALT_ROUNDS);
+  const hash = await bcrypt.hash(sanitizedData.password, SALT_ROUNDS);
 
   let newUser = {
-    universityId: universityId.trim(),
-    username: username.trim(),
-    name: name.trim(),
-    email: email.trim(),
-    profileImageUrl: imageURL.trim(),
-    bio: bio.trim(),
+    universityId: sanitizedData.universityId,
+    username: sanitizedData.username,
+    name: sanitizedData.name,
+    email: sanitizedData.email,
+    profileImageUrl: sanitizedData.imageURL,
+    bio: sanitizedData.bio,
     password: hash,
     super_admin: false,
     ratings: [],
@@ -78,15 +82,18 @@ async function createUser(universityId, username, password, name, email, imageUR
  * @throws Will throw if username parameter is invalid.
  */
 async function getUser(username) {
-  if (!userValidation.isValidUsername(username)) {
-    throw 'Invalid username passed to getUser!';
-  }
+  sharedValidation.checkArgumentLength(arguments, 1);
 
-  // Check username as case insensitive
-  const usernameRegex = new RegExp(["^", username.trim(), "$"].join(""), "i");
+  username = userValidation.validateUsername(username);
 
   const userCollection = await users();
-  const user = await userCollection.findOne({ username: usernameRegex });
+  const user = await userCollection.findOne({ username: username });
+
+  if (!user) {
+    throw 'User does not exist!'
+  }
+
+  user._id = user._id.toString();
 
   return user;
 }
@@ -94,6 +101,7 @@ async function getUser(username) {
 /**
  * Checks if the user's credentials are valid.
  *
+ * @param {String} universityId
  * @param {String} username
  * @param {String} password
  * @returns An object containing { authenticated: true } if successful.
@@ -101,31 +109,21 @@ async function getUser(username) {
  *         exist, or the credentials do not match.
  */
 async function checkUser(universityId, username, password) {
-  if (
-    !userValidation.isValidUsername(username) ||
-    !userValidation.isValidPassword(password)
-  ) {
-    throw 'Either the username or password is invalid!';
-  }
+  sharedValidation.checkArgumentLength(arguments, 3);
 
-  // Get user
-  const user = await getUser(username);
-  if (user === null) {
-    throw 'Either the username or password is invalid!';
-  }
+  let sanitizedData = userValidation.isValidCheckUserParameters(
+    universityId,
+    username,
+    password
+  )
 
-  if (!userValidation.isValidUniversityId(universityId)) {
-      return false;
-  }
+  let user = await getUser(username);
+  
+  let university = await universities.getUniversityById(sanitizedData.universityId);
 
-  let university = await universities.getUniversityById(universityId);
+  let emailDomain = userValidation.getEmailDomain(user.email);
 
-  //get Email domain
-  let emailDomain = user.email.trim().split('@')[1];
-
-  if (university.emailDomain != emailDomain) {
-      throw 'Invalid university domain!';
-  }
+  userValidation.validateDomainsMatch(university.emailDomain, emailDomain);
 
   let passwordsMatch = false;
 
@@ -136,19 +134,19 @@ async function checkUser(universityId, username, password) {
   }
 
   if (!passwordsMatch) {
-    throw 'Either the username or password is invalid!';
+    throw 'Passwords do not match!';
   }
 
   return { authenticated: true };
 }
 
 async function makeSuperAdmin(username) {
-  if (!userValidation.isValidUsername(username)) {
-    throw 'The username is invalid!';
-  }
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  username = userValidation.validateUsername(username);
 
   const user = await getUser(username);
-  if (user === null) {
+  if (!user) {
     throw 'The username does not exist!';
   }
 
@@ -158,7 +156,7 @@ async function makeSuperAdmin(username) {
 
   const userCollection = await users();
   const update = await userCollection.updateOne(
-    { _id: user._id },
+    { _id: ObjectId(user._id) },
     { $set: updateUser }
   );
 
@@ -169,9 +167,127 @@ async function makeSuperAdmin(username) {
   return { userUpdated: true };
 }
 
+// /**
+// * Updates a user in the Users collection.
+// *
+// * @param {String} username
+// * @param {String} name
+// * @param {String} email
+// * @param {String} imageURL
+// * @param {String} bio
+// * @returns An object containing { userUpdated: true } if successful.
+// * @throws Will throw if parameters are invalid, user doesn't exist,
+// *         or there was an issue with the db.
+// */
+// async function updateUser(userId, username, name, email, imageURL, bio) {
+
+//  // Throws if there is an invalid parameter
+//  await userValidation.isValidUserUpdateParameters(
+//    existingUsername,
+//    username,
+//    name,
+//    email,
+//    imageURL,
+//    bio
+//  );
+
+//  if (existingUsername !== username) {
+//    // Check if user already exists
+//    if (await getUser(username) !== null) {
+//      throw 'The new username is already in use!';
+//    }
+//  }
+
+//  let user = await getUser(existingUsername);
+
+//  if (user === null) {
+//    throw 'Could not find user with username: ' + existingUsername;
+//  }
+
+//  let university = await universities.getUniversityById(ObjectId(user.universityId));
+
+//  if (university === null)
+//  {
+//    throw 'Could not find university for id: ' + universityId;
+//  }
+
+//  // Get Email domain
+//  let emailDomain = email.trim().split('@')[1];
+
+//  if (university.emailDomain != emailDomain) {
+//    throw 'Email domain does not match selected university domain!';
+//  }
+
+//  let updatedUser = {
+//    username: username.trim(),
+//    name: name.trim(),
+//    email: email.trim(),
+//    profileImageUrl: imageURL.trim(),
+//    bio: bio.trim(),
+//    super_admin: false,
+//    ratings: [],
+//  };
+
+//  const userCollection = await users();
+//  const updateInfo = await userCollection.updateOne(
+//    { _id: user._id },
+//    { $set: updatedUser }
+//  );
+
+//  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+//    throw 'Could not update user!';
+//  }
+
+//  return { userUpdated: true };
+// }
+
+// /**
+// * Updates a user's password in the Users collection.
+// *
+// * @param {String} username
+// * @param {String} password
+// * @returns An object containing { passwordUpdated: true } if successful.
+// * @throws Will throw if parameters are invalid, user doesn't exist,
+// *         or there was an issue with the db.
+// */
+// async function updatePassword(username, password) {
+
+//  let user = await getUser(username);
+
+//  if (user === null) {
+//    throw 'Could not find user with username: ' + username;
+//  }
+
+//  if (!userValidation.isValidPassword(password)) {
+//    throw 'Invalid password!';
+//  }
+
+//  // Hash password
+//  const SALT_ROUNDS = 10;
+//  const hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+//  let updatedUser = {
+//    password: hash
+//  };
+
+//  const userCollection = await users();
+//  const updateInfo = await userCollection.updateOne(
+//    { _id: user._id },
+//    { $set: updatedUser }
+//  );
+
+//  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+//    throw 'Could not update user password!';
+//  }
+
+//  return { passwordUpdated: true };
+// }
+
 module.exports = {
   createUser,
   getUser,
   checkUser,
-  makeSuperAdmin
+  makeSuperAdmin,
+  // updateUser,
+  // updatePassword
 };
