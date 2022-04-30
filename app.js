@@ -51,6 +51,13 @@ app.use('/profile/edit', async (req, res, next) => {
   next();
 });
 
+app.use('/profile/edit/password', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
 app.use('/profile', async (req, res, next) => {
   if (req.session.user) {
     next();
