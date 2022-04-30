@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data/index');
 const items = data.items;
+const users = data.users;
 const itemValidation = require('../data/validations/itemValidations');
 const sharedValidation = require('../data/validations/sharedValidations');
 
@@ -149,9 +150,26 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find item owner!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
     res.render('items/show', {
         title: 'Item for ' + itemId,
         item: item,
+        canEdit: req.session.user.username == user.username,
         itemId: itemId
     });
 });
@@ -215,7 +233,23 @@ router.get('/:id/edit', async (req, res) => {
         return;
     }
 
-    if (req.session.user.username != item.userId.toString()) {
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find item owner!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
         const itemsList = await items.getAll();
 
         res.status(404).render('index', {
@@ -228,10 +262,13 @@ router.get('/:id/edit', async (req, res) => {
     }
 
     res.render('items/edit', {
-        title: 'Edit ' + university.name,
+        title: 'Edit ' + item.title,
         id: item._id,
         item_title: item.title,
-        // emailDomain: university.emailDomain
+        description: item.description,
+        keywords: item.keywords,
+        price: item.price,
+        pickUpMethod: item.pickUpMethod
     });
 });
 
