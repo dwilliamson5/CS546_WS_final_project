@@ -1,1 +1,5 @@
 THIS IS AN ITEM SHOW FOR {{ itemId }}
+
+{{#if canEdit}}
+    <a href="/items/{{itemId}}/edit" class="btn btn-primary">Edit Item</a>
+{{/if}}
