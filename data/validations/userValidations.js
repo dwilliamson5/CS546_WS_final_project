@@ -1,14 +1,4 @@
-const { ObjectId } = require('mongodb');
-
-function isValidString(string) {
-    if (string === undefined ||
-        typeof string !== 'string' ||
-        string.trim().length === 0) {
-        return false;
-    }
-
-    return true;
-}
+const sharedValidation = require('./sharedValidations');
 
 function isAlphaNumeric(string) {
     // ASCII codes
@@ -52,106 +42,197 @@ function containsNoSpaces(string) {
 }
 
 function isValidUsername(username) {
-    if (!isValidString(username)) {
-        return false;
-    }
-
     const MIN_USERNAME_LENGTH = 4;
 
     if (username.length < MIN_USERNAME_LENGTH) {
-        return false;
+        throw 'Username is less than 4 characters';
     }
 
-    // Check only alphanumeric characters
     if (!isAlphaNumeric(username)) {
-        return false;
+        throw 'Username can only be alphanumeric characters';
     }
-
-    return true;
 }
 
-function isValidPassword(password) {
-    if (!isValidString(password)) {
-        return false;
-    }
-
+function isValidPassword(password, variableName) {
     const MIN_PASSWORD_LENGTH = 6;
 
     if (password.length < MIN_PASSWORD_LENGTH) {
-        return false;
+        throw `${variableName || 'password'} is less than 4 characters`;
     }
 
     if (!containsNoSpaces(password)) {
-        return false;
+        throw `${variableName || 'password'} cannot contain any spaces`;
     }
+}
 
-    return true;
+function passwordsMatch(password, password_confirmation) {
+    if (password != password_confirmation) {
+        throw 'Password and password_confirmation must match';
+    }
 }
 
 function isValidEmail(email) {
-    if (!isValidString(email)) {
-        return false;
-    }
-
     // Check for valid email pattern and only accept .edu addresses
     // Two letter country codes accepted before .edu (e.g. string@string.uk.edu)
     let emailRegex = new RegExp('[a-z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:[A-Z]{2}|edu)\\b');
 
-    return emailRegex.test(email);
+    if (!emailRegex.test(email)) {
+        throw 'Email is not a valid university email address!';
+    }
 }
 
-function isValidUniversityId(universityId) {
-    if (!isValidString(universityId)) {
-        return false;
-    }
-
-    if (!ObjectId.isValid(universityId)) {
-        return false;
-    }
-
-    return true;
+function getEmailDomain(email) {
+    return email.split('@')[1];
 }
 
-async function isValidUserParameters(universityId, username, password, name, email, imageURL, bio) {
-
-    if (!isValidUsername(username)) {
-        throw 'Invalid username!';
+function validateDomainsMatch(domain1, domain2) {
+    if (domain1 != domain2) {
+        throw 'Email domain does not match selected university domain!';
     }
-
-    if (!isValidPassword(password)) {
-        throw 'Invalid password!';
-    }
-
-    if (!isValidString(name)) {
-        throw 'Invalid name!';
-    }
-
-    if (!isValidEmail(email)) {
-        throw 'Invalid email!';
-    }
-
-    if (!isValidUniversityId(universityId)) {
-        throw 'Invalid universityId!';
-    }
-
-    if (!isValidString(imageURL)) {
-        throw 'Invalid image URL!';
-    }
-
-    if (!isValidString(bio)) {
-        throw 'Invalid bio!';
-    }
-
-    return true;
 }
+
+function isValidUserParameters(universityId, username, password, password_confirmation, name, email, imageURL, bio) {
+    sharedValidation.checkParamPresent(universityId);
+    sharedValidation.checkParamPresent(username);
+    sharedValidation.checkParamPresent(password);
+    sharedValidation.checkParamPresent(password_confirmation);
+    sharedValidation.checkParamPresent(name);
+    sharedValidation.checkParamPresent(email);
+    sharedValidation.checkParamPresent(imageURL);
+    sharedValidation.checkParamPresent(bio);
+
+    sharedValidation.checkIsString(universityId);
+    sharedValidation.checkIsString(username);
+    sharedValidation.checkIsString(password);
+    sharedValidation.checkIsString(password_confirmation);
+    sharedValidation.checkIsString(name);
+    sharedValidation.checkIsString(email);
+    sharedValidation.checkIsString(imageURL);
+    sharedValidation.checkIsString(bio);
+
+    universityId = sharedValidation.cleanUpString(universityId);
+    username = sharedValidation.cleanUpString(username);
+    password = sharedValidation.cleanUpString(password);
+    password_confirmation = sharedValidation.cleanUpString(password_confirmation);
+    name = sharedValidation.cleanUpString(name);
+    email = sharedValidation.cleanUpString(email);
+    imageURL = sharedValidation.cleanUpString(imageURL);
+    bio = sharedValidation.cleanUpString(bio);
+
+    username = username.toLowerCase();
+    email = email.toLowerCase();
+    
+    sharedValidation.isValidUniversityId(universityId)
+
+    isValidUsername(username);
+    isValidPassword(password, 'password');
+    isValidPassword(password_confirmation, 'password_confirmation');
+    passwordsMatch(password, password_confirmation)
+    isValidEmail(email)
+
+    return {
+        universityId: universityId,
+        username: username,
+        password: password,
+        password_confirmation: password_confirmation,
+        name: name,
+        email: email,
+        imageURL: imageURL,
+        bio: bio
+    }
+}
+
+function validateUsername(username) {
+    sharedValidation.checkParamPresent(username);
+    sharedValidation.checkIsString(username);
+    username = sharedValidation.cleanUpString(username);
+    username = username.toLowerCase();
+    isValidUsername(username);
+
+    return username;
+}
+
+function isValidCheckUserParameters(universityId, username, password) {
+    sharedValidation.checkParamPresent(universityId);
+    sharedValidation.checkParamPresent(username);
+    sharedValidation.checkParamPresent(password);
+
+    sharedValidation.checkIsString(universityId);
+    sharedValidation.checkIsString(username);
+    sharedValidation.checkIsString(password);
+
+    universityId = sharedValidation.cleanUpString(universityId);
+    username = sharedValidation.cleanUpString(username);
+    password = sharedValidation.cleanUpString(password);
+
+    username = username.toLowerCase();
+
+    sharedValidation.isValidUniversityId(universityId)
+    isValidUsername(username);
+    isValidPassword(password, 'password');
+
+    return {
+        universityId: universityId,
+        username: username,
+        password: password
+    }
+}
+
+// async function isValidUserUpdateParameters(existingUsername, username, name, email, imageURL, bio) {
+
+//      if (!isValidUsername(username)) {
+//          throw 'Invalid username!';
+//      }
+
+//      if (!isValidUsername(existingUsername)) {
+//          throw 'Invalid existing username!';
+//      }
+
+//      if (!isValidString(name)) {
+//          throw 'Invalid name!';
+//      }
+
+//      if (!isValidEmail(email)) {
+//          throw 'Invalid email!';
+//      }
+
+//      if (!isValidString(imageURL)) {
+//          throw 'Invalid image URL!';
+//      }
+
+//      if (!isValidString(bio)) {
+//          throw 'Invalid bio!';
+//      }
+
+//      return true;
+// }
+
+// async function shouldUpdatePassword(passwordl, passwordr) {
+
+//     // If the passwords are empty, then just return
+//     if (passwordl === '' && passwordr === '') {
+//         return false;
+//     }
+
+//     // Check they are valid
+//     if (!isValidPassword(passwordl) || !isValidPassword(passwordr)) {
+//         throw 'New password is invalid!';
+//     }
+
+//     // Check they match
+//     if (passwordl !== passwordr) {
+//         throw 'New passwords don\'t match';
+//     }
+
+//     return true;
+// }
 
 module.exports = {
-    isValidString,
-    isAlphaNumeric,
-    containsNoSpaces,
-    isValidUsername,
-    isValidPassword,
-    isValidEmail,
     isValidUserParameters,
-    isValidUniversityId
+    validateUsername,
+    getEmailDomain,
+    validateDomainsMatch,
+    isValidCheckUserParameters
+    // isValidUserUpdateParameters,
+    // shouldUpdatePassword
 };
