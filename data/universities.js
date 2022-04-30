@@ -31,6 +31,8 @@ async function getUniversityById(id) {
   if (!university) {
     throw 'University does not exist!'
   }
+  
+  university._id = university._id.toString();
 
   return university;
 }
