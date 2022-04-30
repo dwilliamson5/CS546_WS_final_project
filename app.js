@@ -44,6 +44,21 @@ app.use('/admin/universities/:id', async (req, res, next) => {
   next();
 });
 
+app.use('/profile/edit', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
+app.use('/profile', async (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+});
+
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 
