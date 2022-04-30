@@ -98,6 +98,23 @@ async function getUser(username) {
   return user;
 }
 
+async function getUserById(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidUserId(id);
+
+  const userCollection = await users();
+  const user = await userCollection.findOne({ _id: ObjectId(id) });
+
+  if (!user) {
+    throw 'User does not exist!'
+  }
+
+  user._id = user._id.toString();
+
+  return user;
+}
+
 /**
  * Checks if the user's credentials are valid.
  *
@@ -286,5 +303,6 @@ module.exports = {
   checkUser,
   makeSuperAdmin,
   updateUser,
-  updatePassword
+  updatePassword,
+  getUserById
 };
