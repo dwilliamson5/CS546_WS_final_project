@@ -69,11 +69,24 @@ router.put('/edit', async (req, res) => {
     }
 
     try {
-        let result = await users.updateUser(req.session.user.username, username, name, email, imageURL, bio);
+        let response = await users.updateUser(req.session.user.username, username, name, email, imageURL, bio);
 
-        if (result.userUpdated === true) {
+        if (response === null || response.userUpdated !== true) {
+            res.status(500).render('profile/edit', {
+                title: 'Edit Profile',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: 'Internal Server Error',
+                username: username,
+                name: name,
+                email: email,
+                bio: bio
+            });
+            return;
+        }
+
+        if (response.userUpdated === true) {
             // Update username since it could have changed
-            req.session.user = { username: result.username };
+            req.session.user = { username: response.username };
         }
 
         res.redirect('/');
@@ -125,7 +138,16 @@ router.put('/edit/password', async (req, res) => {
     }
 
     try {
-        await users.updatePassword(req.session.user.username, current_password, new_password, new_password_confirmation);
+        let response = await users.updatePassword(req.session.user.username, current_password, new_password, new_password_confirmation);
+
+        if (response === null || response.passwordUpdated !== true) {
+            res.status(500).render('profile/edit', {
+                title: 'Edit Profile',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: 'Internal Server Error'
+            });
+            return;
+        }
 
         res.redirect('/');
     } catch (e) {
