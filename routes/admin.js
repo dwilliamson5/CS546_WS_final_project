@@ -8,7 +8,7 @@ const sharedValidation = require('../data/validations/sharedValidations');
 router.get('/', async (req, res) => {
     const universitiesList = await universities.getAll();
 
-    res.render('admin/index', { title: 'Unisell Admin', universities: universitiesList });
+    res.render('admin/index', { title: 'Unisell Admin', universitiesList: universitiesList });
 });
 
 router.get('/universities/new', async (req, res) => {
@@ -19,9 +19,12 @@ router.get('/universities/:id/edit', async (req, res) => {
     let params = req.params;
 
     if (!params) {
+        const universitiesList = await universities.getAll();
+
         res.status(404).render('admin/index', {
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'No params provided!'
+            error_messages: 'No params provided!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -29,9 +32,12 @@ router.get('/universities/:id/edit', async (req, res) => {
     let universityId = params.id;
 
     if (!universityId) {
+        const universitiesList = await universities.getAll();
+
         res.status(404).render('admin/index', {
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!'
+            error_messages: 'No ID param provided!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -39,9 +45,12 @@ router.get('/universities/:id/edit', async (req, res) => {
     try {
         sharedValidation.isValidUniversityId(universityId);
     } catch (e) {
+        const universitiesList = await universities.getAll();
+
         res.status(404).render('admin/index', {
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'Bad university ID!'
+            error_messages: 'Bad university ID!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -51,9 +60,12 @@ router.get('/universities/:id/edit', async (req, res) => {
     try {
         university = await universities.getUniversityById(universityId);
     } catch (e) {
+        const universitiesList = await universities.getAll();
+
         res.status(404).render('admin/index', {
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that university!'
+            error_messages: 'Could not find that university!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -121,10 +133,13 @@ router.put('/universities/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        res.status(404).render('admin/edit', {
-            title: 'Edit',
+        const universitiesList = await universities.getAll();
+
+        res.status(404).render('admin/index', {
+            title: '404',
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that university!'
+            error_messages: 'Could not find that university!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -132,10 +147,13 @@ router.put('/universities/:id', async (req, res) => {
     let universityId = params.id;
 
     if (!universityId) {
-        res.status(404).render('admin/edit', {
-            title: 'Edit',
+        const universitiesList = await universities.getAll();
+
+        res.status(404).render('admin/index', {
+            title: '404',
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that university!'
+            error_messages: 'Could not find that university!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -143,10 +161,13 @@ router.put('/universities/:id', async (req, res) => {
     let university = await universities.getUniversityById(universityId);
 
     if (!university) {
-        res.status(404).render('admin/edit', {
-            title: 'Edit',
+        const universitiesList = await universities.getAll();
+
+        res.status(404).render('admin/index', {
+            title: '404',
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that university!'
+            error_messages: 'Could not find that university!',
+            universitiesList: universitiesList
         });
         return;
     }
@@ -157,7 +178,8 @@ router.put('/universities/:id', async (req, res) => {
         res.status(400).render('admin/edit', {
             title: 'Edit',
             error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request'
+            error_messages: 'You must provide a body to your request',
+            id: universityId
         });
         return;
     }
@@ -170,7 +192,8 @@ router.put('/universities/:id', async (req, res) => {
             error_status_code: 'HTTP 400 status code',
             error_messages: 'You must provide both the name and emailDomain',
             name: name,
-            emailDomain: emailDomain
+            emailDomain: emailDomain,
+            id: universityId
         });
         return;
     }
@@ -184,7 +207,8 @@ router.put('/universities/:id', async (req, res) => {
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
             name: name,
-            emailDomain: emailDomain
+            emailDomain: emailDomain,
+            id: universityId
         });
         return;
     }
@@ -199,7 +223,8 @@ router.put('/universities/:id', async (req, res) => {
             error_status_code: 'HTTP 500 status code',
             error_messages: e,
             name: name,
-            emailDomain: emailDomain
+            emailDomain: emailDomain,
+            id: universityId
         });
     }
 });
