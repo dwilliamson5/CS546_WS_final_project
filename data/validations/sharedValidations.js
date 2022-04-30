@@ -47,6 +47,16 @@ function checkStringLength(string, variableName, minLength) {
     }
 }
 
+function isValidUserId(id) {
+  checkParamPresent(id, 'user id');
+  checkIsString(id);
+  id = cleanUpString(id);
+  checkStringLength(id, 'user id');
+  validateObjectId(id);
+
+  return id;
+}
+
 function isValidUniversityId(id) {
   checkParamPresent(id, 'university id');
   checkIsString(id);
@@ -76,5 +86,6 @@ module.exports = {
     cleanUpString,
     checkStringLength,
     isValidUniversityId,
-    isValidItemId
+    isValidItemId,
+    isValidUserId
 };
