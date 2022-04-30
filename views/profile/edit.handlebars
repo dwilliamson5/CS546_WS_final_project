@@ -1,0 +1,46 @@
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
+
+<form action="/profile/edit" method="PUT" id="profile-form">
+    <div class="mb-3">
+        <label id="user-label" for="username" class="form-label">Username</label>
+        <input id="username" name="username" class="form-control" value="{{user.username}}" />
+        <div class="form-text">Username must be at least 4 characters and can only be alphanumeric characters</div>
+    </div>
+
+    {{!-- <div class="mb-3">
+        <label id="password-label" for="password" class="form-label">New password</label>
+        <input id="password" type="password" name="password" class="form-control" />
+        <div class="form-text">PASSWORD REQUIREMENTS HERE</div>
+    </div>
+
+    <div class="mb-3">
+        <label id="password-confirm-label" for="passwordConfirm" class="form-label">Re-type new password</label>
+        <input id="password-confirm" type="password" name="passwordConfirm" class="form-control" />
+    </div> --}}
+
+    <div class="mb-3">
+        <label id="name-label" for="name" class="form-label">Name</label>
+        <input id="name" name="name" class="form-control" value="{{user.name}}"/>
+    </div>
+
+    <div class="mb-3">
+        <label id="email-label" for="email" class="form-label">Email</label>
+        <input id="email" type="email" name="email" class="form-control" value="{{user.email}}"/>
+    </div>
+
+    <div class="mb-3">
+        <label id="bio-label" for="bio" class="form-label">Bio</label>
+        <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">{{user.bio}}</textarea>
+    </div>
+
+    {{!-- <div class="mb-3">
+        <!-- TODO -->
+        <label id="image-label" for="image">Profile image</label>
+        <input id="image" type="image" name="image" value="todo"/>
+    </div> --}}
+
+    <button type="submit" class="btn btn-success">Update Profile</button>
+</form>
+
+<a href="/" class="btn btn-secondary">Home</a>
