@@ -65,8 +65,8 @@ function isValidPassword(password, variableName) {
     }
 }
 
-function passwordsMatch(password, password_confirmation) {
-    if (password != password_confirmation) {
+function passwordsMatch(password, passwordConfirmation) {
+    if (password != passwordConfirmation) {
         throw 'Password and password_confirmation must match';
     }
 }
@@ -91,20 +91,20 @@ function validateDomainsMatch(domain1, domain2) {
     }
 }
 
-function isValidUserParameters(universityId, username, password, password_confirmation, name, email, imageURL, bio) {
-    sharedValidation.checkParamPresent(universityId);
-    sharedValidation.checkParamPresent(username);
-    sharedValidation.checkParamPresent(password);
-    sharedValidation.checkParamPresent(password_confirmation);
-    sharedValidation.checkParamPresent(name);
-    sharedValidation.checkParamPresent(email);
-    sharedValidation.checkParamPresent(imageURL);
-    sharedValidation.checkParamPresent(bio);
+function isValidUserParameters(universityId, username, password, passwordConfirmation, name, email, imageURL, bio) {
+    sharedValidation.checkParamPresent(universityId, 'universityId');
+    sharedValidation.checkParamPresent(username, 'username');
+    sharedValidation.checkParamPresent(password, 'password');
+    sharedValidation.checkParamPresent(passwordConfirmation, 'password confirmation');
+    sharedValidation.checkParamPresent(name, 'name');
+    sharedValidation.checkParamPresent(email, 'email');
+    sharedValidation.checkParamPresent(imageURL, 'image url');
+    sharedValidation.checkParamPresent(bio, 'bio');
 
     sharedValidation.checkIsString(universityId);
     sharedValidation.checkIsString(username);
     sharedValidation.checkIsString(password);
-    sharedValidation.checkIsString(password_confirmation);
+    sharedValidation.checkIsString(passwordConfirmation);
     sharedValidation.checkIsString(name);
     sharedValidation.checkIsString(email);
     sharedValidation.checkIsString(imageURL);
@@ -113,28 +113,37 @@ function isValidUserParameters(universityId, username, password, password_confir
     universityId = sharedValidation.cleanUpString(universityId);
     username = sharedValidation.cleanUpString(username);
     password = sharedValidation.cleanUpString(password);
-    password_confirmation = sharedValidation.cleanUpString(password_confirmation);
+    passwordConfirmation = sharedValidation.cleanUpString(passwordConfirmation);
     name = sharedValidation.cleanUpString(name);
     email = sharedValidation.cleanUpString(email);
     imageURL = sharedValidation.cleanUpString(imageURL);
     bio = sharedValidation.cleanUpString(bio);
 
+    sharedValidation.checkStringLength(universityId, 'university id');
+    sharedValidation.checkStringLength(username, 'username');
+    sharedValidation.checkStringLength(password, 'password');
+    sharedValidation.checkStringLength(passwordConfirmation, 'password confirmation');
+    sharedValidation.checkStringLength(name, 'name');
+    sharedValidation.checkStringLength(email, 'email');
+    sharedValidation.checkStringLength(imageURL, 'image url');
+    sharedValidation.checkStringLength(bio, 'bio');
+
     username = username.toLowerCase();
     email = email.toLowerCase();
-    
-    sharedValidation.isValidUniversityId(universityId)
+
+    sharedValidation.isValidUniversityId(universityId);
 
     isValidUsername(username);
     isValidPassword(password, 'password');
-    isValidPassword(password_confirmation, 'password_confirmation');
-    passwordsMatch(password, password_confirmation)
-    isValidEmail(email)
+    isValidPassword(passwordConfirmation, 'password confirmation');
+    passwordsMatch(password, passwordConfirmation);
+    isValidEmail(email);
 
     return {
         universityId: universityId,
         username: username,
         password: password,
-        password_confirmation: password_confirmation,
+        passwordConfirmation: passwordConfirmation,
         name: name,
         email: email,
         imageURL: imageURL,
@@ -143,9 +152,10 @@ function isValidUserParameters(universityId, username, password, password_confir
 }
 
 function validateUsername(username) {
-    sharedValidation.checkParamPresent(username);
+    sharedValidation.checkParamPresent(username, 'username');
     sharedValidation.checkIsString(username);
     username = sharedValidation.cleanUpString(username);
+    sharedValidation.checkStringLength(username, 'username');
     username = username.toLowerCase();
     isValidUsername(username);
 
@@ -153,9 +163,9 @@ function validateUsername(username) {
 }
 
 function isValidCheckUserParameters(universityId, username, password) {
-    sharedValidation.checkParamPresent(universityId);
-    sharedValidation.checkParamPresent(username);
-    sharedValidation.checkParamPresent(password);
+    sharedValidation.checkParamPresent(universityId, 'university id');
+    sharedValidation.checkParamPresent(username, 'username');
+    sharedValidation.checkParamPresent(password, 'password');
 
     sharedValidation.checkIsString(universityId);
     sharedValidation.checkIsString(username);
@@ -165,9 +175,13 @@ function isValidCheckUserParameters(universityId, username, password) {
     username = sharedValidation.cleanUpString(username);
     password = sharedValidation.cleanUpString(password);
 
+    sharedValidation.checkStringLength(username, 'university id');
+    sharedValidation.checkStringLength(username, 'username');
+    sharedValidation.checkStringLength(password, 'password');
+
     username = username.toLowerCase();
 
-    sharedValidation.isValidUniversityId(universityId)
+    sharedValidation.isValidUniversityId(universityId);
     isValidUsername(username);
     isValidPassword(password, 'password');
 
@@ -178,61 +192,96 @@ function isValidCheckUserParameters(universityId, username, password) {
     }
 }
 
-// async function isValidUserUpdateParameters(existingUsername, username, name, email, imageURL, bio) {
+function validateUpdatePassword(username, currentPassword, newPassword, newPasswordConfirmation) {
+    sharedValidation.checkParamPresent(username, 'username');
+    sharedValidation.checkParamPresent(currentPassword, 'current password');
+    sharedValidation.checkParamPresent(newPassword, 'new password');
+    sharedValidation.checkParamPresent(newPasswordConfirmation, 'new password confirmation');
 
-//      if (!isValidUsername(username)) {
-//          throw 'Invalid username!';
-//      }
+    sharedValidation.checkIsString(username);
+    sharedValidation.checkIsString(currentPassword);
+    sharedValidation.checkIsString(newPassword);
+    sharedValidation.checkIsString(newPasswordConfirmation);
 
-//      if (!isValidUsername(existingUsername)) {
-//          throw 'Invalid existing username!';
-//      }
+    username = sharedValidation.cleanUpString(username);
+    currentPassword = sharedValidation.cleanUpString(currentPassword);
+    newPassword = sharedValidation.cleanUpString(newPassword);
+    newPasswordConfirmation = sharedValidation.cleanUpString(newPasswordConfirmation);
 
-//      if (!isValidString(name)) {
-//          throw 'Invalid name!';
-//      }
+    sharedValidation.checkStringLength(username, 'username');
+    sharedValidation.checkStringLength(currentPassword, 'current password');
+    sharedValidation.checkStringLength(newPassword, 'new password');
+    sharedValidation.checkStringLength(newPasswordConfirmation, 'new password confirmation');
 
-//      if (!isValidEmail(email)) {
-//          throw 'Invalid email!';
-//      }
+    username = username.toLowerCase();
 
-//      if (!isValidString(imageURL)) {
-//          throw 'Invalid image URL!';
-//      }
+    isValidUsername(username);
+    isValidPassword(currentPassword, 'current password');
+    isValidPassword(newPassword, 'new password');
+    isValidPassword(newPasswordConfirmation, 'new password confirmation');
 
-//      if (!isValidString(bio)) {
-//          throw 'Invalid bio!';
-//      }
+    passwordsMatch(newPassword, newPasswordConfirmation);
 
-//      return true;
-// }
+    return {
+        username: username,
+        currentPassword: currentPassword,
+        newPassword: newPassword
+    }
+}
 
-// async function shouldUpdatePassword(passwordl, passwordr) {
+function isValidUserUpdateParameters(currentUsername, username, name, email, imageURL, bio) {
+    sharedValidation.checkParamPresent(currentUsername, 'current username');
+    sharedValidation.checkParamPresent(username, 'username');
+    sharedValidation.checkParamPresent(name, 'name');
+    sharedValidation.checkParamPresent(email, 'email');
+    sharedValidation.checkParamPresent(imageURL, 'image url');
+    sharedValidation.checkParamPresent(bio, 'bio');
 
-//     // If the passwords are empty, then just return
-//     if (passwordl === '' && passwordr === '') {
-//         return false;
-//     }
+    sharedValidation.checkIsString(currentUsername);
+    sharedValidation.checkIsString(username);
+    sharedValidation.checkIsString(name);
+    sharedValidation.checkIsString(email);
+    sharedValidation.checkIsString(imageURL);
+    sharedValidation.checkIsString(bio);
 
-//     // Check they are valid
-//     if (!isValidPassword(passwordl) || !isValidPassword(passwordr)) {
-//         throw 'New password is invalid!';
-//     }
+    currentUsername = sharedValidation.cleanUpString(currentUsername);
+    username = sharedValidation.cleanUpString(username);
+    name = sharedValidation.cleanUpString(name);
+    email = sharedValidation.cleanUpString(email);
+    imageURL = sharedValidation.cleanUpString(imageURL);
+    bio = sharedValidation.cleanUpString(bio);
 
-//     // Check they match
-//     if (passwordl !== passwordr) {
-//         throw 'New passwords don\'t match';
-//     }
+    sharedValidation.checkStringLength(currentUsername, 'current username');
+    sharedValidation.checkStringLength(username, 'username');
+    sharedValidation.checkStringLength(name, 'name');
+    sharedValidation.checkStringLength(email, 'email');
+    sharedValidation.checkStringLength(imageURL, 'image url');
+    sharedValidation.checkStringLength(bio, 'bio');
 
-//     return true;
-// }
+    currentUsername = currentUsername.toLowerCase();
+    username = username.toLowerCase();
+    email = email.toLowerCase();
+
+    isValidUsername(currentUsername);
+    isValidUsername(username);
+    isValidEmail(email);
+
+    return {
+        currentUsername: currentUsername,
+        username: username,
+        name: name,
+        email: email,
+        imageURL: imageURL,
+        bio: bio
+    }
+}
 
 module.exports = {
     isValidUserParameters,
     validateUsername,
     getEmailDomain,
     validateDomainsMatch,
-    isValidCheckUserParameters
-    // isValidUserUpdateParameters,
-    // shouldUpdatePassword
+    isValidCheckUserParameters,
+    validateUpdatePassword,
+    isValidUserUpdateParameters
 };

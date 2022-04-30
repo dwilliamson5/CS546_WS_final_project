@@ -48,10 +48,10 @@ function checkStringLength(string, variableName, minLength) {
 }
 
 function isValidUniversityId(id) {
-  checkParamPresent(id);
+  checkParamPresent(id, 'university id');
   checkIsString(id);
   id = cleanUpString(id);
-  checkStringLength(id);
+  checkStringLength(id, 'university id');
   validateObjectId(id);
 
   return id;

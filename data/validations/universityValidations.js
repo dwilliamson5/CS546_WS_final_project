@@ -1,8 +1,8 @@
 const sharedValidation = require('./sharedValidations');
 
 function isValidUniversityParameters(name, emailDomain) {
-  sharedValidation.checkParamPresent(name);
-  sharedValidation.checkParamPresent(emailDomain);
+  sharedValidation.checkParamPresent(name, 'name');
+  sharedValidation.checkParamPresent(emailDomain, 'emailDomain');
 
   sharedValidation.checkIsString(name);
   sharedValidation.checkIsString(emailDomain);
@@ -10,8 +10,8 @@ function isValidUniversityParameters(name, emailDomain) {
   name = sharedValidation.cleanUpString(name);
   emailDomain = sharedValidation.cleanUpString(emailDomain);
 
-  sharedValidation.checkStringLength(name);
-  sharedValidation.checkStringLength(emailDomain);
+  sharedValidation.checkStringLength(name, 'name');
+  sharedValidation.checkStringLength(emailDomain, 'emailDomain');
 
   emailDomain = emailDomain.toLowerCase();
 
