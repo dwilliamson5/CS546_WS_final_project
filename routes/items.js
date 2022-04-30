@@ -8,6 +8,7 @@ router.get('/:id', async (req, res) => {
 
     if (!params) {
         res.status(404).render('errors/404', {
+            title: '404',
             message: 'Could not find that item'
         });
         return;

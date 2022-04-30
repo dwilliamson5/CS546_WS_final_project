@@ -21,7 +21,7 @@ app.use(session({
 app.use('*', async (req, res, next) => {
   if (req.session.user) {
     res.locals.user = true;
-    
+
     try {
       let user = await users.getUser(req.session.user.username);
 
@@ -55,7 +55,10 @@ app.use('/admin', async (req, res, next) => {
 
         next();
       } else {
-        return res.status(403).render('errors/403', { message: 'Admin permission required!' });
+        return res.status(403).render('errors/403', {
+          title: '403',
+          message: 'Admin permission required!'
+        });
       }
     } catch (e) {
       next();

@@ -32,9 +32,12 @@ const constructorMethod = (app) => {
   app.use('/auth', authRoutes);
   app.use('/items', itemsRoutes);
   app.use('/profile', profileRoutes);
-  
+
   app.use('*', (req, res) => {
-    res.status(404).render('errors/404', { message: 'Not found' });
+    res.status(404).render('errors/404', {
+      title: '404',
+      message: 'Not found'
+    });
   });
 };
 
