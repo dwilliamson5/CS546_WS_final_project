@@ -5,6 +5,7 @@ const profileRoutes = require('./profile');
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
+const items = data.items;
 
 const constructorMethod = (app) => {
 
@@ -12,8 +13,11 @@ const constructorMethod = (app) => {
 
     let title = 'Welcome to Unisell';
     let universityName;
+    let itemsList;
 
     if (req.session.user) {
+      itemsList = await items.getAll();
+
       title += ', ' + req.session.user.username;
 
       let user = await users.getUser(req.session.user.username);
@@ -24,7 +28,8 @@ const constructorMethod = (app) => {
     res.render('index', {
       title: title,
       user: req.session.user,
-      universityName: universityName
+      universityName: universityName,
+      itemsList: itemsList
     });
   });
 
