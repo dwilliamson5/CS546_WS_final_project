@@ -4,8 +4,8 @@ function isValidUniversityParameters(name, emailDomain) {
   sharedValidation.checkParamPresent(name, 'name');
   sharedValidation.checkParamPresent(emailDomain, 'emailDomain');
 
-  sharedValidation.checkIsString(name);
-  sharedValidation.checkIsString(emailDomain);
+  sharedValidation.checkIsString(name, 'name');
+  sharedValidation.checkIsString(emailDomain, 'emailDomain');
 
   name = sharedValidation.cleanUpString(name);
   emailDomain = sharedValidation.cleanUpString(emailDomain);

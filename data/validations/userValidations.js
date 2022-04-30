@@ -101,14 +101,14 @@ function isValidUserParameters(universityId, username, password, passwordConfirm
     sharedValidation.checkParamPresent(imageURL, 'image url');
     sharedValidation.checkParamPresent(bio, 'bio');
 
-    sharedValidation.checkIsString(universityId);
-    sharedValidation.checkIsString(username);
-    sharedValidation.checkIsString(password);
-    sharedValidation.checkIsString(passwordConfirmation);
-    sharedValidation.checkIsString(name);
-    sharedValidation.checkIsString(email);
-    sharedValidation.checkIsString(imageURL);
-    sharedValidation.checkIsString(bio);
+    sharedValidation.checkIsString(universityId, 'universityId');
+    sharedValidation.checkIsString(username, 'username');
+    sharedValidation.checkIsString(password, 'password');
+    sharedValidation.checkIsString(passwordConfirmation, 'password confirmation');
+    sharedValidation.checkIsString(name, 'name');
+    sharedValidation.checkIsString(email, 'email');
+    sharedValidation.checkIsString(imageURL, 'image url');
+    sharedValidation.checkIsString(bio, 'bio');
 
     universityId = sharedValidation.cleanUpString(universityId);
     username = sharedValidation.cleanUpString(username);
@@ -153,7 +153,7 @@ function isValidUserParameters(universityId, username, password, passwordConfirm
 
 function validateUsername(username) {
     sharedValidation.checkParamPresent(username, 'username');
-    sharedValidation.checkIsString(username);
+    sharedValidation.checkIsString(username, 'username');
     username = sharedValidation.cleanUpString(username);
     sharedValidation.checkStringLength(username, 'username');
     username = username.toLowerCase();
@@ -167,9 +167,9 @@ function isValidCheckUserParameters(universityId, username, password) {
     sharedValidation.checkParamPresent(username, 'username');
     sharedValidation.checkParamPresent(password, 'password');
 
-    sharedValidation.checkIsString(universityId);
-    sharedValidation.checkIsString(username);
-    sharedValidation.checkIsString(password);
+    sharedValidation.checkIsString(universityId, 'university id');
+    sharedValidation.checkIsString(username, 'username');
+    sharedValidation.checkIsString(password, 'password');
 
     universityId = sharedValidation.cleanUpString(universityId);
     username = sharedValidation.cleanUpString(username);
@@ -198,10 +198,10 @@ function validateUpdatePassword(username, currentPassword, newPassword, newPassw
     sharedValidation.checkParamPresent(newPassword, 'new password');
     sharedValidation.checkParamPresent(newPasswordConfirmation, 'new password confirmation');
 
-    sharedValidation.checkIsString(username);
-    sharedValidation.checkIsString(currentPassword);
-    sharedValidation.checkIsString(newPassword);
-    sharedValidation.checkIsString(newPasswordConfirmation);
+    sharedValidation.checkIsString(username, 'username');
+    sharedValidation.checkIsString(currentPassword, 'current password');
+    sharedValidation.checkIsString(newPassword, 'new password');
+    sharedValidation.checkIsString(newPasswordConfirmation, 'new password confirmation');
 
     username = sharedValidation.cleanUpString(username);
     currentPassword = sharedValidation.cleanUpString(currentPassword);
@@ -237,12 +237,12 @@ function isValidUserUpdateParameters(currentUsername, username, name, email, ima
     sharedValidation.checkParamPresent(imageURL, 'image url');
     sharedValidation.checkParamPresent(bio, 'bio');
 
-    sharedValidation.checkIsString(currentUsername);
-    sharedValidation.checkIsString(username);
-    sharedValidation.checkIsString(name);
-    sharedValidation.checkIsString(email);
-    sharedValidation.checkIsString(imageURL);
-    sharedValidation.checkIsString(bio);
+    sharedValidation.checkIsString(currentUsername, 'current username');
+    sharedValidation.checkIsString(username, 'username');
+    sharedValidation.checkIsString(name, 'name');
+    sharedValidation.checkIsString(email, 'email');
+    sharedValidation.checkIsString(imageURL, 'image url');
+    sharedValidation.checkIsString(bio, 'bio');
 
     currentUsername = sharedValidation.cleanUpString(currentUsername);
     username = sharedValidation.cleanUpString(username);
