@@ -115,7 +115,18 @@ router.post('/universities/', async (req, res) => {
     }
 
     try {
-        await universities.createUniversity(name, emailDomain);
+        let response = await universities.createUniversity(name, emailDomain);
+
+        if (response === null || response.universityInserted !== true) {
+            res.status(500).render('admin/new', {
+                title: 'New University',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: 'Internal Server Error',
+                name: name,
+                emailDomain: emailDomain
+            });
+            return;
+        }
 
         res.redirect('/admin');
     } catch (e) {
@@ -214,7 +225,19 @@ router.put('/universities/:id', async (req, res) => {
     }
 
     try {
-        await universities.updateUniversity(universityId, name, emailDomain);
+        let response = await universities.updateUniversity(universityId, name, emailDomain);
+
+        if (response === null || response.universityUpdated !== true) {
+            res.status(500).render('admin/edit', {
+                title: 'Edit',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: 'Internal Server Error',
+                name: name,
+                emailDomain: emailDomain,
+                id: universityId
+            });
+            return;
+        }
 
         res.redirect('/admin');
     } catch (e) {
