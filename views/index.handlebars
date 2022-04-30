@@ -1,23 +1,23 @@
 {{#if user}}
+    <p class="error-status">{{error_status_code}}</p>
+    <p class="error-message">{{error_messages}}</p>
+    
     <p>Browsing {{universityName}} items:</p>
 
-    <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="/items/123" class="btn btn-primary">See More</a>
-        </div>
-    </div>
-
-    <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="/items/456" class="btn btn-primary">See More</a>
-        </div>
-    </div>    
+    {{#if itemsList}}
+        {{#each itemsList}}
+            <div class="card" style="width: 18rem;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="/items/{{this._id}}" class="btn btn-primary">See More</a>
+                </div>
+            </div>
+        {{/each}}
+    {{else}}
+        <p>There are no items yet. Click "List New Item" to add one.</p>
+    {{/if}}  
 {{else}}
     <p>This is the about page.</p>
 {{/if}}
