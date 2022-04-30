@@ -3,7 +3,7 @@ const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
-const validation = require('../data/validations/userValidations');
+const userValidation = require('../data/validations/userValidations');
 
 router.get('/login', async (req, res) => {
     if (req.session.user) {
@@ -12,25 +12,53 @@ router.get('/login', async (req, res) => {
 
     const universitiesList = await universities.getAll();
 
-    res.render('auth/login', { title: 'Login', universities: universitiesList });
+    res.render('auth/login', { title: 'Login', universitiesList: universitiesList });
 });
 
 router.post('/login', async (req, res) => {
-    const universityId = req.body.universityId;
-    const username = req.body.username;
-    const password = req.body.password;
+    let body = req.body;
+
     const universitiesList = await universities.getAll();
 
+    if (!body) {
+        res.status(400).render('auth/login', {
+            title: 'Login',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request',
+            universitiesList: universitiesList
+        });
+        return;
+    }
+
+    let { universityId, username, password } = body;
+
+    if (!universityId || !username || !password) {
+        res.status(400).render('auth/login', {
+            title: 'Login',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must select a university + provide both the username and password!',
+            universitiesList: universitiesList,
+            universityId: universityId,
+            username: username
+        });
+        return;
+    }
+
     try {
-        if (!validation.isValidUsername(username) ||
-            !validation.isValidPassword(password)) {
-            throw 'Invalid username or password!'
-        }
+        userValidation.isValidCheckUserParameters(universityId, username, password);
+    } catch (e) {
+        res.status(400).render('auth/login', {
+            title: 'Login',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'Invalid username or password!',
+            universitiesList: universitiesList,
+            universityId: universityId,
+            username: username
+        });
+        return;
+    }
 
-        if (!validation.isValidUniversityId(universityId)) {
-            throw 'Invalid university!'
-        }
-
+    try {
         const response = await users.checkUser(universityId, username, password);
 
         if (response === null || response.authenticated !== true) {
@@ -38,7 +66,7 @@ router.post('/login', async (req, res) => {
                 title: 'Login',
                 error_status_code: 'HTTP 500 status code',
                 error_messages: 'Internal Server Error',
-                universities: universitiesList,
+                universitiesList: universitiesList,
                 universityId: universityId,
                 username: username
             });
@@ -53,8 +81,8 @@ router.post('/login', async (req, res) => {
         return res.status(400).render('auth/login', {
             title: 'Login',
             error_status_code: 'HTTP 400 status code',
-            error_messages: e,
-            universities: universitiesList,
+            error_messages: 'Invalid username or password!',
+            universitiesList: universitiesList,
             universityId: universityId,
             username: username
         });
@@ -68,42 +96,61 @@ router.get('/signup', async (req, res) => {
 
     const universitiesList = await universities.getAll();
 
-    res.render('auth/signup', { title: 'Sign Up', universities: universitiesList });
+    res.render('auth/signup', { title: 'Sign Up', universitiesList: universitiesList });
 })
 
 router.post('/signup', async (req, res) => {
-    const universityId = req.body.universityId;
-    const username = req.body.username;
-    const password = req.body.password;
-    const name = req.body.name;
-    const email = req.body.email;
-    const imageURL = 'todo';//req.body.profileImageUrl;
-    const bio = req.body.bio;
+    let body = req.body;
+
     const universitiesList = await universities.getAll();
 
+    if (!body) {
+        res.status(400).render('auth/signup', {
+            title: 'Sign Up',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request',
+            universitiesList: universitiesList
+        });
+        return;
+    }
+
+    let {
+        universityId,
+        username,
+        password,
+        password_confirmation,
+        name,
+        email,
+        imageURL,
+        bio
+    } = body;
+    
+    // this is temporary until it comes as part of the request body
+    imageURL = 'todo';
+    
+    if (!universityId || !username || !password || !password_confirmation || !name || !email || !imageURL || !bio) {
+        res.status(400).render('auth/signup', {
+            title: 'Sign Up',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide all the form elements',
+            universitiesList: universitiesList,
+            universityId: universityId,
+            username: username,
+            name: name,
+            email: email,
+            bio: bio
+        });
+        return;
+    }
+
     try {
-        // Check parameters
-        await validation.isValidUserParameters(universityId, username, password, name, email, imageURL, bio);
-
-        let university = await universities.getUniversityById(universityId);
-
-        //get Email domain
-        let emailDomain = email.trim().split('@')[1];
-
-        if (university.emailDomain != emailDomain) {
-            throw 'Email domain does not match selected university domain!';
-        }
-
-        // Check if user already exists
-        if (await users.getUser(username) !== null) {
-            throw 'That username already exists!';
-        }
+        userValidation.isValidUserParameters(universityId, username, password, password_confirmation, name, email, imageURL, bio);
     } catch (e) {
         return res.status(400).render('auth/signup', {
             title: 'Sign Up',
             error_status_code: 'HTTP 400 status code',
             error_messages: e,
-            universities: universitiesList,
+            universitiesList: universitiesList,
             universityId: universityId,
             username: username,
             name: name,
@@ -113,14 +160,14 @@ router.post('/signup', async (req, res) => {
     }
 
     try {
-        const response = await users.createUser(universityId, username, password, name, email, imageURL, bio);
+        const response = await users.createUser(universityId, username, password, password_confirmation, name, email, imageURL, bio);
 
         if (response === null || response.userInserted === false) {
             return res.status(500).render('auth/signup', {
                 title: 'Sign Up',
                 error_status_code: 'HTTP 500 status code',
                 error_messages: 'Internal Server Error: ' + e,
-                universities: universitiesList,
+                universitiesList: universitiesList,
                 universityId: universityId,
                 username: username,
                 name: name,
@@ -132,13 +179,12 @@ router.post('/signup', async (req, res) => {
         if (response.userInserted === true) {
             res.redirect('/');
         }
-    }
-    catch (e) {
-        return res.status(500).render('auth/signup', {
+    } catch (e) {
+        return res.status(400).render('auth/signup', {
             title: 'Sign Up',
-            error_status_code: 'HTTP 500 status code',
-            error_messages: 'Internal Server Error: ' + e,
-            universities: universitiesList,
+            error_status_code: 'HTTP 400 status code',
+            error_messages: e,
+            universitiesList: universitiesList,
             universityId: universityId,
             username: username,
             name: name,
