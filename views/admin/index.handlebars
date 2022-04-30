@@ -1,14 +1,14 @@
 <p class="error-status">{{error_status_code}}</p>
 <p class="error-message">{{error_messages}}</p>
 
-{{#if universities}}
+{{#if universitiesList}}
   <table class="table">
     <tr>
       <th>Name</th>
       <th>Domain</th>
       <th>Edit</th>
     </tr>
-    {{#each universities}}
+    {{#each universitiesList}}
       <tr>
           <td>{{ this.name }}</td>
           <td>{{ this.emailDomain }}</td>
