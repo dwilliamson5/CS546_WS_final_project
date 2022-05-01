@@ -95,7 +95,8 @@ router.get('/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -109,7 +110,8 @@ router.get('/:id', async (req, res) => {
     let itemId = params.id;
 
     if (!itemId) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -123,7 +125,8 @@ router.get('/:id', async (req, res) => {
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -139,7 +142,8 @@ router.get('/:id', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -155,7 +159,8 @@ router.get('/:id', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -167,7 +172,8 @@ router.get('/:id', async (req, res) => {
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -192,7 +198,8 @@ router.get('/:id/edit', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -206,7 +213,8 @@ router.get('/:id/edit', async (req, res) => {
     let itemId = params.id;
 
     if (!itemId) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -220,7 +228,8 @@ router.get('/:id/edit', async (req, res) => {
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -236,7 +245,8 @@ router.get('/:id/edit', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -252,7 +262,8 @@ router.get('/:id/edit', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -264,7 +275,8 @@ router.get('/:id/edit', async (req, res) => {
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -276,7 +288,8 @@ router.get('/:id/edit', async (req, res) => {
     }
 
     if (req.session.user.username != user.username) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -302,7 +315,8 @@ router.put('/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -316,7 +330,8 @@ router.put('/:id', async (req, res) => {
     let itemId = params.id;
 
     if (!itemId) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -330,7 +345,8 @@ router.put('/:id', async (req, res) => {
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -346,7 +362,8 @@ router.put('/:id', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -362,7 +379,8 @@ router.put('/:id', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -374,7 +392,8 @@ router.put('/:id', async (req, res) => {
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',
@@ -386,7 +405,8 @@ router.put('/:id', async (req, res) => {
     }
 
     if (req.session.user.username != user.username) {
-        const itemsList = await items.getAll();
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
 
         res.status(404).render('index', {
             title: 'Item not found',

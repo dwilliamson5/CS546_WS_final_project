@@ -5,11 +5,12 @@ const itemValidation = require('./validations/itemValidations');
 const sharedValidation = require('./validations/sharedValidations');
 const { ObjectId } = require('mongodb');
 
-async function getAll() {
-    sharedValidation.checkArgumentLength(arguments, 0);
+async function getAllByUniversityId(id) {
+    sharedValidation.checkArgumentLength(arguments, 1);
+    id = sharedValidation.isValidUniversityId(id);
 
     const itemCollection = await items();
-    let itemList = await itemCollection.find({ sold: false }).toArray();
+    let itemList = await itemCollection.find({ sold: false, universityId: id }).toArray();
 
     if (!itemList) {
         throw 'Could not get all items';
@@ -149,7 +150,7 @@ async function updateItem(id, title, description, keywords, price, photos, pickU
 //
 
 module.exports = {
-    getAll,
+    getAllByUniversityId,
     getItemById,
     createItem,
     updateItem

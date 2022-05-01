@@ -16,13 +16,12 @@ const constructorMethod = (app) => {
     let itemsList;
 
     if (req.session.user) {
-      itemsList = await items.getAll();
-
       title += ', ' + req.session.user.username;
 
       let user = await users.getUser(req.session.user.username);
       let university = await universities.getUniversityById(user.universityId);
       universityName = university.name;
+      itemsList = await items.getAllByUniversityId(user.universityId);
     }
 
     res.render('index', {
