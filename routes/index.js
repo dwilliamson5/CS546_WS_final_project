@@ -2,6 +2,7 @@ const adminRoutes = require('./admin');
 const authRoutes = require('./auth');
 const itemsRoutes = require('./items');
 const profileRoutes = require('./profile');
+const searchRoutes = require('./search');
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
@@ -36,6 +37,7 @@ const constructorMethod = (app) => {
   app.use('/auth', authRoutes);
   app.use('/items', itemsRoutes);
   app.use('/profile', profileRoutes);
+  app.use('/search', searchRoutes);
 
   app.use('*', (req, res) => {
     res.status(404).render('errors/404', {

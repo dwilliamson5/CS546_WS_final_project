@@ -81,6 +81,14 @@ app.use('/items', async (req, res, next) => {
   }
 });
 
+app.use('/search', async (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+});
+
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 

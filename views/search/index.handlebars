@@ -1,0 +1,21 @@
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
+
+{{#if itemsList}}
+    <h3>Results for {{searchTerm}}:</h3>
+
+    {{#each itemsList}}
+        <div class="card" style="width: 18rem;">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+                <h2 class="card-title">Card title</h2>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="/items/{{this._id}}" class="btn btn-primary">See More</a>
+            </div>
+        </div>
+    {{/each}}
+{{else}}
+    <p>There are no results for that search</p>
+{{/if}}
+
+<a href="/" class="btn btn-secondary">Back</a>

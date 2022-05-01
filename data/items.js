@@ -23,6 +23,27 @@ async function getAllByUniversityId(id) {
     return itemList;
 }
 
+async function getAllByUniversityIdAndKeyword(id, keyword) {
+    sharedValidation.checkArgumentLength(arguments, 2);
+    id = sharedValidation.isValidUniversityId(id);
+    sharedValidation.checkIsString(keyword);
+    keyword = sharedValidation.cleanUpString(keyword);
+    sharedValidation.checkStringLength(keyword, 'keyword');
+
+    const itemCollection = await items();
+    let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: id }).toArray();
+
+    if (!itemList) {
+        throw 'No items for that keyword';
+    }
+
+    itemList.forEach(item => {
+      item._id = sharedValidation.stringifyId(item._id);
+    });
+
+    return itemList;
+}
+
 async function getItemById(id) {
   sharedValidation.checkArgumentLength(arguments, 1);
   id = sharedValidation.isValidItemId(id);
@@ -151,6 +172,7 @@ async function updateItem(id, title, description, keywords, price, photos, pickU
 
 module.exports = {
     getAllByUniversityId,
+    getAllByUniversityIdAndKeyword,
     getItemById,
     createItem,
     updateItem
