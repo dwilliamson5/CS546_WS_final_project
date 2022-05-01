@@ -73,33 +73,33 @@ function isValidItemUpdateParameters(id, title, description, keywords, price, ph
   sharedValidation.checkParamPresent(description, 'description');
   sharedValidation.checkParamPresent(keywords, 'keywords');
   sharedValidation.checkParamPresent(price, 'price');
-  sharedValidation.checkParamPresent(username, 'username');
   sharedValidation.checkParamPresent(photos, 'photos');
   sharedValidation.checkParamPresent(pickUpMethod, 'pickUpMethod');
+  sharedValidation.checkParamPresent(sold, 'sold');
 
   sharedValidation.checkIsString(title, 'title');
   sharedValidation.checkIsString(description, 'description');
   sharedValidation.checkIsString(keywords, 'keywords');
   sharedValidation.checkIsString(price, 'price');
-  sharedValidation.checkIsString(username, 'username');
   sharedValidation.checkIsString(photos, 'photos');
   sharedValidation.checkIsString(pickUpMethod, 'pickUpMethod');
+  sharedValidation.checkIsString(sold, 'sold');
 
   title = sharedValidation.cleanUpString(title);
   description = sharedValidation.cleanUpString(description);
   keywords = sharedValidation.cleanUpString(keywords);
   price = sharedValidation.cleanUpString(price);
-  username = sharedValidation.cleanUpString(username);
   photos = sharedValidation.cleanUpString(photos);
   pickUpMethod = sharedValidation.cleanUpString(pickUpMethod);
+  sold = sharedValidation.cleanUpString(sold);
 
   sharedValidation.checkStringLength(title, 'title');
   sharedValidation.checkStringLength(description, 'description');
   sharedValidation.checkStringLength(keywords, 'keywords');
   sharedValidation.checkStringLength(price, 'price');
-  sharedValidation.checkStringLength(username, 'username');
   sharedValidation.checkStringLength(photos, 'photos');
   sharedValidation.checkStringLength(pickUpMethod, 'pickUpMethod');
+  sharedValidation.checkStringLength(sold, 'sold');
 
   keywords = keywords.split(',');
 
@@ -137,7 +137,6 @@ function isValidItemUpdateParameters(id, title, description, keywords, price, ph
     description: description,
     keywords: keywords,
     price: price,
-    username: username,
     photos: photos,
     pickUpMethod: pickUpMethod,
     sold: sold
