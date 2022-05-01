@@ -2,7 +2,19 @@
     <p class="error-status">{{error_status_code}}</p>
     <p class="error-message">{{error_messages}}</p>
 
-    <p>Browsing {{universityName}} items:</p>
+    <form action="/search" method="POST" id="search-item-form">
+
+        <div class="mb-3">
+            <label for="search_term" class="form-label">Search Items</label>
+            <input id="item-search" placeholder="headphones" name="search_term" class="form-control"/>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search Items</button>
+    </form>
+
+    <hr>
+
+    <h3>Browsing {{universityName}} items:</h3>
 
     {{#if itemsList}}
         {{#each itemsList}}
