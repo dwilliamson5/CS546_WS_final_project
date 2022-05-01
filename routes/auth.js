@@ -197,6 +197,8 @@ router.post('/signup', async (req, res) => {
 router.get('/logout', async (req, res) => {
     if (req.session.user) {
         req.session.destroy();
+        res.locals.user = false;
+        res.locals.superAdmin = false;
 
         res.render('auth/loggedout', { title: 'Logged out' });
     } else {
