@@ -1,7 +1,7 @@
 <p class="error-status">{{error_status_code}}</p>
 <p class="error-message">{{error_messages}}</p>
 
-<h2>Edit Profile</h2>
+<h2>Edit Info</h2>
 <form action="/profile/edit" method="POST" id="profile-form">
     <div class="mb-3">
         <label id="user-label" for="username" class="form-label">Username</label>
@@ -38,19 +38,19 @@
 <h2>Edit Password</h2>
 <form action="/profile/edit/password" method="POST" id="password-form">
     <div class="mb-3">
-        <label id="password-label" for="current_password" class="form-label">Current Password</label>
-        <input id="password" type="password" name="current_password" class="form-control" />
+        <label id="current_password-label" for="current_password" class="form-label">Current Password</label>
+        <input id="current_password" type="password" name="current_password" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label id="new-password-label" for="new_password" class="form-label">New password</label>
-        <input id="new-password" type="password" name="new_password" class="form-control" />
+        <label id="new_password-label" for="new_password" class="form-label">New password</label>
+        <input id="new_password" type="password" name="new_password" class="form-control" />
         <div class="form-text">Password must be at least 6 characters and cannot contain spaces</div>
     </div>
 
     <div class="mb-3">
-        <label id="password-confirmation-label" for="new_password_confirmation" class="form-label">Re-type new password</label>
-        <input id="password-confirmation" type="password" name="new_password_confirmation" class="form-control" />
+        <label id="new_password-confirmation-label" for="new_password_confirmation" class="form-label">Re-type new password</label>
+        <input id="new_password_confirmation" type="password" name="new_password_confirmation" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-success">Update Password</button>
