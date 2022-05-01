@@ -21,7 +21,7 @@ app.use(session({
 app.use('*', async (req, res, next) => {
   if (req.session.user) {
     res.locals.user = true;
-    
+
     try {
       let user = await users.getUser(req.session.user.username);
 
@@ -44,6 +44,43 @@ app.use('/admin/universities/:id', async (req, res, next) => {
   next();
 });
 
+app.use('/profile/edit', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
+app.use('/profile/edit/password', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
+app.use('/items/:id', async (req, res, next) => {
+  if (req.method == 'POST') {
+    req.method = 'PUT';
+  }
+  next();
+});
+
+app.use('/profile', async (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+});
+
+app.use('/items', async (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+});
+
 app.use('/admin', async (req, res, next) => {
   if (req.session.user) {
 
@@ -55,7 +92,10 @@ app.use('/admin', async (req, res, next) => {
 
         next();
       } else {
-        return res.status(403).render('errors/403', { message: 'Admin permission required!' });
+        return res.status(403).render('errors/403', {
+          title: '403',
+          message: 'Admin permission required!'
+        });
       }
     } catch (e) {
       next();

@@ -1,21 +1,33 @@
-<h1>{{itemName}}</h1>
-<p>{{itemDescription}}</p>
-<p>{{itemPrice}}</p>
-<p>Highest Bid: {{highest-bid}}</p>
-{{!-- For each keyword --}}
-{{#each itemKeywords}}
-<p>{{this}}</p>
-{{/each}}
-<p>Status: {{itemStatus}}</p>
-<p>Listed by: {{user}}</p>
-<p>University: {{university}}</p>
-<p>Pick Up Method: {{itemPickupMethod}}</p>
+<p>Description:</p>
+<p>{{item.description}}</p>
+
+<p>Price:</p>
+<p>{{item.price}}</p>
+
+<p>Keywords:</p>
+<p>{{keywords}}</p>
+
+<p>Pick Up Method:</p>
+<p>{{item.pickUpMethod}}</p>
+
+<p>Listed By:</p>
+<p>{{user.username}}</p>
+
 {{!-- For each image upload --}}
-{{#each itemImage}}
+{{!-- {{#each itemImage}}
 <img src="{{this}}" alt="{{this}}">
-{{/each}}
-<p>Rating: {{rating}}</p>
-{{#each comments}}
+{{/each}} --}}
+
+{{!-- <p>Rating: {{rating}}</p> --}}
+
+{{!-- {{#each comments}}
 <p>{{this}}</p>
 {{/each}}
 
+{{!-- <p>Highest Bid: {{highest-bid}}</p> --}}
+
+{{#if canEdit}}
+    <a href="/items/{{itemId}}/edit" class="btn btn-primary">Edit Item</a>
+{{/if}}
+
+<a href="/" class="btn btn-secondary">Back</a>

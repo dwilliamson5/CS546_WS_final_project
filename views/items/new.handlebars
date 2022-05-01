@@ -1,41 +1,36 @@
-<h1>List a New Item</h1>
-<form method="POST">
-    {{!-- Item Name --}}
+<p class="error-status">{{error_status_code}}</p>
+<p class="error-message">{{error_messages}}</p>
+
+<form action="/items" method="POST" id="new-item-form">
     <div class="mb-3">
-        <label for="itemName" class="form-label">Item Name</label>
-        <input type="text" name="itemName" id="itemName" class="form-control">
+        <label for="title" class="form-label">Title</label>
+        <input id="title" name="item_title" value="{{item_title}}" class="form-control"/>
     </div>
-    {{!-- Item Description --}}
+
     <div class="mb-3">
-        <label for="itemDescription" class="form-label">Item Description</label>
-        <textarea name="itemDescription" id="itemDescription" class="form-control" rows="5"></textarea>
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description" name="description" rows="5" cols="30" class="form-control">{{description}}</textarea>
     </div>
-    {{!-- Item Price --}}
+
     <div class="mb-3">
-        <label for="itemPrice" class="form-label">Item Price</label>
-        <input type="number" name="itemPrice" id="itemPrice" class="form-control">
+        <label for="keywords" class="form-label">Keywords</label>
+        <input id="keywords" name="keywords" value="{{keywords}}" class="form-control" />
+        <div class="form-text">Keywords must be comma seperated</div>
     </div>
-    {{!-- Item Keywords --}}
-    {{!-- How to submit multiple keywords? --}}
+
     <div class="mb-3">
-        <label for="itemKeywords" class="form-label">Item Keywords</label>
-        <input type="text" name="itemKeywords" id="itemKeywords" class="form-control">
+        <label for="price" class="form-label">Price</label>
+        <input id="price" name="price" type="number" value="{{price}}" class="form-control"/>
     </div>
-    {{!-- Pickup Method Dropdown --}}
+
     <div class="mb-3">
-        <label for="itemPickupMethod" class="form-label">Pickup Method</label>
-        <select name="itemPickupMethod" id="itemPickupMethod" class="form-control">
-            <option value="pickup">Pickup</option>
-            <option value="delivery">Delivery</option>
-        </select>
+        <label for="pick_up_method" class="form-label">Pick Up Method</label>
+        <input id="pick_up_method" name="pickUpMethod" value="{{pickUpMethod}}" class="form-control"/>
     </div>
-    {{!-- Input Item Image --}}
-    {{!-- How to submit multiple images? --}}
-    <div class="mb-3">
-        <label for="itemImage" class="form-label">Item Image</label>
-        <input type="file" name="itemImage" id="itemImage" class="form-control">
-    </div>
-    {{!-- Submit Button --}}
-    <button type="submit" class="btn btn-success">Submit</button>
+
+    {{!-- photos! --}}
+
+    <button type="submit" class="btn btn-success">Create New Item</button>
 </form>
 
+<a href="/" class="btn btn-secondary">Back</a>

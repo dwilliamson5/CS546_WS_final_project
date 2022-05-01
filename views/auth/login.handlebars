@@ -7,7 +7,7 @@
         <label for="universityId" class="form-label">Select your university:</label>
 
         <select name="universityId" id="universityId" class="form-select">
-            {{#each universities}}
+            {{#each universitiesList}}
                 <option value="{{this._id}}">{{ this.name }}</option>
             {{/each}}
         </select>

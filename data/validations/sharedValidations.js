@@ -1,3 +1,15 @@
+const { ObjectId } = require('mongodb');
+
+function stringifyId(id) {
+    return id.toString();
+}
+
+function validateObjectId(id) {
+    if (!ObjectId.isValid(id)) {
+        throw 'invalid object ID';
+    }
+}
+
 function checkArgumentLength(args, length) {
     let argLength = args.length;
 
@@ -8,18 +20,72 @@ function checkArgumentLength(args, length) {
     }
 }
 
+function checkParamPresent(variable, variableName) {
+    if (!variable || variable === undefined) {
+        throw `${variableName || 'provided variable'} is not present`;
+    }
+}
+
 function checkIsString(string, variableName) {
     if (typeof string !== 'string') {
         throw `${variableName || 'provided variable'} is not a string`;
     }
 }
 
-function lower(attr) {
-    return attr.toLowerCase();
+function cleanUpString(string) {
+    return string.trim();
+}
+
+function checkStringLength(string, variableName, minLength) {
+    if (string.length === 0) {
+        throw `${variableName || 'provided variable'} is empty or only contains spaces`;
+    }
+
+    minLength = minLength || 1;
+    if (string.length < minLength) {
+        throw `${variableName || 'provided variable'} must be more than ${minLength} characters`;
+    }
+}
+
+function isValidUserId(id) {
+  checkParamPresent(id, 'user id');
+  checkIsString(id);
+  id = cleanUpString(id);
+  checkStringLength(id, 'user id');
+  validateObjectId(id);
+
+  return id;
+}
+
+function isValidUniversityId(id) {
+  checkParamPresent(id, 'university id');
+  checkIsString(id);
+  id = cleanUpString(id);
+  checkStringLength(id, 'university id');
+  validateObjectId(id);
+
+  return id;
+}
+
+function isValidItemId(id) {
+  checkParamPresent(id, 'item id');
+  checkIsString(id);
+  id = cleanUpString(id);
+  checkStringLength(id, 'item id');
+  validateObjectId(id);
+
+  return id;
 }
 
 module.exports = {
+    stringifyId,
+    validateObjectId,
     checkArgumentLength,
+    checkParamPresent,
     checkIsString,
-    lower
+    cleanUpString,
+    checkStringLength,
+    isValidUniversityId,
+    isValidItemId,
+    isValidUserId
 };

@@ -6,7 +6,7 @@
         <label for="universityId" class="form-label">Select your university:</label>
 
         <select name="universityId" id="universityId" class="form-select">
-            {{#each universities}}
+            {{#each universitiesList}}
                 <option value="{{this._id}}">{{ this.name }}</option>
             {{/each}}
         </select>
@@ -16,18 +16,18 @@
     <div class="mb-3">
         <label id="user-label" for="username" class="form-label">Username</label>
         <input id="username" name="username" class="form-control" value="{{username}}" />
-        <div class="form-text">USERNAME REQUIREMENTS HERE</div>
+        <div class="form-text">Username must be at least 4 characters and can only be alphanumeric characters</div>
     </div>
 
     <div class="mb-3">
         <label id="password-label" for="password" class="form-label">Password</label>
         <input id="password" type="password" name="password" class="form-control" />
-        <div class="form-text">PASSWORD REQUIREMENTS HERE</div>
+        <div class="form-text">Password must be at least 6 characters and cannot contain spaces</div>
     </div>
 
     <div class="mb-3">
-        <label id="password-confirmation-label" for="password-confirmation" class="form-label">Confirm Password</label>
-        <input id="password-confirmation" type="password" name="password-confirmation" class="form-control" />
+        <label id="password-confirmation-label" for="password_confirmation" class="form-label">Confirm Password</label>
+        <input id="password-confirmation" type="password" name="password_confirmation" class="form-control" />
     </div>
 
     <div class="mb-3">
