@@ -59,7 +59,7 @@ async function createUser(universityId, username, password, passwordConfirmation
     email: sanitizedData.email,
     profileImageUrl: sanitizedData.imageURL,
     bio: sanitizedData.bio,
-    password: hash,
+    passwordHash: hash,
     super_admin: false,
     ratings: [],
   };
@@ -135,7 +135,7 @@ async function checkUser(universityId, username, password) {
   )
 
   let user = await getUser(username);
-  
+
   let university = await universities.getUniversityById(sanitizedData.universityId);
 
   let emailDomain = userValidation.getEmailDomain(user.email);
@@ -145,7 +145,7 @@ async function checkUser(universityId, username, password) {
   let passwordsMatch = false;
 
   try {
-    passwordsMatch = await bcrypt.compare(password, user.password);
+    passwordsMatch = await bcrypt.compare(password, user.passwordHash);
   } catch (e) {
     throw 'Exception occurred when comparing passwords!';
   }
@@ -220,9 +220,9 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
       // new username doesn't exist. we're okay
     }
   }
-  
+
   let university = await universities.getUniversityById(user.universityId.toString());
-  
+
   let emailDomain = userValidation.getEmailDomain(sanitizedData.email);
 
   userValidation.validateDomainsMatch(university.emailDomain, emailDomain);
@@ -263,13 +263,13 @@ async function updatePassword(username, currentPassword, newPassword, newPasswor
   sharedValidation.checkArgumentLength(arguments, 4);
 
   sanitizedData = userValidation.validateUpdatePassword(username, currentPassword, newPassword, newPasswordConfirmation);
-  
+
   let user = await getUser(sanitizedData.username);
 
   let passwordsMatch = false;
 
   try {
-    passwordsMatch = await bcrypt.compare(sanitizedData.currentPassword, user.password);
+    passwordsMatch = await bcrypt.compare(sanitizedData.currentPassword, user.passwordHash);
   } catch (e) {
     throw 'Exception occurred when comparing passwords!';
   }
@@ -281,7 +281,7 @@ async function updatePassword(username, currentPassword, newPassword, newPasswor
   const hash = await bcrypt.hash(sanitizedData.newPassword, SALT_ROUNDS);
 
   let updatedUser = {
-    password: hash
+    passwordHash: hash
   };
 
   const userCollection = await users();
