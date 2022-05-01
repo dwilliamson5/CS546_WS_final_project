@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     }
 
     let { item_title, description, keywords, price, photos, pickUpMethod } = body;
-    
+
     // temp until we get photos working
     photos = 'imag1, image2, image3';
 
@@ -166,11 +166,25 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    if (item.universityId.toString() != user.universityId.toString()) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Cannot view that item because it belongs to another school!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
     res.render('items/show', {
-        title: 'Item for ' + itemId,
+        title: item.title,
         item: item,
         canEdit: req.session.user.username == user.username,
-        itemId: itemId
+        itemId: itemId,
+        user: user,
+        keywords: item.keywords.join(', ')
     });
 });
 
@@ -249,6 +263,18 @@ router.get('/:id/edit', async (req, res) => {
         return;
     }
 
+    if (item.universityId.toString() != user.universityId.toString()) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Cannot view that item because it belongs to another school!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
     if (req.session.user.username != user.username) {
         const itemsList = await items.getAll();
 
@@ -272,13 +298,197 @@ router.get('/:id/edit', async (req, res) => {
     });
 });
 
-//update
+router.put('/:id', async (req, res) => {
+    let params = req.params;
 
+    if (!params) {
+        const itemsList = await items.getAll();
 
-//create comments
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No params provided!',
+            itemsList: itemsList
+        });
+        return;
+    }
 
-// need to check that the user is the owner or admin 
+    let itemId = params.id;
 
-//mark as sold
+    if (!itemId) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No ID param provided!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(itemId);
+    } catch (e) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Bad item ID!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that item!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find item owner!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Cannot view that item because it belongs to another school!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
+        const itemsList = await items.getAll();
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Cannot edit that item because you are not the owner!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        res.status(400).render('items/edit', {
+            title: 'New Item',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide a body to your request',
+            id: itemId
+        });
+        return;
+    }
+
+    let { item_title, description, keywords, price, photos, pickUpMethod, sold } = body;
+
+    // temp until we have photos
+    photos = 'item1, item2, item3';
+
+    if (!item_title || !description || !keywords || !price || !photos || !pickUpMethod || !sold) {
+        res.status(400).render('items/edit', {
+            title: 'Edit',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: 'You must provide all attributes',
+            id: itemId,
+            item_title: item_title,
+            description: description,
+            keywords: keywords,
+            price: price,
+            photos: photos,
+            pickUpMethod: pickUpMethod,
+            sold: sold
+        });
+        return;
+    }
+
+    try {
+        itemValidation.isValidItemUpdateParameters(itemId, item_title, description, keywords, price, photos, pickUpMethod, sold);
+    } catch (e) {
+        res.status(400).render('items/edit', {
+            title: 'Edit',
+            error_status_code: 'HTTP 400 status code',
+            error_messages: e,
+            id: itemId,
+            item_title: item_title,
+            description: description,
+            keywords: keywords,
+            price: price,
+            photos: photos,
+            pickUpMethod: pickUpMethod,
+            sold: sold
+        });
+        return;
+    }
+
+    try {
+        let response = await items.updateItem(itemId, item_title, description, keywords, price, photos, pickUpMethod, sold);
+
+        if (response === null || response.itemUpdated !== true) {
+            res.status(500).render('items/edit', {
+                title: 'Edit',
+                error_status_code: 'HTTP 500 status code',
+                error_messages: 'Internal Server Error',
+                id: itemId,
+                item_title: item_title,
+                description: description,
+                keywords: keywords,
+                price: price,
+                photos: photos,
+                pickUpMethod: pickUpMethod,
+                sold: sold
+            });
+            return;
+        }
+
+        res.redirect('/items/' + itemId);
+    } catch (e) {
+        res.status(500).render('items/edit', {
+            title: 'Edit',
+            error_status_code: 'HTTP 500 status code',
+            error_messages: e,
+            id: itemId,
+            item_title: item_title,
+            description: description,
+            keywords: keywords,
+            price: price,
+            photos: photos,
+            pickUpMethod: pickUpMethod,
+            sold: sold
+        });
+    }
+});
+
+// create comments
+// create bids
 
 module.exports = router;
