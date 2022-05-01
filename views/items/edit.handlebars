@@ -28,11 +28,13 @@
         <input id="pick_up_method" name="pickUpMethod" value="{{pickUpMethod}}" class="form-control"/>
     </div>
 
-    <div class="form-check">
-        <input for="sold" class="form-check-input" type="checkbox" value="{{sold}}" id="sold">
-        <label class="form-check-label" for="sold">
-            Sold
-        </label>
+    <div class="mb-3">
+        <label for="sold" class="form-label">Sold:</label>
+
+        <select name="sold" id="sold" class="form-select">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+        </select>
     </div>
 
     {{!-- photos! --}}
