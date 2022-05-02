@@ -12,3 +12,15 @@
 .error-message {
   color: red;
 }
+
+button[type=submit] {
+  margin-bottom: 20px;
+}
+
+body {
+  background-color: #f9f9f9;
+}
+
+footer {
+  text-align: center;
+}
