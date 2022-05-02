@@ -32,15 +32,15 @@
     {{/if}}
 {{else}}
     <hr>
-    <p><strong>What is Unisell?</strong></p>
+    <h3>What is Unisell?</h3>
     <p>Unisell is a used-item marketplace exclusive to university students. Verified university students can buy or sell used 
     items.</p>
     <hr>
-    <p><strong>Our goal</strong></p>
+    <h3>Our goal</h3>
     <p>Unisell is designed to improve college communities and promote reuse of items by providing a platform where students 
     can safely interact.</p>
     <hr>
-    <p><strong>How does Unisell work?</strong></p>
+    <h3>How does Unisell work?</h3>
     <p>To join us, all you need is your student email address.
         Once you create an account, you can post or buy items. 
     </p>
@@ -56,7 +56,14 @@
             <li>Accept a bid that you like.</li>
             <li>Communicate with the buyer to decide when and where to meet.</li>
         </ol>        
-        <p><strong>*Note that all transactions happen on campus.</strong></p>
+        <p>*Note that all transactions happen on campus.</p>
+    <hr>
+    <h3>Participating Universities:</h3>
+    {{#each universityList}}
+      <ul>
+          <li>{{ this }}</li>
+      </ul>
+    {{/each}}
 
 </p>
 {{/if}}
