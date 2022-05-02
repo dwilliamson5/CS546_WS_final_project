@@ -102,6 +102,9 @@ router.get('/signup', async (req, res) => {
 router.post('/signup', async (req, res) => {
     let body = req.body;
 
+    console.log(body);
+    console.log(req.files);
+
     const universitiesList = await universities.getAll();
 
     if (!body) {
