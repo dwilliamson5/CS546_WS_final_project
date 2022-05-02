@@ -11,14 +11,34 @@
 <p>{{item.pickUpMethod}}</p>
 
 <p>Listed By:</p>
+{{!-- Clicking username goes to user profile? --}}
+<p>Username:</p>
 <p>{{user.username}}</p>
+<p>Rating:</p>
+<p>{{user.rating}}</p>
+
+{{!-- Make a bid --}}
+<form action="/items/edit" method="POST" id="bid-form">
+    <div class="mb-3">
+        <label id="bid-label" for="bid" class="form-label">Make a Bid</label>
+        <input id="bid" name="bid" class="form-control" value="{{bid}}"/>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+{{!-- Make a comment --}}
+<form action="/items/show" method="POST" id="comment-form">
+    <div class="mb-3">
+        <label id="comment-label" for="comment" class="form-label">Make a comment</label>
+        <textarea id="comment" name="comment" rows="5" cols="30" class="form-control">{{comment}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Post</button>
+</form>
 
 {{!-- For each image upload --}}
 {{!-- {{#each itemImage}}
 <img src="{{this}}" alt="{{this}}">
 {{/each}} --}}
-
-{{!-- <p>Rating: {{rating}}</p> --}}
 
 {{!-- {{#each comments}}
 <p>{{this}}</p>
