@@ -10,7 +10,7 @@
 }
 
 .error-message {
-  color: red;
+  color: darkred;
 }
 
 button[type=submit] {
