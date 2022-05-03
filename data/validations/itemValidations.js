@@ -143,7 +143,34 @@ function isValidItemUpdateParameters(id, title, description, keywords, price, ph
   };
 }
 
+function isValidComment(id, username, comment) {
+  id = sharedValidation.isValidItemId(id);
+
+  sharedValidation.checkParamPresent(id, 'id');
+  sharedValidation.checkParamPresent(username, 'username');
+  sharedValidation.checkParamPresent(comment, 'comment');
+
+  sharedValidation.checkIsString(id, 'id');
+  sharedValidation.checkIsString(username, 'username');
+  sharedValidation.checkIsString(comment, 'comment');
+
+  id = sharedValidation.cleanUpString(id);
+  username = sharedValidation.cleanUpString(username);
+  comment = sharedValidation.cleanUpString(comment);
+
+  sharedValidation.checkStringLength(id, 'id');
+  sharedValidation.checkStringLength(username, 'username');
+  sharedValidation.checkStringLength(comment, 'comment');
+
+  return {
+    id: id,
+    username: username,
+    comment: comment
+  }
+}
+
 module.exports = {
   isValidItemParameters,
-  isValidItemUpdateParameters
+  isValidItemUpdateParameters,
+  isValidComment
 };
