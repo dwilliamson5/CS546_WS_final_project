@@ -170,12 +170,12 @@ function isValidComment(id, username, comment) {
 }
 
 function isValidBid(itemId, bid, userId) {
-  itemId = sharedValidation.isValidItemId(itemId);
-  userId = sharedValidation.isValidItemId(userId);
-
   sharedValidation.checkParamPresent(itemId, 'itemId');
   sharedValidation.checkParamPresent(userId, 'userId');
   sharedValidation.checkParamPresent(bid, 'bid');
+  
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
 
   sharedValidation.checkIsString(itemId, 'itemId');
   sharedValidation.checkIsString(userId, 'userId');
@@ -187,8 +187,7 @@ function isValidBid(itemId, bid, userId) {
 
   sharedValidation.checkStringLength(itemId, 'itemId');
   sharedValidation.checkStringLength(userId, 'userId');
-  sharedValidation.checkStringLength(bid, 'bid');
-
+  //add validation for bid amount
   return {
     itemId: itemId,
     bid: bid,
