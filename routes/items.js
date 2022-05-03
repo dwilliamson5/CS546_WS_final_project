@@ -184,13 +184,16 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    let comments = await items.getCommentsForItemId(itemId);
+
     res.render('items/show', {
         title: item.title,
         item: item,
         canEdit: req.session.user.username == user.username,
         itemId: itemId,
         user: user,
-        keywords: item.keywords.join(', ')
+        keywords: item.keywords.join(', '),
+        comments: comments
     });
 });
 
@@ -508,7 +511,135 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// create comments
+router.post('/:id/comment', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No params provided!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let itemId = params.id;
+
+    if (!itemId) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'No ID param provided!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'You must supply a body to your request!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let { comment } = body;
+
+    if (!comment) {
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'You must supply a comment!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    try {
+        itemValidation.isValidComment(itemId, req.session.user.username, comment);
+    } catch (e) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Your param/body is not vaild!' + e,
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find that item!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Could not find item owner!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        let user = await users.getUser(req.session.user.username);
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Cannot view that item because it belongs to another school!',
+            itemsList: itemsList
+        });
+        return;
+    }
+
+    try {
+        const commentResult = await items.createComment(itemId, req.session.user.username, comment);
+
+        response.render('partials/comment', { layout: null, ...commentResult });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
 // create bids
 
 module.exports = router;
