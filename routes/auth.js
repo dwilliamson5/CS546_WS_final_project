@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
+const images = data.images;
 const universities = data.universities;
 const userValidation = require('../data/validations/userValidations');
 
@@ -102,9 +103,6 @@ router.get('/signup', async (req, res) => {
 router.post('/signup', async (req, res) => {
     let body = req.body;
 
-    console.log(body);
-    console.log(req.files);
-
     const universitiesList = await universities.getAll();
 
     if (!body) {
@@ -124,14 +122,13 @@ router.post('/signup', async (req, res) => {
         password_confirmation,
         name,
         email,
-        imageURL,
+        image,
         bio
     } = body;
-    
-    // this is temporary until it comes as part of the request body
-    imageURL = 'todo';
-    
-    if (!universityId || !username || !password || !password_confirmation || !name || !email || !imageURL || !bio) {
+
+    const imageURL = "test.png";
+
+    if (!universityId || !username || !password || !password_confirmation || !name || !email || !bio) {
         res.status(400).render('auth/signup', {
             title: 'Sign Up',
             error_status_code: 'HTTP 400 status code',
@@ -163,7 +160,10 @@ router.post('/signup', async (req, res) => {
     }
 
     try {
-        const response = await users.createUser(universityId, username, password, password_confirmation, name, email, imageURL, bio);
+        
+        const uploadedImageURL = await images.uploadImage(imageURL, image);
+        
+        const response = await users.createUser(universityId, username, password, password_confirmation, name, email, uploadedImageURL, bio);
 
         if (response === null || response.userInserted === false) {
             return res.status(500).render('auth/signup', {
@@ -180,6 +180,7 @@ router.post('/signup', async (req, res) => {
         }
 
         if (response.userInserted === true) {
+
             res.redirect('/');
         }
     } catch (e) {
