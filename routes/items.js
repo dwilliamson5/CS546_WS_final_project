@@ -634,7 +634,7 @@ router.post('/:id/comment', async (req, res) => {
     try {
         const commentResult = await items.createComment(itemId, req.session.user.username, comment);
 
-        response.render('partials/comment', { layout: null, ...commentResult });
+        res.render('partials/comment', { layout: null, ...commentResult });
     } catch (e) {
         res.status(500).json({ error: e });
     }
