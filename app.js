@@ -18,6 +18,36 @@ app.use(session({
   saveUninitialized: true
 }));
 
+const rewriteUnsupportedBrowserMethods = (req, res, next) => {
+  // If the user posts to the server with a property called _method, rewrite the request's method
+  // To be that method; so if they post _method=PUT you can now allow browsers to POST to a route that gets
+  // rewritten in this middleware to a PUT route
+  if (req.body && req.body._method) {
+    req.method = req.body._method;
+    delete req.body._method;
+  }
+
+  // let the next middleware run:
+  next();
+};
+
+const handlebarsInstance = exphbs.create({
+  defaultLayout: 'main',
+  // Specify helpers which are only registered on this instance.
+  helpers: {
+    asJSON: (obj, spacing) => {
+      if (typeof spacing === 'number')
+        return new Handlebars.SafeString(JSON.stringify(obj, null, spacing));
+
+      return new Handlebars.SafeString(JSON.stringify(obj));
+    }
+  },
+  partialsDir: ['views/partials/']
+});
+
+app.engine('handlebars', handlebarsInstance.engine);
+app.set('view engine', 'handlebars');
+
 app.use('*', async (req, res, next) => {
   if (req.session.user) {
     res.locals.user = true;
@@ -37,33 +67,7 @@ app.use('*', async (req, res, next) => {
   next();
 });
 
-app.use('/admin/universities/:id', async (req, res, next) => {
-  if (req.method == 'POST') {
-    req.method = 'PUT';
-  }
-  next();
-});
-
-app.use('/profile/edit', async (req, res, next) => {
-  if (req.method == 'POST') {
-    req.method = 'PUT';
-  }
-  next();
-});
-
-app.use('/profile/edit/password', async (req, res, next) => {
-  if (req.method == 'POST') {
-    req.method = 'PUT';
-  }
-  next();
-});
-
-app.use('/items/:id', async (req, res, next) => {
-  if (req.method == 'POST') {
-    req.method = 'PUT';
-  }
-  next();
-});
+app.use(rewriteUnsupportedBrowserMethods);
 
 app.use('/profile', async (req, res, next) => {
   if (req.session.user) {
@@ -113,9 +117,6 @@ app.use('/admin', async (req, res, next) => {
     return res.redirect('/');
   }
 });
-
-app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
-app.set('view engine', 'handlebars');
 
 configRoutes(app);
 
