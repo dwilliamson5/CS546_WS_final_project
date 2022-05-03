@@ -129,6 +129,71 @@ async function updateItem(id, title, description, keywords, price, photos, pickU
   return { itemUpdated: true };
 }
 
+async function createComment(id, username, comment) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+
+  let sanitizedData = itemValidation.isValidComment(id, username, comment);
+
+  let user = await users.getUser(sanitizedData.username);
+
+  const itemCollection = await items();
+
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id)});
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  const newComment = {
+      _id: ObjectId(),
+      commentersUserId: user._id,
+      text: sanitizedData.comment
+  };
+
+  const itemsCollection = await items();
+  const updatedInfo = await itemsCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { comments: newComment } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+      throw 'Could not create comment successfully';
+  }
+
+  const output = {
+    comment: newComment.text,
+    username: user.username,
+    photo: user.imageURL || 'no_image'
+  }
+
+  return output;
+}
+
+async function getCommentsForItemId(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidItemId(id);
+
+  let item = await getItemById(id);
+
+  let comments = item.comments;
+
+  let output = []
+  
+  for (let i = 0; i < comments.length; i++) {
+    comment = comments[i];
+
+    let user = await users.getUserById(comment.commentersUserId.toString());
+    
+    let result = {
+      imageURL: user.imageURL || '/public/images/blank.jpg',
+      username: user.username,
+      text: comment.text
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
 // async function createBids(itemId, bid, userId, accepted) {
 //     const itemsCollection = await items();
 //     const item = await this.getItem(itemId);
@@ -175,8 +240,9 @@ module.exports = {
     getAllByUniversityIdAndKeyword,
     getItemById,
     createItem,
-    updateItem
+    updateItem,
+    createComment,
+    getCommentsForItemId
     // createBids,
-    // createComment,
     // createRating
 };
