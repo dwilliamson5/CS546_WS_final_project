@@ -197,34 +197,31 @@ async function getCommentsForItemId(id) {
 async function createBids(itemId, bid, userId) {
   sharedValidation.checkArgumentLength(arguments, 3);
   let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
-  let userCollection = await users();
-  let username = await userCollection.findOne({ _id: ObjectId(sanitizedData.userId)}).username;
-  let user = await users.getUser(sanitizedData.username);
-  const itemCollection = await items();
-  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.itemId)});
-
-  if (!item) {
-    throw 'Item does not exist!'
-  }
-  if (!username){
+ 
+  let user = await users.getUserById(sanitizedData.userId);
+  if (!user){
     throw 'User does not exist!'
   }
 
+  const itemCollection = await items();
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.itemId)});
+  if (!item) {
+    throw 'Item does not exist!'
+  }  
+
   const newBid = {
       _id: ObjectId(),
-      itemId: user._id,
+      itemId: sanitizedData.itemId,
       bid: sanitizedData.bid,
       userId: sanitizedData.userId,
       accepted: false
   };
 
-  const itemsCollection = await items();
-  const updatedInfo = await itemsCollection.updateOne({ _id: ObjectId(item.itemId) }, { $addToSet: { bids: newBid } });
+  const updatedInfo = await itemCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { bids: newBid } });
 
   if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
       throw 'Could not create bid successfully!';
   }
-
   const output = {
     photo: user.imageURL || '/public/images/blank.jpg',
     text: newBid.text,
@@ -239,12 +236,12 @@ async function getBidsForItemId(itemId, userId) {
   itemId = sharedValidation.isValidItemId(itemId);
   userId = sharedValidation.isValidUserId(userId);
 
-  let item = await getItemById(id);
-  let user = await users.getUserById(userId);
-
+  let item = await getItemById(itemId);
   if (!item) {
     throw 'Item does not exist!'
   }
+
+  let user = await users.getUserById(userId);
   if (!user){
     throw 'User does not exist!'
   }
@@ -252,7 +249,7 @@ async function getBidsForItemId(itemId, userId) {
   let bids = item.bids;
 
   let output = []
-
+  let bid;
   for (let i = 0; i < bids.length; i++) {
     bid = bids[i];
 
