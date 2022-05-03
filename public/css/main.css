@@ -24,3 +24,15 @@ body {
 footer {
   text-align: center;
 }
+
+.carousel-inner {
+  background-color: black;
+}
+
+.carousel_image {
+  height: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  display: block!important;
+}

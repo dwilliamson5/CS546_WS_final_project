@@ -1,13 +1,13 @@
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="https://scontent.fewr1-6.fna.fbcdn.net/v/t45.5328-4/278302928_4890743744306143_6901770805173009719_n.jpg?stp=dst-jpg_s960x960&_nc_cat=109&ccb=1-5&_nc_sid=c48759&_nc_ohc=LxuZ5gKGzpsAX_r-lSM&_nc_ht=scontent.fewr1-6.fna&oh=00_AT9-X1yAtK2_zRQei5fi3m7gjntERmM0MwhSJm8ElMObWQ&oe=6275D679" alt="First slide">
+      <img class="carousel_image" src="https://scontent.fewr1-6.fna.fbcdn.net/v/t45.5328-4/278302928_4890743744306143_6901770805173009719_n.jpg?stp=dst-jpg_s960x960&_nc_cat=109&ccb=1-5&_nc_sid=c48759&_nc_ohc=LxuZ5gKGzpsAX_r-lSM&_nc_ht=scontent.fewr1-6.fna&oh=00_AT9-X1yAtK2_zRQei5fi3m7gjntERmM0MwhSJm8ElMObWQ&oe=6275D679" alt="First slide">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="https://scontent.fewr1-5.fna.fbcdn.net/v/t45.5328-4/278674873_5177796068937602_2031184812532681317_n.jpg?stp=dst-jpg_s960x960&_nc_cat=106&ccb=1-5&_nc_sid=c48759&_nc_ohc=gcpE1H662VUAX9bY50F&_nc_ht=scontent.fewr1-5.fna&oh=00_AT-S8wibGSpWuefTUBJ6AzVY9OdCxoed9wVlJ2CeWxwRyQ&oe=6276053C" alt="Second slide">
+      <img class="carousel_image" src="https://scontent.fewr1-5.fna.fbcdn.net/v/t45.5328-4/278674873_5177796068937602_2031184812532681317_n.jpg?stp=dst-jpg_s960x960&_nc_cat=106&ccb=1-5&_nc_sid=c48759&_nc_ohc=gcpE1H662VUAX9bY50F&_nc_ht=scontent.fewr1-5.fna&oh=00_AT-S8wibGSpWuefTUBJ6AzVY9OdCxoed9wVlJ2CeWxwRyQ&oe=6276053C" alt="Second slide">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="https://scontent.fewr1-5.fna.fbcdn.net/v/t45.5328-4/278650834_5071419116304472_340677323595229689_n.jpg?stp=dst-jpg_s960x960&_nc_cat=105&ccb=1-5&_nc_sid=c48759&_nc_ohc=MEYdao8a76cAX_VnFty&_nc_ht=scontent.fewr1-5.fna&oh=00_AT9Mmg4mpMxHiCe20UUpao3SiQmvmXAHZFKB8yO-llZVfw&oe=627637CE" alt="Third slide">
+      <img class="carousel_image" src="https://scontent.fewr1-5.fna.fbcdn.net/v/t45.5328-4/278650834_5071419116304472_340677323595229689_n.jpg?stp=dst-jpg_s960x960&_nc_cat=105&ccb=1-5&_nc_sid=c48759&_nc_ohc=MEYdao8a76cAX_VnFty&_nc_ht=scontent.fewr1-5.fna&oh=00_AT9Mmg4mpMxHiCe20UUpao3SiQmvmXAHZFKB8yO-llZVfw&oe=627637CE" alt="Third slide">
     </div>
   </div>
   <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -19,6 +19,8 @@
     <span class="sr-only">Next</span>
   </a>
 </div>
+
+<hr>
 
 <h3>Description:</h3>
 <p>{{item.description}}</p>
@@ -33,69 +35,88 @@
 <p>{{item.pickUpMethod}}</p>
 
 <h3>Listed By:</h3>
-{{!-- Clicking username goes to user profile? --}}
-<h4>Username:</h4>
-<p>{{user.username}}</p>
-<h4>Rating:</h4>
-<p>{{user.rating}}</p>
-
-<h3>Comments</h3>
-
-<div id="comments-list">
-    {{#if comments}}
-        {{#each comments}}
-          <div class="d-flex">
-            <img
-            src="{{photo}}"
-            alt="{{username}}"
-            class="me-3 rounded-circle"
-            style="width: 60px; height: 60px;"
-            />
-            <div>
-              <h5 class="fw-bold">
-                {{username}}
-              </h5>
-              <p>
-                {{text}}
-              </p>
-            </div>
-          </div>
-        {{/each}}
-    {{else}}
-        <p>There are no comments yet. Be the first to add one below!</p>
-    {{/if}}
+<div class="d-flex">
+    <img
+    src="{{user.imageURL}}"
+    alt="{{username}}"
+    class="me-3 rounded-circle"
+    style="width: 60px; height: 60px;"
+    />
+    <div>
+        <h5 class="fw-bold">
+          {{user.username}}
+        </h5>
+        <p>
+          Bio: {{user.bio}}
+        </p>
+        <p>
+          Rating: {{rating}}
+        </p>
+    </div>
 </div>
 
-<h3>Add a comment</h3>
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header">
+        <h4>Comments</h4>
+      </div>
+      <div class="card-body">
+        <div id="comments-list">
+            {{#if comments}}
+                {{#each comments}}
+                  <div class="d-flex">
+                    <img
+                    src="{{photo}}"
+                    alt="{{username}}"
+                    class="me-3 rounded-circle"
+                    style="width: 60px; height: 60px;"
+                    />
+                    <div>
+                      <h5 class="fw-bold">
+                        {{username}}
+                      </h5>
+                      <p>
+                        {{text}}
+                      </p>
+                    </div>
+                  </div>
+                  <hr>
+                {{/each}}
+            {{else}}
+                <p>There are no comments yet. Be the first to add one below!</p>
+            {{/if}}
+        </div>
 
-<form action="/items/{{itemId}}/comment" method="POST" id="new-comment-form">
-    <div class="mb-3">
-        <label id="comment-label" for="comment" class="form-label">Comment text</label>
-        <textarea id="comment" name="comment" rows="5" cols="30" class="form-control"></textarea>
+        <h4>Add a comment</h4>
+
+        <form action="/items/{{itemId}}/comment" method="POST" id="new-comment-form">
+            <div class="mb-3">
+                <label id="comment-label" for="comment" class="form-label">Comment text</label>
+                <textarea id="comment" name="comment" rows="5" cols="30" class="form-control"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Post Comment</button>
+        </form>
+      </div>
     </div>
+  </div>
+  <div class="col">
+    {{!-- Make a bid --}}
+    <form action="/items/edit" method="POST" id="bid-form">
+        <div class="mb-3">
+            <label id="bid-label" for="bid" class="form-label">Make a Bid</label>
+            <input id="bid" name="bid" class="form-control" value="{{bid}}"/>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
 
-    <button type="submit" class="btn btn-success">Post Comment</button>
-</form>
+    {{!-- <p>Highest Bid: {{highest-bid}}</p> --}}
 
-{{!-- Make a bid --}}
-<form action="/items/edit" method="POST" id="bid-form">
-    <div class="mb-3">
-        <label id="bid-label" for="bid" class="form-label">Make a Bid</label>
-        <input id="bid" name="bid" class="form-control" value="{{bid}}"/>
-    </div>
-    <button type="submit" class="btn btn-success">Submit</button>
-</form>
+  </div>
+</div>
 
-{{!-- For each image upload --}}
-{{!-- {{#each itemImage}}
-<img src="{{this}}" alt="{{this}}">
-{{/each}} --}}
-
-{{!-- {{#each comments}}
-<p>{{this}}</p>
-{{/each}}
-
-{{!-- <p>Highest Bid: {{highest-bid}}</p> --}}
+<br>
 
 {{#if canEdit}}
     <a href="/items/{{itemId}}/edit" class="btn btn-primary">Edit Item</a>
