@@ -15,6 +15,7 @@ const constructorMethod = (app) => {
     let title = 'Welcome to Unisell';
     let universityName;
     let itemsList;
+    let universityList = [];
 
     if (req.session.user) {
       title += ', ' + req.session.user.username;
@@ -24,11 +25,16 @@ const constructorMethod = (app) => {
       universityName = university.name;
       itemsList = await items.getAllByUniversityId(user.universityId);
     }
+    else{
+      let universityCollection = await universities.getAll();
+      universityCollection.forEach(university => universityList.push(university.name));
+    }
 
     res.render('index', {
       title: title,
       user: req.session.user,
       universityName: universityName,
+      universityList: universityList,
       itemsList: itemsList
     });
   });
