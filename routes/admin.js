@@ -4,6 +4,7 @@ const data = require('../data/index');
 const universities = data.universities;
 const universityValidation = require('../data/validations/universityValidations');
 const sharedValidation = require('../data/validations/sharedValidations');
+const xss = require('xss');
 
 router.get('/', async (req, res) => {
     const universitiesList = await universities.getAll();
@@ -30,6 +31,7 @@ router.get('/universities/:id/edit', async (req, res) => {
     }
 
     let universityId = params.id;
+    universityId = xss(universityId);
 
     if (!universityId) {
         const universitiesList = await universities.getAll();
@@ -91,6 +93,8 @@ router.post('/universities/', async (req, res) => {
     }
 
     let { name, emailDomain } = body;
+    name = xss(name);
+    emailDomain = xss(emailDomain);
 
     if (!name || !emailDomain) {
         res.status(400).render('admin/new', {
@@ -156,6 +160,7 @@ router.put('/universities/:id', async (req, res) => {
     }
 
     let universityId = params.id;
+    universityId = xss(universityId);
 
     if (!universityId) {
         const universitiesList = await universities.getAll();
@@ -196,6 +201,8 @@ router.put('/universities/:id', async (req, res) => {
     }
 
     let { name, emailDomain } = body;
+    name = xss(name);
+    emailDomain = xss(emailDomain);
 
     if (!name || !emailDomain) {
         res.status(400).render('admin/edit', {

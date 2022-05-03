@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require('../data/index');
 const users = data.users;
 const userValidation = require('../data/validations/userValidations');
+const xss = require('xss');
 
 router.get('/edit', async (req, res) => {
     try {
@@ -36,6 +37,11 @@ router.put('/edit', async (req, res) => {
     }
 
     let { username, name, email, imageURL, bio } = body;
+    username = xss(username);
+    name = xss(name);
+    email = xss(email);
+    imageURL = xss(imageURL);
+    bio = xss(bio);
 
     // this is temporary until it comes as part of the request body
     imageURL = 'todo';
@@ -116,6 +122,9 @@ router.put('/edit/password', async (req, res) => {
     }
 
     let { current_password, new_password, new_password_confirmation } = body;
+    current_password = xss(current_password);
+    new_password = xss(new_password);
+    new_password_confirmation = xss(new_password_confirmation);
 
     if (!current_password || !new_password || !new_password_confirmation) {
         res.status(400).render('profile/edit', {
