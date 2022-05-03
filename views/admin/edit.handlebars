@@ -2,6 +2,8 @@
 <p class="error-message">{{error_messages}}</p>
 
 <form action="/admin/universities/{{id}}" method="POST" id="edit-university-form">
+    <input name="_method" type="hidden" value="PUT" />
+
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input id="name" name="name" value="{{name}}" class="form-control"/>

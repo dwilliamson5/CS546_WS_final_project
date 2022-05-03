@@ -20,7 +20,9 @@
     {{/each}}
 </ul>}
 
-<form action="/items/{{id}}" method="POST" id="update-item-form">
+<form action="/items/{{id}}/update" method="POST" id="update-item-form">
+    <input name="_method" type="hidden" value="PUT" />
+    
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input id="title" name="item_title" value="{{item_title}}" class="form-control"/>
