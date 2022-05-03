@@ -169,8 +169,35 @@ function isValidComment(id, username, comment) {
   }
 }
 
+function isValidBid(itemId, bid, userId) {
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidItemId(userId);
+
+  sharedValidation.checkParamPresent(itemId, 'itemId');
+  sharedValidation.checkParamPresent(userId, 'userId');
+  sharedValidation.checkParamPresent(bid, 'bid');
+
+  sharedValidation.checkIsString(itemId, 'itemId');
+  sharedValidation.checkIsString(userId, 'userId');
+  sharedValidation.checkIsString(bid, 'bid');
+
+  itemId = sharedValidation.cleanUpString(itemId);
+  userId = sharedValidation.cleanUpString(userId);
+  bid = sharedValidation.cleanUpString(bid);
+
+  sharedValidation.checkStringLength(itemId, 'itemId');
+  sharedValidation.checkStringLength(userId, 'userId');
+  sharedValidation.checkStringLength(bid, 'bid');
+
+  return {
+    itemId: itemId,
+    bid: bid,
+    userId: userId
+  }
+}
 module.exports = {
   isValidItemParameters,
   isValidItemUpdateParameters,
-  isValidComment
+  isValidComment,
+  isValidBid
 };

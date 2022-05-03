@@ -78,7 +78,32 @@
 </form>
 
 {{!-- Make a bid --}}
-<form action="/items/edit" method="POST" id="bid-form">
+<div id="bids-list">
+    {{#if bids}}
+        {{#each bids}}
+          <div class="d-flex">
+            <img
+            src="{{photo}}"
+            alt="{{username}}"
+            class="me-3 rounded-circle"
+            style="width: 60px; height: 60px;"
+            />
+            <div>
+              <h5 class="fw-bold">
+                {{username}}
+              </h5>
+              <p>
+                {{text}}
+              </p>
+            </div>
+          </div>
+        {{/each}}
+    {{else}}
+        <p>There are no bids yet. Be the first to add one below!</p> {{!-- only buyers can see this --}}
+
+    {{/if}}
+</div>
+<form action="/items/{{itemId}}/bid" method="POST" id="new-bid-form">
     <div class="mb-3">
         <label id="bid-label" for="bid" class="form-label">Make a Bid</label>
         <input id="bid" name="bid" class="form-control" value="{{bid}}"/>

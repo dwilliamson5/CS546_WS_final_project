@@ -194,19 +194,79 @@ async function getCommentsForItemId(id) {
   return output;
 }
 
-// async function createBids(itemId, bid, userId, accepted) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newBid = {
-//         bid: bid,
-//         userId: userId,
-//         accepted: accepted
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { bids: newBid } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add bid';
-//
-//     return await this.getItem(itemId);
-// }
+async function createBids(itemId, bid, userId) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+  let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
+  let userCollection = await users();
+  let username = await userCollection.findOne({ _id: ObjectId(sanitizedData.userId)}).username;
+  let user = await users.getUser(sanitizedData.username);
+  const itemCollection = await items();
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.itemId)});
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+  if (!username){
+    throw 'User does not exist!'
+  }
+
+  const newBid = {
+      _id: ObjectId(),
+      itemId: user._id,
+      bid: sanitizedData.bid,
+      userId: sanitizedData.userId,
+      accepted: false
+  };
+
+  const itemsCollection = await items();
+  const updatedInfo = await itemsCollection.updateOne({ _id: ObjectId(item.itemId) }, { $addToSet: { bids: newBid } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+      throw 'Could not create bid successfully!';
+  }
+
+  const output = {
+    photo: user.imageURL || '/public/images/blank.jpg',
+    text: newBid.text,
+    username: user.username
+  }
+  
+  return output;
+}
+
+async function getBidsForItemId(itemId, userId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
+
+  let item = await getItemById(id);
+  let user = await users.getUserById(userId);
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+  if (!user){
+    throw 'User does not exist!'
+  }
+
+  let bids = item.bids;
+
+  let output = []
+
+  for (let i = 0; i < bids.length; i++) {
+    bid = bids[i];
+
+    let result = {
+      photo: user.imageURL || '/public/images/blank.jpg',
+      username: user.username,
+      text: bid.text
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
 //
 // async function createComment(itemId, comment, userId) {
 //     const itemsCollection = await items();
@@ -242,7 +302,8 @@ module.exports = {
     createItem,
     updateItem,
     createComment,
-    getCommentsForItemId
-    // createBids,
+    getCommentsForItemId,
+    createBids,
+    getBidsForItemId,
     // createRating
 };
