@@ -1,6 +1,25 @@
 <p class="error-status">{{error_status_code}}</p>
 <p class="error-message">{{error_messages}}</p>
 
+{{!-- Show Bids --}}
+<p>Bids:</p>
+<ul>
+    {{#each bid}}
+    <li>
+        <p>{{this.offer}}</p>
+        <p>Name:</p>
+        <p>{{this.user.name}}</p>
+        <p>Username:</p>
+        <p>{{this.user.username}}</p>
+        <p>Rating:</p>
+        <p>{{this.user.rating}}</p>
+        {{!-- Accept Bid Button --}}
+        <button type="submit" class="btn btn-success">Accept Bid</button>
+        {{!-- If bid is accepted, show buyer information --}}
+    </li>
+    {{/each}}
+</ul>}
+
 <form action="/items/{{id}}" method="POST" id="update-item-form">
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
