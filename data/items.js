@@ -158,9 +158,9 @@ async function createComment(id, username, comment) {
   }
 
   const output = {
-    comment: newComment.text,
-    username: user.username,
-    photo: user.imageURL || 'no_image'
+    photo: user.imageURL || '/public/images/blank.jpg',
+    text: newComment.text,
+    username: user.username
   }
 
   return output;
@@ -176,14 +176,14 @@ async function getCommentsForItemId(id) {
   let comments = item.comments;
 
   let output = []
-  
+
   for (let i = 0; i < comments.length; i++) {
     comment = comments[i];
 
     let user = await users.getUserById(comment.commentersUserId.toString());
-    
+
     let result = {
-      imageURL: user.imageURL || '/public/images/blank.jpg',
+      photo: user.imageURL || '/public/images/blank.jpg',
       username: user.username,
       text: comment.text
     };
