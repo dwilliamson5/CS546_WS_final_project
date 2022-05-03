@@ -5,6 +5,7 @@ const items = data.items;
 const users = data.users;
 const itemValidation = require('../data/validations/itemValidations');
 const sharedValidation = require('../data/validations/sharedValidations');
+const xss = require('xss');
 
 router.get('/new', async (req, res) => {
     res.render('items/new', { title: 'New Item' });
@@ -23,6 +24,12 @@ router.post('/', async (req, res) => {
     }
 
     let { item_title, description, keywords, price, photos, pickUpMethod } = body;
+    item_title = xss(item_title);
+    description = xss(description);
+    keywords = xss(keywords);
+    price = xss(price);
+    photos = xss(photos);
+    pickUpMethod = xss(pickUpMethod);
 
     // temp until we get photos working
     photos = 'imag1, image2, image3';
@@ -108,6 +115,7 @@ router.get('/:id', async (req, res) => {
     }
 
     let itemId = params.id;
+    itemId = xss(itemId);
 
     if (!itemId) {
         let user = await users.getUser(req.session.user.username);
@@ -214,6 +222,7 @@ router.get('/:id/edit', async (req, res) => {
     }
 
     let itemId = params.id;
+    itemId = xss(itemId);
 
     if (!itemId) {
         let user = await users.getUser(req.session.user.username);
@@ -331,6 +340,7 @@ router.put('/:id', async (req, res) => {
     }
 
     let itemId = params.id;
+    itemId = xss(itemId);
 
     if (!itemId) {
         let user = await users.getUser(req.session.user.username);
@@ -433,6 +443,13 @@ router.put('/:id', async (req, res) => {
     }
 
     let { item_title, description, keywords, price, photos, pickUpMethod, sold } = body;
+    item_title = xss(item_title);
+    description = xss(description);
+    keywords = xss(keywords);
+    price = xss(price);
+    photos = xss(photos);
+    pickUpMethod = xss(pickUpMethod);
+    sold = xss(sold);
 
     // temp until we have photos
     photos = 'item1, item2, item3';
@@ -528,6 +545,7 @@ router.post('/:id/comment', async (req, res) => {
     }
 
     let itemId = params.id;
+    itemId = xss(itemId);
 
     if (!itemId) {
         let user = await users.getUser(req.session.user.username);
@@ -558,6 +576,7 @@ router.post('/:id/comment', async (req, res) => {
     }
 
     let { comment } = body;
+    comment = xss(comment);
 
     if (!comment) {
         res.status(404).render('index', {
