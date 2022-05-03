@@ -42,13 +42,7 @@ async function createUser(universityId, username, password, passwordConfirmation
 
   userValidation.validateDomainsMatch(university.emailDomain, emailDomain);
 
-  try {
-    await getUser(sanitizedData.username)
-
-    throw 'That username already exists!';
-  } catch (e) {
-    // user was not found
-  }
+  await checkUsernameDoesntExist(sanitizedData.username)
 
   const hash = await bcrypt.hash(sanitizedData.password, SALT_ROUNDS);
 
@@ -96,6 +90,28 @@ async function getUser(username) {
   user._id = user._id.toString();
 
   return user;
+}
+
+/**
+ * Check if username already exists.
+ *
+ * @param {String} username
+ * @returns The user as an object.
+ * @throws Will throw if username is taken.
+ */
+async function checkUsernameDoesntExist(username) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  username = userValidation.validateUsername(username);
+
+  const userCollection = await users();
+  const user = await userCollection.findOne({ username: username });
+
+  if (user) {
+    throw 'User with username already exists!'
+  }
+
+  return true;
 }
 
 async function getUserById(id) {
@@ -163,9 +179,6 @@ async function makeSuperAdmin(username) {
   username = userValidation.validateUsername(username);
 
   const user = await getUser(username);
-  if (!user) {
-    throw 'The username does not exist!';
-  }
 
   let updateUser = {
     super_admin: true
@@ -212,13 +225,9 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
   let user = await getUser(sanitizedData.currentUsername);
 
   if (sanitizedData.currentUsername !== sanitizedData.username) {
+
     // Check if new username already exists
-    try {
-      await getUser(sanitizedData.username);
-      throw 'The new username is already in use!';
-    } catch (e) {
-      // new username doesn't exist. we're okay
-    }
+    await checkUsernameDoesntExist(sanitizedData.username);
   }
 
   let university = await universities.getUniversityById(user.universityId.toString());
