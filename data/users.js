@@ -131,6 +131,30 @@ async function getUserById(id) {
   return user;
 }
 
+async function getAvgRating(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidUserId(id);
+
+  let user = await getUserById(id);
+
+  let sumRating = 0;
+
+  let ratings = user.ratings;
+
+  if (ratings.length == 0) {
+    return sumRating;
+  } else {
+    for (let i = 0; i < ratings.length; i++) {
+      let rating = ratings[i];
+
+      sumRating += rating;
+    }
+
+    return sumRating / ratings.length;
+  }
+}
+
 /**
  * Checks if the user's credentials are valid.
  *
@@ -313,5 +337,6 @@ module.exports = {
   makeSuperAdmin,
   updateUser,
   updatePassword,
-  getUserById
+  getUserById,
+  getAvgRating
 };
