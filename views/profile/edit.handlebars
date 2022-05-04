@@ -2,6 +2,9 @@
 <p class="error-message">{{error_messages}}</p>
 
 <h2>Edit Info</h2>
+
+<img class="img-thumbnail" alt="profile picture" src="{{imageURL}}"  width="304" height="236" />
+
 <form action="/profile/edit" method="POST" id="profile-form">
     <input name="_method" type="hidden" value="PUT" />
 
@@ -26,11 +29,11 @@
         <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">{{bio}}</textarea>
     </div>
 
-    {{!-- <div class="mb-3">
-        <!-- TODO -->
+    <div class="mb-3">
         <label id="image-label" for="image">Profile image</label>
-        <input id="image" type="image" name="image" value="todo"/>
-    </div> --}}
+        <input id="image" type="file" name="image" accept="image/*"/>
+        <input id="imageURL" type="hidden" name="imageURL"/>
+    </div>
 
     <button type="submit" class="btn btn-success">Update Profile</button>
 </form>
@@ -61,3 +64,5 @@
 </form>
 
 <a href="/" class="btn btn-secondary">Home</a>
+
+<script src="/public/js/editProfile.js" type="module"></script>

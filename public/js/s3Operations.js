@@ -23,6 +23,8 @@ export function uploadImage(imageName, imageStream, callback) {
         apiVersion: '2006-03-01',
         params: { Bucket: bucketName },
         Key: imageName,
+        ContentType: 'image/jpeg',
+        ACL:'public-read',
         Body: imageStream
     };
 
