@@ -61,6 +61,7 @@ app.use('*', async (req, res, next) => {
       if (user.super_admin) {
         res.locals.superAdmin = true;
       }
+      res.locals.imageUrl = user.profileImageUrl || '/public/images/blank.jpg'
     } catch (e) {
       next();
       return;
