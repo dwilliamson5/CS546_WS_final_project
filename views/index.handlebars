@@ -17,16 +17,18 @@
     <h3>Browsing {{universityName}} items:</h3>
 
     {{#if itemsList}}
-        {{#each itemsList}}
-            <div class="card" style="width: 18rem;">
-                <img src="..." class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h2 class="card-title">Card title</h2>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a href="/items/{{this._id}}" class="btn btn-primary">See More</a>
+        <div class="item-list">
+            {{#each itemsList}}
+                <div class="card" style="width: 18rem;">
+                    <img src="{{this.imageURL}}" class="card-img-top" alt="{{this.title}}">
+                    <div class="card-body">
+                        <h2 class="card-title">{{this.title}}</h2>
+                        <p class="card-text">{{this.description}}</p>
+                        <a href="/items/{{this._id}}" class="btn btn-primary">View</a>
+                    </div>
                 </div>
-            </div>
-        {{/each}}
+            {{/each}}
+        </div>
     {{else}}
         <p>There are no items yet. Click "List New Item" to add one.</p>
     {{/if}}
