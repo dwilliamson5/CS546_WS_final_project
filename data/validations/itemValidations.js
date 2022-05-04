@@ -168,11 +168,13 @@ function isValidComment(id, username, comment) {
 }
 
 function isValidPrice(price){
-  if(isNaN(price)){
+  if (isNaN(price)) {
     throw 'Must be a number'
   }
+
   price = parseInt(price);
-  if(price < 0){
+
+  if (price < 0) {
     throw 'price cannot be below 0 (free)';
   }
 }
@@ -181,7 +183,7 @@ function isValidBid(itemId, bid, userId) {
   sharedValidation.checkParamPresent(itemId, 'itemId');
   sharedValidation.checkParamPresent(userId, 'userId');
   sharedValidation.checkParamPresent(bid, 'bid');
-  
+
   itemId = sharedValidation.isValidItemId(itemId);
   userId = sharedValidation.isValidUserId(userId);
 
@@ -195,18 +197,20 @@ function isValidBid(itemId, bid, userId) {
 
   sharedValidation.checkStringLength(itemId, 'itemId');
   sharedValidation.checkStringLength(userId, 'userId');
+  sharedValidation.checkStringLength(bid, 'bid');
+
   isValidPrice(bid);
-  
+
   return {
     itemId: itemId,
     bid: bid,
     userId: userId
   }
 }
+
 module.exports = {
   isValidItemParameters,
   isValidItemUpdateParameters,
   isValidComment,
   isValidBid
 };
-
