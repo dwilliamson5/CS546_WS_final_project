@@ -1,5 +1,4 @@
-const express = require("express");
-const os = require("os");
+const express = require('express');
 const app = express();
 const static = express.static(__dirname + '/public');
 const session = require('express-session');

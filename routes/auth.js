@@ -170,7 +170,6 @@ router.post('/signup', async (req, res) => {
     }
 
     try {
-        
         const response = await users.createUser(universityId, username, password, password_confirmation, name, email, imageURL, bio);
 
         if (response === null || response.userInserted === false) {
@@ -188,7 +187,6 @@ router.post('/signup', async (req, res) => {
         }
 
         if (response.userInserted === true) {
-
             res.redirect('/');
         }
     } catch (e) {
