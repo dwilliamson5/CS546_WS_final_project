@@ -166,6 +166,16 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    let avgRating;
+
+    try {
+        avgRating = await users.getAvgRating(user._id);
+    } catch (e) {
+        req.flash('message', 'Something went wrong with overall rating');
+        res.redirect('/');
+        return;
+    }
+
     res.render('items/show', {
         title: item.title,
         item: item,
@@ -175,7 +185,8 @@ router.get('/:id', async (req, res) => {
         keywords: item.keywords.join(', '),
         comments: comments,
         bids: bids,
-        highest_bid: highest_bid
+        highest_bid: highest_bid,
+        avgRating: avgRating
     });
 });
 
