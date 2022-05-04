@@ -8,18 +8,15 @@ const sharedValidation = require('../data/validations/sharedValidations');
 const xss = require('xss');
 
 router.get('/new', async (req, res) => {
-    res.render('items/new', { title: 'New Item' });
+    res.render('items/new', { title: 'New Item', flash: req.flash('message') });
 });
 
 router.post('/', async (req, res) => {
     let body = req.body;
 
     if (!body) {
-        res.status(400).render('items/new', {
-            title: 'New Item',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request'
-        });
+        req.flash('message', 'You must provide a body to your request');
+        res.redirect('/items/new');
         return;
     }
 
@@ -102,15 +99,8 @@ router.get('/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No params provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
         return;
     }
 
@@ -118,30 +108,16 @@ router.get('/:id', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
         return;
     }
 
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Bad item ID!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
         return;
     }
 
@@ -150,15 +126,8 @@ router.get('/:id', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that item!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
         return;
     }
 
@@ -167,28 +136,14 @@ router.get('/:id', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find item owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot view that item because it belongs to another school!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
@@ -209,15 +164,8 @@ router.get('/:id/edit', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No params provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
         return;
     }
 
@@ -225,30 +173,16 @@ router.get('/:id/edit', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
         return;
     }
 
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Bad item ID!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
         return;
     }
 
@@ -257,15 +191,8 @@ router.get('/:id/edit', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that item!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
         return;
     }
 
@@ -274,41 +201,20 @@ router.get('/:id/edit', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find item owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot view that item because it belongs to another school!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
     if (req.session.user.username != user.username) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot edit that item because you are not the owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
         return;
     }
 
@@ -319,7 +225,8 @@ router.get('/:id/edit', async (req, res) => {
         description: item.description,
         keywords: item.keywords,
         price: item.price,
-        pickUpMethod: item.pickUpMethod
+        pickUpMethod: item.pickUpMethod,
+        flash: req.flash('message')
     });
 });
 
@@ -327,15 +234,8 @@ router.put('/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No params provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
         return;
     }
 
@@ -343,30 +243,16 @@ router.put('/:id', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
         return;
     }
 
     try {
         sharedValidation.isValidItemId(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Bad item ID!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
         return;
     }
 
@@ -374,16 +260,9 @@ router.put('/:id', async (req, res) => {
 
     try {
         item = await items.getItemById(itemId);
-    } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that item!',
-            itemsList: itemsList
-        });
+    } catch (e) { 
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
         return;
     }
 
@@ -392,53 +271,28 @@ router.put('/:id', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find item owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot view that item because it belongs to another school!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
     if (req.session.user.username != user.username) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot edit that item because you are not the owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
         return;
     }
 
     let body = req.body;
 
     if (!body) {
-        res.status(400).render('items/edit', {
-            title: 'New Item',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request',
-            id: itemId
-        });
+        req.flash('message', 'You must provide a body to your request');
+        res.redirect('/items/' + itemId);
         return;
     }
 
@@ -532,15 +386,8 @@ router.post('/:id/comment', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No params provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
         return;
     }
 
@@ -548,30 +395,16 @@ router.post('/:id/comment', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
         return;
     }
 
     let body = req.body;
 
     if (!body) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'You must supply a body to your request!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'You must supply a body to your request!');
+        res.redirect('/');
         return;
     }
 
@@ -579,27 +412,16 @@ router.post('/:id/comment', async (req, res) => {
     comment = xss(comment);
 
     if (!comment) {
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'You must supply a comment!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'You must supply a comment!');
+        res.redirect('/');
         return;
     }
 
     try {
         itemValidation.isValidComment(itemId, req.session.user.username, comment);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Your param/body is not vaild!' + e,
-            itemsList: itemsList
-        });
+        req.flash('message', 'Your param/body is not vaild!');
+        res.redirect('/');
         return;
     }
 
@@ -608,15 +430,8 @@ router.post('/:id/comment', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find that item!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
         return;
     }
 
@@ -625,28 +440,14 @@ router.post('/:id/comment', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Could not find item owner!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        let user = await users.getUser(req.session.user.username);
-        const itemsList = await items.getAllByUniversityId(user.universityId);
-
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Cannot view that item because it belongs to another school!',
-            itemsList: itemsList
-        });
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
