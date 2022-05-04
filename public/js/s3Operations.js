@@ -39,12 +39,7 @@ export function uploadImage(imageName, imageStream, callback) {
             throw err;
         }
 
-        const url = s3Client.getSignedUrl('getObject', {
-            Bucket: bucketName,
-            Key: imageName
-        });
-
-        callback(url);
+        callback(data.Location);
     });
 }
 
