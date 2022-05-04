@@ -13,7 +13,11 @@ router.get('/login', async (req, res) => {
 
     const universitiesList = await universities.getAll();
 
-    res.render('auth/login', { title: 'Login', universitiesList: universitiesList });
+    res.render('auth/login', {
+      title: 'Login',
+      universitiesList: universitiesList,
+      flash: req.flash('message')
+    });
 });
 
 router.post('/login', async (req, res) => {
@@ -22,12 +26,8 @@ router.post('/login', async (req, res) => {
     const universitiesList = await universities.getAll();
 
     if (!body) {
-        res.status(400).render('auth/login', {
-            title: 'Login',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request',
-            universitiesList: universitiesList
-        });
+        req.flash('message', 'You must provide a body to your request');
+        res.redirect('/auth/login');
         return;
     }
 
@@ -136,10 +136,10 @@ router.post('/signup', async (req, res) => {
     email = xss(email);
     imageURL = xss(imageURL);
     bio = xss(bio);
-    
+
     // this is temporary until it comes as part of the request body
     imageURL = 'todo';
-    
+
     if (!universityId || !username || !password || !password_confirmation || !name || !email || !imageURL || !bio) {
         res.status(400).render('auth/signup', {
             title: 'Sign Up',
@@ -189,7 +189,9 @@ router.post('/signup', async (req, res) => {
         }
 
         if (response.userInserted === true) {
-            res.redirect('/');
+            req.flash('message', 'Account created. Please login');
+            res.redirect('/auth/login');
+            return;
         }
     } catch (e) {
         return res.status(400).render('auth/signup', {
