@@ -195,38 +195,35 @@ async function getCommentsForItemId(id) {
   return output;
 }
 
-async function createBids(itemId, bid, userId) {
+async function createBid(itemId, bid, userId) {
   sharedValidation.checkArgumentLength(arguments, 3);
   let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
- 
-  let user = await users.getUserById(sanitizedData.userId);
-  if (!user){
-    throw 'User does not exist!'
-  }
 
-  const itemCollection = await items();
-  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.itemId)});
-  if (!item) {
-    throw 'Item does not exist!'
-  }  
+  let user = await users.getUserById(sanitizedData.userId);
+  let item = await getItemById(sanitizedData.itemId)
 
   const newBid = {
-      _id: ObjectId(),
-      itemId: sanitizedData.itemId,
-      bid: sanitizedData.bid,
-      userId: sanitizedData.userId,
-      accepted: false
+    _id: ObjectId(),
+    itemId: sanitizedData.itemId,
+    bid: sanitizedData.bid,
+    userId: sanitizedData.userId,
+    accepted: false
   };
+
+  const itemCollection = await items();
+
   const updatedInfo = await itemCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { bids: newBid } });
 
   if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
-      throw 'Could not create bid successfully!';
+    throw 'Could not create bid successfully!';
   }
+
   const output = {
-    photo: user.imageURL || '/public/images/blank.jpg',
-    text: newBid.bid,
+    photo: user.profileImageUrl || '/public/images/blank.jpg',
+    bid: newBid.bid,
     username: user.username
   }
+
   return output;
 }
 
@@ -235,23 +232,20 @@ async function getBidsForSeller(itemId) {
   itemId = sharedValidation.isValidItemId(itemId);
 
   let item = await getItemById(itemId);
-  if (!item) {
-    throw 'Item does not exist!'
-  }
 
   let bids = item.bids;
 
   let output = []
-  let bid;
+
   for (let i = 0; i < bids.length; i++) {
-    bid = bids[i];
+    let bid = bids[i];
 
     let user = await users.getUserById(bid.userId.toString());
 
     let result = {
-      photo: user.imageURL || '/public/images/blank.jpg',
+      photo: user.profileImageUrl || '/public/images/blank.jpg',
       username: user.username,
-      text: bid.bid
+      bid: bid.bid
     };
 
     output.push(result);
@@ -266,34 +260,46 @@ async function getBidsForBuyer(itemId, userId) {
   userId = sharedValidation.isValidUserId(userId);
 
   let item = await getItemById(itemId);
-  if (!item) {
-    throw 'Item does not exist!'
-  }
-
   let user = await users.getUserById(userId);
-  if (!user){
-    throw 'User does not exist!'
-  }
 
   let bids = item.bids;
 
   let output = []
-  let bid;
-  let result;
+
   for (let i = 0; i < bids.length; i++) {
-    if(userId == bids[i].userId.toString()){
-      bid = bids[i];
-    
-      result = {
-        photo: user.imageURL || '/public/images/blank.jpg',
+    let bid = bids[i];
+
+    if (userId == bid.userId.toString()) {
+      let result = {
+        photo: user.profileImageUrl || '/public/images/blank.jpg',
         username: user.username,
-        text: bid.bid
+        bid: bid.bid
       };
+
       output.push(result);
     }
   }
 
   return output;
+}
+
+async function getHighestBid(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  let bids = await getBidsForSeller(itemId);
+
+  let max = 0;
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    bid = parseInt(bid.bid);
+
+    if (bid > max) {
+      max = bid
+    }
+  }
+
+  return max;
 }
 
 // async function createRating(itemId, rating, userId) {
@@ -318,8 +324,9 @@ module.exports = {
     updateItem,
     createComment,
     getCommentsForItemId,
-    createBids,
+    createBid,
     getBidsForBuyer,
-    getBidsForSeller
+    getBidsForSeller,
+    getHighestBid
     // createRating
 };
