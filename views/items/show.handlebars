@@ -78,6 +78,8 @@
 </form>
 
 {{!-- Make a bid --}}
+<h3>Bids</h3>
+
 <div id="bids-list">
     {{#if bids}}
         {{#each bids}}
@@ -103,6 +105,9 @@
 
     {{/if}}
 </div>
+
+<h3>Add a bid</h3>
+
 <form action="/items/{{itemId}}/bid" method="POST" id="new-bid-form">
     <div class="mb-3">
         <label id="bid-label" for="bid" class="form-label">Make a Bid</label>
