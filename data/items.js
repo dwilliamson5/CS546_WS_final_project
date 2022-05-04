@@ -231,7 +231,38 @@ async function createBids(itemId, bid, userId) {
   return output;
 }
 
-async function getBidsForItemId(itemId, userId) {
+async function getBidsForItemId(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  itemId = sharedValidation.isValidItemId(itemId);
+
+  let item = await getItemById(itemId);
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  let bids = item.bids;
+
+  let output = []
+  let bid;
+  for (let i = 0; i < bids.length; i++) {
+    bid = bids[i];
+
+    let user = await users.getUserById(bid.userId.toString());
+
+    let result = {
+      photo: user.imageURL || '/public/images/blank.jpg',
+      username: user.username,
+      text: bid.text
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
+
+async function getBidsForUser(itemId, userId) {
   sharedValidation.checkArgumentLength(arguments, 2);
   itemId = sharedValidation.isValidItemId(itemId);
   userId = sharedValidation.isValidUserId(userId);
@@ -250,15 +281,17 @@ async function getBidsForItemId(itemId, userId) {
 
   let output = []
   let bid;
+  let result;
   for (let i = 0; i < bids.length; i++) {
-    bid = bids[i];
-
-    let result = {
-      photo: user.imageURL || '/public/images/blank.jpg',
-      username: user.username,
-      text: bid.text
-    };
-
+    if(userId == bids[i].userId){
+      bid = bids[i];
+    
+      result = {
+        photo: user.imageURL || '/public/images/blank.jpg',
+        username: user.username,
+        text: bid.text
+      };
+    }
     output.push(result);
   }
 
@@ -301,6 +334,7 @@ module.exports = {
     createComment,
     getCommentsForItemId,
     createBids,
-    getBidsForItemId,
+    getBidsForUser,
+    getBidsForItemId
     // createRating
 };

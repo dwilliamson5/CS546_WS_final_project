@@ -193,18 +193,51 @@ router.get('/:id', async (req, res) => {
     }
 
     let comments = await items.getCommentsForItemId(itemId);
-    let bids = await items.getBidsForItemId(itemId, user._id);
+    let currentuser = await users.getUser(req.session.user.username);
+    let itemPostUser = await users.getUserById(item.userId);
 
-    res.render('items/show', {
-        title: item.title,
-        item: item,
-        canEdit: req.session.user.username == user.username,
-        itemId: itemId,
-        user: user,
-        keywords: item.keywords.join(', '),
-        comments: comments,
-        bids: bids
-    });
+    if(currentuser._id == item.userId){  //current user is the seller
+        let bids = await items.getBidsForItemId(itemId.toString());
+        res.render('items/show', {
+            title: item.title,
+            item: item,
+            canEdit: req.session.user.username == user.username,
+            itemId: itemId,
+            user: itemPostUser,
+            keywords: item.keywords.join(', '),
+            comments: comments,
+            bids: bids
+        });
+        return;
+    }
+    else{ //current user posted a bid already
+        let bids = await items.getBidsForUser(itemId.toString(), currentuser._id.toString());
+        if(bids == []){
+            res.render('items/show', {
+                title: item.title,
+                item: item,
+                canEdit: req.session.user.username == user.username,
+                itemId: itemId,
+                user: itemPostUser,
+                keywords: item.keywords.join(', '),
+                comments: comments,
+                bids: bids
+            });
+            return;
+        } 
+        else{//current user has no posts
+            res.render('items/show', {
+                title: item.title,
+                item: item,
+                canEdit: req.session.user.username == user.username,
+                itemId: itemId,
+                user: itemPostUser,
+                keywords: item.keywords.join(', '),
+                comments: comments,
+            });
+            return;
+        }
+    }
 });
 
 router.get('/:id/edit', async (req, res) => {
@@ -556,7 +589,7 @@ router.post('/:id/comment', async (req, res) => {
         res.status(404).render('index', {
             title: 'Item not found',
             error_status_code: 'HTTP 404 status code',
-            error_messages: 'No ID param provided!',
+            error_messages: 'No param provided!',
             itemsList: itemsList
         });
         return;
@@ -663,9 +696,8 @@ router.post('/:id/comment', async (req, res) => {
  //EDIT HERRE
 router.post('/:id/bid', async (req, res) => {
     let params = req.params;
-    let user;
+    let user = await users.getUser(req.session.user.username);
     if (!params) {
-        user = await users.getUser(req.session.user.username);
         const itemsList = await items.getAllByUniversityId(user.universityId);
         res.status(404).render('index', {
             title: 'Item not found',
@@ -678,9 +710,7 @@ router.post('/:id/bid', async (req, res) => {
     let itemId = params.id;
 
     if (!itemId) {
-        user = await users.getUser(req.session.user.username);
         const itemsList = await items.getAllByUniversityId(user.universityId);
-
         res.status(404).render('index', {
             title: 'Item not found',
             error_status_code: 'HTTP 404 status code',
@@ -692,9 +722,7 @@ router.post('/:id/bid', async (req, res) => {
 
     let body = req.body;
     if (!body) {
-        user = await users.getUser(req.session.user.username);
         const itemsList = await items.getAllByUniversityId(user.universityId);
-
         res.status(404).render('index', {
             title: 'Item not found',
             error_status_code: 'HTTP 404 status code',
@@ -715,23 +743,10 @@ router.post('/:id/bid', async (req, res) => {
         });
         return;
     }
-    try {
-        user = await users.getUser(req.session.user.username);
-        itemValidation.isValidBid(itemId, bid, user._id);
-    } catch (e) {
-        const itemsList = await items.getAllByUniversityId(user.universityId);
 
-        res.status(404).render('index', {
-            title: 'Item not found',
-            error_status_code: 'HTTP 404 status code',
-            error_messages: 'Your param/body is not vaild!' + e,
-            itemsList: itemsList
-        });
-        return;
-    }
-
+    let item;
     try {
-        await items.getItemById(itemId);
+        item = await items.getItemById(itemId);
     } catch (e) {
         const itemsList = await items.getAllByUniversityId(user.universityId);
 
@@ -743,7 +758,20 @@ router.post('/:id/bid', async (req, res) => {
         });
         return;
     }
-    
+
+    try {
+        itemValidation.isValidBid(itemId, bid, user._id);
+    } catch (e) {
+        const itemsList = await items.getAllByUniversityId(user.universityId);
+        res.status(404).render('index', {
+            title: 'Item not found',
+            error_status_code: 'HTTP 404 status code',
+            error_messages: 'Your param/body is not vaild!' + e,
+            itemsList: itemsList
+        });
+        return;
+    }
+  
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
@@ -759,8 +787,9 @@ router.post('/:id/bid', async (req, res) => {
     }
 
     try {
+        user = await users.getUser(req.session.user.username);
         const bidResult = await items.createBids(itemId, bid, user._id);
-
+        console.log(bidResult);
         res.render('partials/bids', { layout: null, ...bidResult });
     } catch (e) {
         res.status(500).json({ error: e });

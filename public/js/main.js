@@ -2,7 +2,10 @@
 
 	var commentForm = $('#new-comment-form'),
 		commentInput = $('#comment'),
-		commentArea = $('#comments-list');
+		commentArea = $('#comments-list'),
+        bidsArea = $('#bids-list'),
+        bidForm = $('#new-bid-form'),
+        bidInput = $('#bid');
 
 	commentForm.submit(function(event) {
 		event.preventDefault();
@@ -23,6 +26,28 @@
                 var newElement = $(responseMessage);
                 commentArea.append(newElement);
                 commentForm.trigger('reset');
+            });
+		}
+	});
+    bidForm.submit(function(event) {
+		event.preventDefault();
+
+		var bid = bidInput.val();
+
+		if (bid) {			
+            var requestConfig = {
+                method: 'POST',
+                url: commentForm.attr('action'),
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    bid: bid
+                })
+            };
+
+            $.ajax(requestConfig).then(function(responseMessage) {
+                var newElement = $(responseMessage);
+                bidsArea.append(newElement);
+                bidForm.trigger('reset');
             });
 		}
 	});
