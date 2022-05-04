@@ -14,7 +14,8 @@ router.get('/edit', async (req, res) => {
             username: user.username,
             name: user.name,
             email: user.email,
-            bio: user.bio
+            bio: user.bio,
+            flash: req.flash('message')
         });
     } catch (e) {
         res.status(500).render('errors/500', {
@@ -28,11 +29,8 @@ router.put('/edit', async (req, res) => {
     let body = req.body;
 
     if (!body) {
-        res.status(400).render('profile/edit', {
-            title: 'Edit Profile',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request'
-        });
+        req.flash('message', 'You must provide a body to your request');
+        res.redirect('/profile/edit');
         return;
     }
 
@@ -113,11 +111,8 @@ router.put('/edit/password', async (req, res) => {
     let body = req.body;
 
     if (!body) {
-        res.status(400).render('profile/edit', {
-            title: 'Edit Profile',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide a body to your request'
-        });
+        req.flash('message', 'You must provide a body to your request');
+        res.redirect('/profile/edit');
         return;
     }
 
@@ -127,22 +122,16 @@ router.put('/edit/password', async (req, res) => {
     new_password_confirmation = xss(new_password_confirmation);
 
     if (!current_password || !new_password || !new_password_confirmation) {
-        res.status(400).render('profile/edit', {
-            title: 'Edit Profile',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: 'You must provide the current password + new password and confirmation'
-        });
+        req.flash('message', 'You must provide the current password + new password and confirmation');
+        res.redirect('/profile/edit');
         return;
     }
 
     try {
         userValidation.validateUpdatePassword(req.session.user.username, current_password, new_password, new_password_confirmation);
     } catch (e) {
-        res.status(400).render('profile/edit', {
-            title: 'Edit Profile',
-            error_status_code: 'HTTP 400 status code',
-            error_messages: e
-        });
+        req.flash('message', e);
+        res.redirect('/profile/edit');
         return;
     }
 
@@ -150,21 +139,16 @@ router.put('/edit/password', async (req, res) => {
         let response = await users.updatePassword(req.session.user.username, current_password, new_password, new_password_confirmation);
 
         if (response === null || response.passwordUpdated !== true) {
-            res.status(500).render('profile/edit', {
-                title: 'Edit Profile',
-                error_status_code: 'HTTP 500 status code',
-                error_messages: 'Internal Server Error'
-            });
+            req.flash('message', 'Internal Server Error');
+            res.redirect('/profile/edit');
             return;
         }
 
         res.redirect('/');
     } catch (e) {
-        res.status(500).render('profile/edit', {
-            title: 'Edit Profile',
-            error_status_code: 'HTTP 500 status code',
-            error_messages: e
-        });
+        req.flash('message', 'HTTP 500 status code');
+        res.redirect('/profile/edit');
+        return;
     }
 });
 

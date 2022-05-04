@@ -35,7 +35,8 @@ const constructorMethod = (app) => {
       user: req.session.user,
       universityName: universityName,
       universityList: universityList,
-      itemsList: itemsList
+      itemsList: itemsList,
+      flash: req.flash('message')
     });
   });
 
