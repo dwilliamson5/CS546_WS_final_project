@@ -46,6 +46,12 @@
           <br>
           <h1 class="title">{{ title }}</h1>
 
+          {{#if flash}}
+            <div class="alert alert-danger" role="alert">
+                {{flash}}
+            </div>
+          {{/if}}
+
           {{{body}}}
         </div>
 

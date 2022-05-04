@@ -18,6 +18,7 @@ async function getAllByUniversityId(id) {
 
     itemList.forEach(item => {
       item._id = sharedValidation.stringifyId(item._id);
+      item.imageURL = item.photos && item.photos[0].imageURL;
     });
 
     return itemList;
@@ -39,6 +40,7 @@ async function getAllByUniversityIdAndKeyword(id, keyword) {
 
     itemList.forEach(item => {
       item._id = sharedValidation.stringifyId(item._id);
+      item.imageURL = item.photos && item.photos[0].imageURL;
     });
 
     return itemList;

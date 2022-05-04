@@ -7,6 +7,7 @@ const exphbs = require('express-handlebars');
 const configRoutes = require('./routes');
 const data = require('./data/index');
 const users = data.users;
+const flash = require('connect-flash');
 
 app.use('/public', static);
 app.use(express.json());
@@ -18,6 +19,8 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
+app.use(flash());
 
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   // If the user posts to the server with a property called _method, rewrite the request's method
