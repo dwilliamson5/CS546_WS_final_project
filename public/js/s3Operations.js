@@ -1,5 +1,3 @@
-const AWS = require('aws-sdk');
-
 const region = 'us-east-1';
 const bucketName = 'cs546-ws-final-project-images';
 const identityPoolId = 'us-east-1:d0545538-d63b-453e-b60a-e52ddc828f6c';
@@ -19,14 +17,12 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
  * @throws Will throw if parameters are invalid or 
  *         there was an issue uploading the file.
  */
-async function uploadImage(imageName, imageStream) {
-
-    var imageKey = encodeURIComponent(imageName);
+export function uploadImage(imageName, imageStream, callback) {
 
     let params = {
         apiVersion: '2006-03-01',
         params: { Bucket: bucketName },
-        Key: imageKey,
+        Key: imageName,
         Body: imageStream
     };
 
@@ -41,10 +37,18 @@ async function uploadImage(imageName, imageStream) {
             throw err;
         }
 
-        return data.Location;
+        const url = s3Client.getSignedUrl('getObject', {
+            Bucket: bucketName,
+            Key: imageName
+        });
+
+        callback(url);
     });
 }
 
-module.exports = {
-    uploadImage
-};
+export function getUniqueName(filename) {
+
+    var now = Date.now();
+
+    return now + filename;
+}

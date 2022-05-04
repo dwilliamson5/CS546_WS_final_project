@@ -1,4 +1,3 @@
-const formData = require("express-form-data");
 const express = require("express");
 const os = require("os");
 const app = express();
@@ -12,20 +11,6 @@ const users = data.users;
 app.use('/public', static);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const options = {
-  uploadDir: os.tmpdir(),
-  autoClean: true
-};
-
-// parse data with connect-multiparty. 
-app.use(formData.parse(options));
-// delete from the request all empty files (size == 0)
-app.use(formData.format());
-// change the file objects to fs.ReadStream 
-app.use(formData.stream());
-// union the body and the files
-app.use(formData.union());
 
 app.use(session({
   name: 'AuthCookie',
