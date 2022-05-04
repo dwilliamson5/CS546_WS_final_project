@@ -148,16 +148,51 @@ router.get('/:id', async (req, res) => {
     }
 
     let comments = await items.getCommentsForItemId(itemId);
+    let currentUser = await users.getUser(req.session.user.username);
+    let itemPostUser = await users.getUserById(item.userId);
 
-    res.render('items/show', {
-        title: item.title,
-        item: item,
-        canEdit: req.session.user.username == user.username,
-        itemId: itemId,
-        user: user,
-        keywords: item.keywords.join(', '),
-        comments: comments
-    });
+    if(currentUser._id == item.userId){  //current user is the seller
+        let bids = await items.getBidsForSeller(itemId.toString());
+        res.render('items/show', {
+            title: item.title,
+            item: item,
+            canEdit: req.session.user.username == user.username,
+            itemId: itemId,
+            user: itemPostUser,
+            keywords: item.keywords.join(', '),
+            comments: comments,
+            bids: bids
+        });
+        return;
+    }
+    else{ //current user posted a bid already
+        let bids = await items.getBidsForBuyer(itemId.toString(), currentUser._id.toString());
+        if(bids == []){
+            res.render('items/show', {
+                title: item.title,
+                item: item,
+                canEdit: req.session.user.username == user.username,
+                itemId: itemId,
+                user: itemPostUser,
+                keywords: item.keywords.join(', '),
+                comments: comments,
+            });
+            return;
+        } 
+        else{//current user has no bids
+            res.render('items/show', {
+                title: item.title,
+                item: item,
+                canEdit: req.session.user.username == user.username,
+                itemId: itemId,
+                user: itemPostUser,
+                keywords: item.keywords.join(', '),
+                comments: comments,
+                bids: bids
+            });
+            return;
+        }
+    }
 });
 
 router.get('/:id/edit', async (req, res) => {
@@ -460,6 +495,66 @@ router.post('/:id/comment', async (req, res) => {
     }
 });
 
-// create bids
+router.post('/:id/bid', async (req, res) => {
+    let params = req.params;
+    let user = await users.getUser(req.session.user.username);
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+    let itemId = params.id;
+    itemId = xss(itemId);
 
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        return;
+    }
+
+    let body = req.body;
+    if (!body) {
+        req.flash('message', 'You must supply a body to your request!');
+        return;
+    }
+
+    let { bid } = body;
+    bid = xss(bid);
+
+    if (!bid) {
+        req.flash('message', 'You must supply a bid!');
+        return;
+    }
+
+    let item;
+    try {
+        itemValidation.isValidBid(itemId, bid, user._id);
+    } catch (e) {
+        req.flash('message', 'Your param/body is not vaild!');
+        return;
+    }
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        return;
+    }
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        return;
+    }
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        return;
+    }
+    try {
+        user = await users.getUser(req.session.user.username);
+        const bidResult = await items.createBids(itemId, bid, user._id);
+        res.render('partials/comment', { layout: null, ...bidResult });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
 module.exports = router;
