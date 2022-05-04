@@ -50,7 +50,7 @@
           Bio: {{user.bio}}
         </p>
         <p>
-          Rating: {{rating}}
+          Rating: {{avgRating}}
         </p>
     </div>
 </div>
@@ -112,20 +112,26 @@
                 <hr>
               {{/each}}
             {{else}}
-              <p>Interested in this item? Leave a bid!</p>
+              {{#unless canEdit}}
+                <p>Interested in this item? Leave a bid!</p>
+              {{/unless}}
             {{/if}}
           </div>
 
-          <h4>Add a bid</h4>
+          {{#if canEdit}}
+            <a href="/items/{{itemId}}/manage_bids" class="btn btn-success">Manage Bids</a>
+          {{else}}
+            <h4>Add a bid</h4>
 
-          <form action="/items/{{itemId}}/bid" method="POST" id="new-bid-form">
-            <div class="mb-3">
-              <label id="bid-label" for="bid" class="form-label">Bid amount</label>
-              <input id="bid" name="bid"  type="number" class="form-control">
-            </div>
+            <form action="/items/{{itemId}}/bid" method="POST" id="new-bid-form">
+              <div class="mb-3">
+                <label id="bid-label" for="bid" class="form-label">Bid amount</label>
+                <input id="bid" name="bid"  type="number" class="form-control">
+              </div>
 
-            <button type="submit" class="btn btn-success">Submit Bid</button>
-          </form>
+              <button type="submit" class="btn btn-success">Submit Bid</button>
+            </form>
+          {{/if}}
         </div>
       </div>
   </div>
