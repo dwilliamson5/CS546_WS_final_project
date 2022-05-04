@@ -178,7 +178,6 @@ async function getCommentsForItemId(id) {
   let comments = item.comments;
 
   let output = []
-
   for (let i = 0; i < comments.length; i++) {
     comment = comments[i];
 
@@ -196,33 +195,113 @@ async function getCommentsForItemId(id) {
   return output;
 }
 
-// async function createBids(itemId, bid, userId, accepted) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newBid = {
-//         bid: bid,
-//         userId: userId,
-//         accepted: accepted
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { bids: newBid } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add bid';
-//
-//     return await this.getItem(itemId);
-// }
-//
-// async function createComment(itemId, comment, userId) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newComment = {
-//         comment: comment,
-//         userId: userId
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { comments: newComment } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add comment';
-//
-//     return await this.getItem(itemId);
-// }
-//
+async function createBid(itemId, bid, userId) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+  let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
+
+  let user = await users.getUserById(sanitizedData.userId);
+  let item = await getItemById(sanitizedData.itemId)
+
+  const newBid = {
+    _id: ObjectId(),
+    itemId: sanitizedData.itemId,
+    bid: sanitizedData.bid,
+    userId: sanitizedData.userId,
+    accepted: false
+  };
+
+  const itemCollection = await items();
+
+  const updatedInfo = await itemCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { bids: newBid } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not create bid successfully!';
+  }
+
+  const output = {
+    photo: user.profileImageUrl || '/public/images/blank.jpg',
+    bid: newBid.bid,
+    username: user.username
+  }
+
+  return output;
+}
+
+async function getBidsForSeller(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  itemId = sharedValidation.isValidItemId(itemId);
+
+  let item = await getItemById(itemId);
+
+  let bids = item.bids;
+
+  let output = []
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    let user = await users.getUserById(bid.userId.toString());
+
+    let result = {
+      photo: user.profileImageUrl || '/public/images/blank.jpg',
+      username: user.username,
+      bid: bid.bid
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
+async function getBidsForBuyer(itemId, userId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
+
+  let item = await getItemById(itemId);
+  let user = await users.getUserById(userId);
+
+  let bids = item.bids;
+
+  let output = []
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    if (userId == bid.userId.toString()) {
+      let result = {
+        photo: user.profileImageUrl || '/public/images/blank.jpg',
+        username: user.username,
+        bid: bid.bid
+      };
+
+      output.push(result);
+    }
+  }
+
+  return output;
+}
+
+async function getHighestBid(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  let bids = await getBidsForSeller(itemId);
+
+  let max = 0;
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    bid = parseInt(bid.bid);
+
+    if (bid > max) {
+      max = bid
+    }
+  }
+
+  return max;
+}
+
 // async function createRating(itemId, rating, userId) {
 //     const itemsCollection = await items();
 //     const item = await this.getItem(itemId);
@@ -244,7 +323,10 @@ module.exports = {
     createItem,
     updateItem,
     createComment,
-    getCommentsForItemId
-    // createBids,
+    getCommentsForItemId,
+    createBid,
+    getBidsForBuyer,
+    getBidsForSeller,
+    getHighestBid
     // createRating
 };

@@ -148,6 +148,23 @@ router.get('/:id', async (req, res) => {
     }
 
     let comments = await items.getCommentsForItemId(itemId);
+    let currentUser = await users.getUser(req.session.user.username);
+    let bids = await items.getBidsForBuyer(itemId, currentUser._id);
+
+    if (currentUser._id == item.userId) {
+        // get bids for seller instead
+        bids = await items.getBidsForSeller(itemId);
+    }
+
+    let highest_bid;
+
+    try {
+        highest_bid = await items.getHighestBid(itemId);
+    } catch (e) {
+        req.flash('message', 'Something went wrong with highest bid');
+        res.redirect('/');
+        return;
+    }
 
     res.render('items/show', {
         title: item.title,
@@ -156,7 +173,9 @@ router.get('/:id', async (req, res) => {
         itemId: itemId,
         user: user,
         keywords: item.keywords.join(', '),
-        comments: comments
+        comments: comments,
+        bids: bids,
+        highest_bid: highest_bid
     });
 });
 
@@ -260,7 +279,7 @@ router.put('/:id', async (req, res) => {
 
     try {
         item = await items.getItemById(itemId);
-    } catch (e) { 
+    } catch (e) {
         req.flash('message', 'Could not find that item!');
         res.redirect('/');
         return;
@@ -460,6 +479,81 @@ router.post('/:id/comment', async (req, res) => {
     }
 });
 
-// create bids
+router.post('/:id/bid', async (req, res) => {
+    let params = req.params;
+    let user = await users.getUser(req.session.user.username);
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        req.flash('message', 'You must supply a body to your request!');
+        res.redirect('/');
+        return;
+    }
+
+    let { bid } = body;
+    bid = xss(bid);
+
+    if (!bid) {
+        req.flash('message', 'You must supply a bid!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        itemValidation.isValidBid(itemId, bid, user._id);
+    } catch (e) {
+        req.flash('message', 'Your param/body is not vaild!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        const bidResult = await items.createBid(itemId, bid, user._id);
+
+        res.render('partials/bid', { layout: null, ...bidResult });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
 
 module.exports = router;
