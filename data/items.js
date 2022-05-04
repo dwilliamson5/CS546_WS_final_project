@@ -160,7 +160,7 @@ async function createComment(id, username, comment) {
   }
 
   const output = {
-    photo: user.imageURL || '/public/images/blank.jpg',
+    photo: user.profileImageUrl || '/public/images/blank.jpg',
     text: newComment.text,
     username: user.username
   }
@@ -185,7 +185,7 @@ async function getCommentsForItemId(id) {
     let user = await users.getUserById(comment.commentersUserId.toString());
 
     let result = {
-      photo: user.imageURL || '/public/images/blank.jpg',
+      photo: user.profileImageUrl || '/public/images/blank.jpg',
       username: user.username,
       text: comment.text
     };

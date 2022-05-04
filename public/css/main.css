@@ -29,3 +29,7 @@ footer {
   margin: 20px;
   display: inline-flex;
 }
+
+#dropdownUser1 {
+  padding-left: 20px;
+}

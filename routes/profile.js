@@ -15,7 +15,7 @@ router.get('/edit', async (req, res) => {
             name: user.name,
             email: user.email,
             bio: user.bio,
-            imageURL: user.profileImageUrl,
+            imageURL: user.profileImageUrl || '/public/images/blank.jpg',
             flash: req.flash('message')
         });
     } catch (e) {
