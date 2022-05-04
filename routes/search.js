@@ -5,6 +5,7 @@ const items = data.items;
 const users = data.users;
 const universities = data.universities;
 const sharedValidation = require('../data/validations/sharedValidations');
+const xss = require('xss');
 
 router.post('/', async (req, res) => {
     let body = req.body;
@@ -19,6 +20,7 @@ router.post('/', async (req, res) => {
     }
 
     let { search_term } = body;
+    search_term = xss(search_term);
 
     if (!search_term) {
         res.status(400).render('search/index', {
@@ -31,7 +33,6 @@ router.post('/', async (req, res) => {
 
     let id;
     let user = await users.getUser(req.session.user.username);
-    let itemsList = await items.getAllByUniversityId(user.universityId);
 
     try {
         id = sharedValidation.isValidUniversityId(user.universityId);

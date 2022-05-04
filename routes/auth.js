@@ -5,6 +5,7 @@ const users = data.users;
 const images = data.images;
 const universities = data.universities;
 const userValidation = require('../data/validations/userValidations');
+const xss = require('xss');
 
 router.get('/login', async (req, res) => {
     if (req.session.user) {
@@ -32,6 +33,9 @@ router.post('/login', async (req, res) => {
     }
 
     let { universityId, username, password } = body;
+    universityId = xss(universityId);
+    username = xss(username);
+    password = xss(password);
 
     if (!universityId || !username || !password) {
         res.status(400).render('auth/login', {
@@ -125,10 +129,20 @@ router.post('/signup', async (req, res) => {
         image,
         bio
     } = body;
-
-    const imageURL = "test.png";
-
-    if (!universityId || !username || !password || !password_confirmation || !name || !email || !bio) {
+    
+    universityId = xss(universityId);
+    username = xss(username);
+    password = xss(password);
+    password_confirmation = xss(password_confirmation);
+    name = xss(name);
+    email = xss(email);
+    imageURL = xss(imageURL);
+    bio = xss(bio);
+    
+    // this is temporary until it comes as part of the request body
+    imageURL = 'todo';
+    
+    if (!universityId || !username || !password || !password_confirmation || !name || !email || !imageURL || !bio) {
         res.status(400).render('auth/signup', {
             title: 'Sign Up',
             error_status_code: 'HTTP 400 status code',

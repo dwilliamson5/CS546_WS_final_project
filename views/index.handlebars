@@ -5,7 +5,7 @@
     <form action="/search" method="POST" id="search-item-form">
 
         <div class="mb-3">
-            <label for="search_term" class="form-label">Search Items</label>
+            <label for="search_term" class="form-label">Search by keyword</label>
             <input id="item-search" placeholder="headphones" name="search_term" class="form-control"/>
         </div>
 
@@ -31,5 +31,39 @@
         <p>There are no items yet. Click "List New Item" to add one.</p>
     {{/if}}
 {{else}}
-    <p>This is the about page.</p>
+    <hr>
+    <h3>What is Unisell?</h3>
+    <p>Unisell is a used-item marketplace exclusive to university students. Verified university students can buy or sell used
+    items.</p>
+    <hr>
+    <h3>Our goal</h3>
+    <p>Unisell is designed to improve college communities and promote reuse of items by providing a platform where students
+    can safely interact.</p>
+    <hr>
+    <h3>How does Unisell work?</h3>
+    <p>To join us, all you need is your student email address.
+        Once you create an account, you can post or buy items.
+    </p>
+        <p>Purchasing items:</p>
+        <ol>
+            <li>Leave a comment on the post you wish to purchase if you have any questions.</li>
+            <li>Create a bid.</li>
+            <li>You will be notified if your bid is accepted.</li>
+        </ol>
+        <p>Selling items:</p>
+        <ol>
+            <li>Create a post with photos, keywords, descriptions, etc.</li>
+            <li>Accept a bid that you like.</li>
+            <li>Communicate with the buyer to decide when and where to meet.</li>
+        </ol>
+        <p>*Note that all transactions happen on campus.</p>
+    <hr>
+    <h3>Participating Universities:</h3>
+    {{#each universityList}}
+      <ul>
+          <li>{{ this }}</li>
+      </ul>
+    {{/each}}
+
+</p>
 {{/if}}
