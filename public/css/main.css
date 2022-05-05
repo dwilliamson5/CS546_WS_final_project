@@ -3,6 +3,11 @@
   margin-top: 8px;
 }
 
+.sr-only{
+  color: black;
+  font-size: 1.5rem;
+}
+
 .error-status {
   color: darkred;
   font-size: larger;
