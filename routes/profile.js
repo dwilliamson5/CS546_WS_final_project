@@ -42,7 +42,7 @@ router.put('/edit', async (req, res) => {
     imageURL = xss(imageURL);
     bio = xss(bio);
 
-    if (!username || !name || !email || !imageURL || !bio) {
+    if (!username || !name || !email || !bio) {
         res.status(400).render('profile/edit', {
             title: 'Edit Profile',
             error_status_code: 'HTTP 400 status code',
@@ -50,14 +50,13 @@ router.put('/edit', async (req, res) => {
             username: username,
             name: name,
             email: email,
-            bio: bio,
-            imageURL: imageURL
+            bio: bio
         });
         return;
     }
 
     try {
-        userValidation.isValidUserUpdateParameters(req.session.user.username, username, name, email, imageURL, bio);
+        userValidation.isValidUserUpdateParameters(req.session.user.username, username, name, email, bio);
     } catch (e) {
         res.status(400).render('profile/edit', {
             title: 'Edit Profile',
@@ -66,8 +65,7 @@ router.put('/edit', async (req, res) => {
             username: username,
             name: name,
             email: email,
-            bio: bio,
-            imageURL: imageURL
+            bio: bio
         });
         return;
     }

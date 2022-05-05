@@ -229,33 +229,29 @@ function validateUpdatePassword(username, currentPassword, newPassword, newPassw
     }
 }
 
-function isValidUserUpdateParameters(currentUsername, username, name, email, imageURL, bio) {
+function isValidUserUpdateParameters(currentUsername, username, name, email, bio) {
     sharedValidation.checkParamPresent(currentUsername, 'current username');
     sharedValidation.checkParamPresent(username, 'username');
     sharedValidation.checkParamPresent(name, 'name');
     sharedValidation.checkParamPresent(email, 'email');
-    sharedValidation.checkParamPresent(imageURL, 'image url');
     sharedValidation.checkParamPresent(bio, 'bio');
 
     sharedValidation.checkIsString(currentUsername, 'current username');
     sharedValidation.checkIsString(username, 'username');
     sharedValidation.checkIsString(name, 'name');
     sharedValidation.checkIsString(email, 'email');
-    sharedValidation.checkIsString(imageURL, 'image url');
     sharedValidation.checkIsString(bio, 'bio');
 
     currentUsername = sharedValidation.cleanUpString(currentUsername);
     username = sharedValidation.cleanUpString(username);
     name = sharedValidation.cleanUpString(name);
     email = sharedValidation.cleanUpString(email);
-    imageURL = sharedValidation.cleanUpString(imageURL);
     bio = sharedValidation.cleanUpString(bio);
 
     sharedValidation.checkStringLength(currentUsername, 'current username');
     sharedValidation.checkStringLength(username, 'username');
     sharedValidation.checkStringLength(name, 'name');
     sharedValidation.checkStringLength(email, 'email');
-    sharedValidation.checkStringLength(imageURL, 'image url');
     sharedValidation.checkStringLength(bio, 'bio');
 
     currentUsername = currentUsername.toLowerCase();
@@ -271,7 +267,6 @@ function isValidUserUpdateParameters(currentUsername, username, name, email, ima
         username: username,
         name: name,
         email: email,
-        imageURL: imageURL,
         bio: bio
     }
 }
