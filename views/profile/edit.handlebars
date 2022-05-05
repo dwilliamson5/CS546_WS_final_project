@@ -1,9 +1,9 @@
 <p class="error-status">{{error_status_code}}</p>
-<p class="error-message">{{error_messages}}</p>
+<p class="error-message" id="error-message">{{error_messages}}</p>
 
 <h2>Edit Info</h2>
 
-<img class="img-thumbnail" alt="profile picture" src="{{imageURL}}"  width="304" height="236" />
+<img class="img-thumbnail rounded" alt="profile picture" src="{{imageURL}}"  width="304" height="236" />
 
 <form action="/profile/edit" method="POST" id="profile-form">
     <input name="_method" type="hidden" value="PUT" />

@@ -23,7 +23,8 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         var files = document.getElementById('image').files;
 
         if (!files.length) {
-            // DISPLAY NO IMAGE ERROR ON UI
+            $('#error-message').text('You need to provide a profile image!');
+            window.scrollTo({top: 0, behavior: 'smooth'});
             return false;
         }
 
