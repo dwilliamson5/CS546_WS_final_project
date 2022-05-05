@@ -96,7 +96,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         var html = '';
 
         if (!photos || photos.length === 0) {
-            html = '<p>There are no items yet. Click "List New Item" to add one.</p>';
+            html = '<p>There are no items yet. Click "Add photo" to add one.</p>';
             previewImages.append(html);
             return;
         }

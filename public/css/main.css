@@ -50,6 +50,12 @@ footer {
   font:bold;
 }
 
+.carousel-empty {
+  text-align: center;
+  width: 100%;
+  height: 150px;
+}
+
 #dropdownUser1 {
   padding-left: 20px;
 }
