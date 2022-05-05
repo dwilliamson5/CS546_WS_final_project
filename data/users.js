@@ -356,15 +356,14 @@ async function createRating(raterId, rateeId, rating) {
   rating = sharedValidation.isValidRating(rating);
 
   let rater = await getUserById(raterId);
-  let ratee = await getUserById(ratee);
-  
-  const userCollection = await users();
+  let ratee = await getUserById(rateeId);
 
   const newRating = {
-    userId: ObjectId(rater),
+    userId: ObjectId(rater._id),
     rating: rating
   };
-  
+
+  const userCollection = await users();
   const updatedInfo = await userCollection.updateOne({ _id: ObjectId(ratee._id) }, { $addToSet: { rating: newRating } });
 
   if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
