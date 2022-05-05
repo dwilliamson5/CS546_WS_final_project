@@ -209,6 +209,18 @@ function isValidBid(itemId, bid, userId) {
   }
 }
 
+function isValidPrice(price){
+  if (isNaN(price)) {
+    throw 'Must be a number'
+  }
+
+  price = parseInt(price);
+
+  if (price < 0) {
+    throw 'price cannot be below 0 (free)';
+  }
+}
+
 module.exports = {
   isValidItemParameters,
   isValidItemUpdateParameters,
