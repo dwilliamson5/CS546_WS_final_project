@@ -3,6 +3,7 @@ const authRoutes = require('./auth');
 const itemsRoutes = require('./items');
 const profileRoutes = require('./profile');
 const searchRoutes = require('./search');
+const rateRoutes = require('./rate');
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
@@ -16,28 +17,38 @@ const constructorMethod = (app) => {
     let universityName;
     let itemsList;
     let universityList = [];
+    let acceptedBids;
+    
+    try {
+      if (req.session.user) {
+        title += ', ' + req.session.user.username;
 
-    if (req.session.user) {
-      title += ', ' + req.session.user.username;
+        let user = await users.getUser(req.session.user.username);
+        let university = await universities.getUniversityById(user.universityId);
+        universityName = university.name;
+        itemsList = await items.getAllByUniversityId(user.universityId);
+        acceptedBids = await users.hasAcceptedBids(user._id);
+      }
+      else{
+        let universityCollection = await universities.getAll();
+        universityCollection.forEach(university => universityList.push(university.name));
+      }
 
-      let user = await users.getUser(req.session.user.username);
-      let university = await universities.getUniversityById(user.universityId);
-      universityName = university.name;
-      itemsList = await items.getAllByUniversityId(user.universityId);
+      res.render('index', {
+        title: title,
+        user: req.session.user,
+        universityName: universityName,
+        universityList: universityList,
+        itemsList: itemsList,
+        acceptedBids: acceptedBids,
+        flash: req.flash('message')
+      });
+    } catch (e) {
+      res.status(500).render('errors/500', {
+          title: '500',
+          message: 'Internal server error'
+      });
     }
-    else{
-      let universityCollection = await universities.getAll();
-      universityCollection.forEach(university => universityList.push(university.name));
-    }
-
-    res.render('index', {
-      title: title,
-      user: req.session.user,
-      universityName: universityName,
-      universityList: universityList,
-      itemsList: itemsList,
-      flash: req.flash('message')
-    });
   });
 
   app.use('/admin', adminRoutes);
@@ -45,6 +56,7 @@ const constructorMethod = (app) => {
   app.use('/items', itemsRoutes);
   app.use('/profile', profileRoutes);
   app.use('/search', searchRoutes);
+  app.use('/rate', rateRoutes);
 
   app.use('*', (req, res) => {
     res.status(404).render('errors/404', {

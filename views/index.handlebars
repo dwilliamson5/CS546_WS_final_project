@@ -16,6 +16,14 @@
 
     <h3>Browsing {{universityName}} items:</h3>
 
+    {{#if acceptedBids}}
+        {{#each acceptedBids}}
+            <div class="alert alert-primary" role="alert">
+                Congratuations, you have an accepted bid on {{this.title}}! <a href="/items/{{this._id}}">View the item</a> to contact the seller.
+            </div>
+        {{/each}}
+    {{/if}}
+
     {{#if itemsList}}
         <div class="item-list">
             {{#each itemsList}}
@@ -66,6 +74,4 @@
           <li>{{ this }}</li>
       </ul>
     {{/each}}
-
-</p>
 {{/if}}

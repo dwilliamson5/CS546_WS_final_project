@@ -1,3 +1,25 @@
+{{#if hasAcceptedBid}}
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-success" role="alert">
+        Congratuations, your bid was accepted for ${{hasAcceptedBid.price}}! You can contact {{hasAcceptedBid.username}} at {{hasAcceptedBid.email}} to discuss futher. Thanks for using Unisell!
+      </div>
+
+      <p>Please take a moment to rate {{hasAcceptedBid.username}}:</p>
+
+      <form action="/rate/{{hasAcceptedBid.userGivingRatingId}}/{{hasAcceptedBid.userGettingRatedId}}" method="POST" id="new-rating-form">
+        <div class="mb-3">
+          <label id="rating-label" for="rating" class="form-label">Rating</label>
+          <input id="rating" name="rating" type="number" min="1" max="5" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit Rating</button>
+      </form>
+    </div>
+  </div>
+  <br>
+{{/if}}
+
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
@@ -26,7 +48,7 @@
 <p>{{item.description}}</p>
 
 <h2>Price:</h2>
-<p>{{item.price}}</p>
+<p>${{item.price}}</p>
 
 <h2>Keywords:</h2>
 <p>{{keywords}}</p>
@@ -106,7 +128,7 @@
                   <img src="{{photo}}" alt="{{username}}" class="me-3 rounded-circle" style="width: 60px; height: 60px;" />
                   <div>
                       <h3 class="fw-bold">{{username}}</h3>
-                      <p>{{bid}}</p>
+                      <p>${{bid}}</p>
                   </div>
                 </div>
                 <hr>

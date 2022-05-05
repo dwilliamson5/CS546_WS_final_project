@@ -51,9 +51,7 @@ function isValidItemParameters(title, description, keywords, price, username, ph
     photos[index] = photo;
   });
 
-  if (price < 0) {
-    throw 'price cannot be below 0 (free)';
-  }
+  isValidPrice(price);
 
   return {
     title: title,

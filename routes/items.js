@@ -176,6 +176,16 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    let hasAcceptedBid;
+    
+    try {
+        hasAcceptedBid = await items.hasAcceptedBidFor(itemId, currentUser._id);
+    } catch (e) {
+        req.flash('message', 'Something went wrong with hasAcceptedBid');
+        res.redirect('/');
+        return;
+    }
+
     res.render('items/show', {
         title: item.title,
         item: item,
@@ -186,7 +196,8 @@ router.get('/:id', async (req, res) => {
         comments: comments,
         bids: bids,
         highest_bid: highest_bid,
-        avgRating: avgRating
+        avgRating: avgRating,
+        hasAcceptedBid: hasAcceptedBid
     });
 });
 
@@ -565,6 +576,195 @@ router.post('/:id/bid', async (req, res) => {
     } catch (e) {
         res.status(500).json({ error: e });
     }
+});
+
+router.get('/:id/manage_bids', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(itemId);
+    } catch (e) {
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
+        return;
+    }
+
+    let bids;
+
+    try {
+        bids = await items.getBidsForSeller(itemId);
+    } catch (e) {
+        req.flash('message', 'Something went wrong getting bids!');
+        res.redirect('/');
+        return;
+    }
+
+    res.render('items/manage_bids', {
+        title: 'Bids for ' + item.title,
+        id: item._id,
+        bids: bids,
+        flash: req.flash('message')
+    });
+});
+
+router.get('/:id/bids/:bidId/accept', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    let bidId = params.bidId;
+    itemId = xss(itemId);
+    bidId = xss(bidId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    if (!bidId) {
+        req.flash('message', 'No bid ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(itemId);
+    } catch (e) {
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(bidId);
+    } catch (e) {
+        req.flash('message', 'Bad bid ID!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
+        return;
+    }
+
+    let bid;
+
+    try {
+        bid = await items.getBidForItem(itemId, bidId);
+    } catch (e) {
+        req.flash('message', 'Something went wrong getting the bid!');
+        res.redirect('/');
+        return;
+    }
+
+    let currentUser;
+
+    try {
+        currentUser = await users.getUser(req.session.user.username);
+    } catch (e) {
+        req.flash('message', 'Something went wrong getting the current user!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        await items.acceptBid(itemId, bidId);
+    } catch (e) {
+        req.flash('message', 'Something went wrong accepting the bid!');
+        res.redirect('/');
+        return;
+    }
+
+    res.render('items/accepted_bid', {
+        title: 'Woo, you accepted a bid for ' + item.title,
+        id: item._id,
+        acceptedUsername: bid.username,
+        acceptedEmail: bid.email,
+        acceptedPrice: bid.price,
+        userGettingRatedId: bid.bidOwner,
+        userGivingRatingId: currentUser._id,
+    });
 });
 
 module.exports = router;
