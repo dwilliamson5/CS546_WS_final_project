@@ -17,6 +17,7 @@ const constructorMethod = (app) => {
     let universityName;
     let itemsList;
     let universityList = [];
+    let imageUrl = '';
     let acceptedBids;
     
     try {
@@ -40,6 +41,7 @@ const constructorMethod = (app) => {
         universityName: universityName,
         universityList: universityList,
         itemsList: itemsList,
+        imageUrl: imageUrl,
         acceptedBids: acceptedBids,
         flash: req.flash('message')
       });

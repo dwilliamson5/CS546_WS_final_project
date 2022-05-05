@@ -1,7 +1,7 @@
 <p class="error-status">{{error_status_code}}</p>
-<p class="error-message">{{error_messages}}</p>
+<p class="error-message" id="error-message">{{error_messages}}</p>
 
-<form action="/auth/signup" method="POST" id="signup-form">
+<form action="/auth/signup" method="POST" id="profile-form">
     <div class="mb-3">
         <label for="universityId" class="form-label">Select your university:</label>
 
@@ -45,14 +45,16 @@
         <textarea id="bio" name="bio" rows="5" cols="30" class="form-control">{{bio}}</textarea>
     </div>
 
-    {{!-- <div class="mb-3">
-        <!-- TODO -->
+    <div class="mb-3">
         <label id="image-label" for="image">Profile image</label>
-        <input id="image" type="image" name="image" />
-    </div> --}}
+        <input id="image" type="file" name="image" accept="image/*"/>
+        <input id="imageURL" type="hidden" name="imageURL"/>
+    </div>
 
     <button type="submit" class="btn btn-success">Sign Up</button>
 </form>
 
 <a href="/auth/login" class="btn btn-primary">Already have an account? Click here to log-in</a>
 <a href="/" class="btn btn-secondary">Home</a>
+
+<script src="/public/js/editProfile.js" type="module"></script>

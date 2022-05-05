@@ -77,6 +77,15 @@ function isValidItemId(id) {
   return id;
 }
 
+function isValidUrlString(url) {
+  checkParamPresent(url, 'url');
+  checkIsString(url);
+  url = cleanUpString(url);
+  checkStringLength(url, 'url');
+
+  return id;
+}
+
 function isValidRating(rating){
   if (isNaN(rating)) {
     throw 'Must be a number'
@@ -104,5 +113,6 @@ module.exports = {
     isValidUniversityId,
     isValidItemId,
     isValidUserId,
+    isValidUrlString,
     isValidRating
-};
+}

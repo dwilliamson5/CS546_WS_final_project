@@ -6,44 +6,54 @@ const sharedValidation = require('./validations/sharedValidations');
 const { ObjectId } = require('mongodb');
 
 async function getAllByUniversityId(id) {
-    sharedValidation.checkArgumentLength(arguments, 1);
-    id = sharedValidation.isValidUniversityId(id);
+  sharedValidation.checkArgumentLength(arguments, 1);
+  id = sharedValidation.isValidUniversityId(id);
 
-    const itemCollection = await items();
-    let itemList = await itemCollection.find({ sold: false, universityId: id }).toArray();
+  const itemCollection = await items();
+  let itemList = await itemCollection.find({ sold: false, universityId: id }).toArray();
 
-    if (!itemList) {
-        throw 'Could not get all items';
-    }
+  if (!itemList) {
+    throw 'Could not get all items';
+  }
 
-    itemList.forEach(item => {
-      item._id = sharedValidation.stringifyId(item._id);
-      item.imageURL = item.photos && item.photos[0].imageURL;
-    });
+  itemList.forEach(item => {
+    item._id = sharedValidation.stringifyId(item._id);
+    item.imageURL = item.photos && item.photos[0].imageUrl;
 
-    return itemList;
+    let photos = item.photos;
+
+    photos.forEach(photo => {
+      photo._id = sharedValidation.stringifyId(photo._id);
+    })
+  });
+
+  return itemList;
 }
 
 async function getAllByUniversityIdAndKeyword(id, keyword) {
-    sharedValidation.checkArgumentLength(arguments, 2);
-    id = sharedValidation.isValidUniversityId(id);
-    sharedValidation.checkIsString(keyword);
-    keyword = sharedValidation.cleanUpString(keyword);
-    sharedValidation.checkStringLength(keyword, 'keyword');
+  sharedValidation.checkArgumentLength(arguments, 2);
+  id = sharedValidation.isValidUniversityId(id);
+  sharedValidation.checkIsString(keyword);
+  keyword = sharedValidation.cleanUpString(keyword);
+  sharedValidation.checkStringLength(keyword, 'keyword');
 
-    const itemCollection = await items();
-    let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: id }).toArray();
+  const itemCollection = await items();
+  let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: id }).toArray();
 
-    if (!itemList) {
-        throw 'No items for that keyword';
-    }
+  if (!itemList) {
+    throw 'No items for that keyword';
+  }
 
-    itemList.forEach(item => {
-      item._id = sharedValidation.stringifyId(item._id);
-      item.imageURL = item.photos && item.photos[0].imageURL;
-    });
+  itemList.forEach(item => {
+    item._id = sharedValidation.stringifyId(item._id);
+    item.imageURL = item.photos && item.photos[0].imageUrl;
 
-    return itemList;
+    item.photos.forEach(photo => {
+      photo._id = sharedValidation.stringifyId(photo._id);
+    })
+  });
+
+  return itemList;
 }
 
 async function getItemById(id) {
@@ -79,7 +89,7 @@ async function createItem(title, description, keywords, price, username, photos,
     price: sanitizedData.price,
     userId: userId,
     universityId: universityId,
-    photos: sanitizedData.photos,
+    photos: [],
     pickUpMethod: sanitizedData.pickUpMethod,
     sold: false,
     bids: [],
@@ -103,7 +113,7 @@ async function updateItem(id, title, description, keywords, price, photos, pickU
 
   const itemCollection = await items();
 
-  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id)});
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id) });
 
   if (!item) {
     throw 'Item does not exist!'
@@ -114,7 +124,6 @@ async function updateItem(id, title, description, keywords, price, photos, pickU
     description: sanitizedData.description,
     keywords: sanitizedData.keywords,
     price: sanitizedData.price,
-    photos: sanitizedData.photos,
     pickUpMethod: sanitizedData.pickUpMethod,
     sold: sanitizedData.sold
   };
@@ -140,27 +149,27 @@ async function createComment(id, username, comment) {
 
   const itemCollection = await items();
 
-  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id)});
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id) });
 
   if (!item) {
     throw 'Item does not exist!'
   }
 
   const newComment = {
-      _id: ObjectId(),
-      commentersUserId: user._id,
-      text: sanitizedData.comment
+    _id: ObjectId(),
+    commentersUserId: user._id,
+    text: sanitizedData.comment
   };
 
   const itemsCollection = await items();
   const updatedInfo = await itemsCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { comments: newComment } });
 
   if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
-      throw 'Could not create comment successfully';
+    throw 'Could not create comment successfully';
   }
 
   const output = {
-    photo: user.imageURL || '/public/images/blank.jpg',
+    photo: user.profileImageUrl || '/public/images/blank.jpg',
     text: newComment.text,
     username: user.username
   }
@@ -184,7 +193,7 @@ async function getCommentsForItemId(id) {
     let user = await users.getUserById(comment.commentersUserId.toString());
 
     let result = {
-      photo: user.imageURL || '/public/images/blank.jpg',
+      photo: user.profileImageUrl || '/public/images/blank.jpg',
       username: user.username,
       text: comment.text
     };
@@ -193,6 +202,159 @@ async function getCommentsForItemId(id) {
   }
 
   return output;
+}
+
+async function getImagesForItemId(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidItemId(id);
+
+  let item = await getItemById(id);
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  let photos = item.photos;
+
+  let output = []
+
+  for (let i = 0; i < photos.length; i++) {
+    let photo = photos[i];
+
+    let result = {
+      _id: photo._id,
+      description: photo.description,
+      imageURL: photo.imageUrl || '/public/images/blank.jpg'
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
+async function getPhoto(itemId, imageId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+
+  itemId = sharedValidation.isValidItemId(itemId);
+  imageId = sharedValidation.isValidItemId(imageId);
+
+  let item = await getItemById(itemId);
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  const itemCollection = await items();
+
+  let photo = await itemCollection.aggregate(
+    [
+      {
+        $match:
+        {
+          "photos._id": ObjectId(imageId)
+        }
+      },
+      {
+        $addFields:
+        {
+          photos:
+          {
+            $filter:
+            {
+              input: "$photos",
+              cond:
+              {
+                $eq: ["$$this._id", ObjectId(imageId)]
+              }
+            }
+          }
+        }
+      },
+      { $unwind: "$photos" },
+      {
+        $project:
+        {
+          _id: "$photos._id",
+          title: "$photos.description",
+          releaseDate: "$photos.imageUrl"
+        }
+      }
+    ]).toArray();
+
+  if (!photo || photo.length === 0) {
+    throw 'Photo does not exist!'
+  }
+
+  photo[0]._id = photo[0]._id.toString();
+
+  return photo[0];
+}
+
+async function createPhotoForItem(id, description, imageURL) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+
+  let sanitizedData = itemValidation.isValidPhoto(id, description, imageURL);
+
+  const itemCollection = await items();
+
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id) });
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  let newPhoto = {
+    _id: ObjectId(),
+    description: sanitizedData.description,
+    imageUrl: sanitizedData.imageURL
+  };
+
+  const itemsCollection = await items();
+  const updatedInfo = await itemsCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { photos: newPhoto } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not create photo successfully';
+  }
+
+  return { photoAdded: true };
+}
+
+async function editPhotoForItem(itemId, imageId, description, imageURL) {
+  sharedValidation.checkArgumentLength(arguments, 4);
+
+  let sanitizedData = itemValidation.isValidPhoto(itemId, description, imageURL);
+  imageId = sharedValidation.isValidItemId(imageId);
+
+  const itemCollection = await items();
+
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id) });
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  let photo = await getPhoto(sanitizedData.id, imageId);
+
+  const updatedInfo = await itemCollection.updateOne(
+    { 
+      "_id": ObjectId(sanitizedData.id),
+      "photos._id": ObjectId(photo._id)
+    },
+    { 
+      $set: { 
+        "photos.$.description": sanitizedData.description,
+        "photos.$.imageUrl": sanitizedData.imageURL
+      } 
+    }
+  );
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not update photo successfully';
+  }
+
+  return { photoUpdated: true };
 }
 
 async function createBid(itemId, bid, userId) {
@@ -425,18 +587,22 @@ async function hasAcceptedBidFor(itemId, userId) {
 }
 
 module.exports = {
-    getAllByUniversityId,
-    getAllByUniversityIdAndKeyword,
-    getItemById,
-    createItem,
-    updateItem,
-    createComment,
-    getCommentsForItemId,
-    createBid,
-    getBidsForBuyer,
-    getBidsForSeller,
-    getHighestBid,
-    getBidForItem,
-    acceptBid,
-    hasAcceptedBidFor
+  getAllByUniversityId,
+  getAllByUniversityIdAndKeyword,
+  getItemById,
+  createItem,
+  updateItem,
+  createComment,
+  getCommentsForItemId,
+  getImagesForItemId,
+  getPhoto,
+  createPhotoForItem,
+  editPhotoForItem,
+  createBid,
+  getBidsForBuyer,
+  getBidsForSeller,
+  getHighestBid,
+  getBidForItem,
+  acceptBid,
+  hasAcceptedBidFor
 };

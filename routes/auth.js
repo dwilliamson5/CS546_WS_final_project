@@ -128,6 +128,7 @@ router.post('/signup', async (req, res) => {
         imageURL,
         bio
     } = body;
+
     universityId = xss(universityId);
     username = xss(username);
     password = xss(password);
@@ -136,10 +137,7 @@ router.post('/signup', async (req, res) => {
     email = xss(email);
     imageURL = xss(imageURL);
     bio = xss(bio);
-
-    // this is temporary until it comes as part of the request body
-    imageURL = 'todo';
-
+    
     if (!universityId || !username || !password || !password_confirmation || !name || !email || !imageURL || !bio) {
         res.status(400).render('auth/signup', {
             title: 'Sign Up',

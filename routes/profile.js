@@ -15,6 +15,7 @@ router.get('/edit', async (req, res) => {
             name: user.name,
             email: user.email,
             bio: user.bio,
+            imageURL: user.profileImageUrl || '/public/images/blank.jpg',
             flash: req.flash('message')
         });
     } catch (e) {
@@ -41,9 +42,6 @@ router.put('/edit', async (req, res) => {
     imageURL = xss(imageURL);
     bio = xss(bio);
 
-    // this is temporary until it comes as part of the request body
-    imageURL = 'todo';
-
     if (!username || !name || !email || !imageURL || !bio) {
         res.status(400).render('profile/edit', {
             title: 'Edit Profile',
@@ -52,7 +50,8 @@ router.put('/edit', async (req, res) => {
             username: username,
             name: name,
             email: email,
-            bio: bio
+            bio: bio,
+            imageURL: imageURL
         });
         return;
     }
@@ -67,7 +66,8 @@ router.put('/edit', async (req, res) => {
             username: username,
             name: name,
             email: email,
-            bio: bio
+            bio: bio,
+            imageURL: imageURL
         });
         return;
     }
@@ -83,7 +83,8 @@ router.put('/edit', async (req, res) => {
                 username: username,
                 name: name,
                 email: email,
-                bio: bio
+                bio: bio,
+                imageURL: imageURL
             });
             return;
         }
@@ -102,7 +103,8 @@ router.put('/edit', async (req, res) => {
             username: username,
             name: name,
             email: email,
-            bio: bio
+            bio: bio,
+            imageURL: imageURL
         });
     }
 });
