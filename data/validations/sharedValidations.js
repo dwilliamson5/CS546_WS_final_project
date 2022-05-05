@@ -89,6 +89,8 @@ function isValidRating(rating){
   } else if (rating > 5) {
     throw 'rating cannot be greater than 5'
   }
+    
+  return rating;
 }
 
 module.exports = {
