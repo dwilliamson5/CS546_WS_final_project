@@ -738,6 +738,16 @@ router.get('/:id/bids/:bidId/accept', async (req, res) => {
         return;
     }
 
+    let currentUser;
+
+    try {
+        currentUser = await users.getUser(req.session.user.username);
+    } catch (e) {
+        req.flash('message', 'Something went wrong getting the current user!');
+        res.redirect('/');
+        return;
+    }
+
     try {
         await items.acceptBid(itemId, bidId);
     } catch (e) {
@@ -751,8 +761,9 @@ router.get('/:id/bids/:bidId/accept', async (req, res) => {
         id: item._id,
         acceptedUsername: bid.username,
         acceptedEmail: bid.email,
-        userId: bid.userId,
-        acceptedPrice: bid.price
+        acceptedPrice: bid.price,
+        userGettingRatedId: bid.bidOwner,
+        userGivingRatingId: currentUser._id,
     });
 });
 
