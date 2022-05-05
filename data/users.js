@@ -149,10 +149,10 @@ async function getAvgRating(id) {
     for (let i = 0; i < ratings.length; i++) {
       let rating = ratings[i];
 
-      sumRating += rating;
+      sumRating += rating.rating;
     }
 
-    return sumRating / ratings.length;
+    return (Math.round((sumRating / ratings.length) * 10) / 10);
   }
 }
 
@@ -339,8 +339,8 @@ async function hasAcceptedBids(id) {
   let user = await getUserById(id);
 
   const itemCollection = await items();
-  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true }).toArray();
-
+  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true, sold: false }).toArray();
+  
   if (itemsList.length == 0) {
     return false;
   } else {
@@ -357,14 +357,15 @@ async function createRating(raterId, rateeId, rating) {
 
   let rater = await getUserById(raterId);
   let ratee = await getUserById(rateeId);
-
+  
   const newRating = {
+    _id: ObjectId(),
     userId: ObjectId(rater._id),
     rating: rating
   };
 
   const userCollection = await users();
-  const updatedInfo = await userCollection.updateOne({ _id: ObjectId(ratee._id) }, { $addToSet: { rating: newRating } });
+  const updatedInfo = await userCollection.updateOne({ _id: ObjectId(ratee._id) }, { $addToSet: { ratings: newRating } });
 
   if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
     throw 'Could not create rating successfully';
