@@ -34,7 +34,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         var files = document.getElementById('image').files;
 
         if (!files.length) {
-            showError('You need to provide a profile image!');
+            showError('You need to provide an image!');
             return false;
         }
 
