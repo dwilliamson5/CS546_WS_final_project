@@ -1,3 +1,16 @@
+{{#if hasAcceptedBid}}
+  <div class="card">
+    <div class="card-body">
+      <div class="alert alert-success" role="alert">
+        Congratuations, your bid was accepted for ${{hasAcceptedBid.price}}! You can contact {{hasAcceptedBid.username}} at {{hasAcceptedBid.email}} to discuss futher. Thanks for using Unisell!
+      </div>
+
+      <p>Please take a moment to rate {{hasAcceptedBid.username}}:</p>
+    </div>
+  </div>
+  <br>
+{{/if}}
+
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
