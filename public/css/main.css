@@ -40,6 +40,16 @@ footer {
   height: 236px;
 }
 
+.carousel_image {
+  width: 100%;
+  height: 450px;
+}
+
+.carousel-caption h3 {
+  color:crimson;
+  font:bold;
+}
+
 #dropdownUser1 {
   padding-left: 20px;
 }
