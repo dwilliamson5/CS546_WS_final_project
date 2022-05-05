@@ -45,6 +45,7 @@ const constructorMethod = (app) => {
   app.use('/items', itemsRoutes);
   app.use('/profile', profileRoutes);
   app.use('/search', searchRoutes);
+  app.use('/rate', rateRoutes);
 
   app.use('*', (req, res) => {
     res.status(404).render('errors/404', {
