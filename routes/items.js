@@ -177,7 +177,7 @@ router.get('/:id', async (req, res) => {
     }
 
     let hasAcceptedBid;
-    
+
     try {
         hasAcceptedBid = await items.hasAcceptedBidFor(itemId, currentUser._id);
     } catch (e) {
@@ -405,7 +405,7 @@ router.get('/:id/photos', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id/update', async (req, res) => {
     let params = req.params;
 
     if (!params) {
