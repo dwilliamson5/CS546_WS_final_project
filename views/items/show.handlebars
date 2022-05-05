@@ -23,7 +23,6 @@
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
     {{#if item.photos}}
-
       {{#each item.photos}}
         <div class="carousel-item {{#if @first }}active {{/if}}">
           <img class="carousel_image" src="{{this.imageUrl}}" alt="{{this.description}}">
@@ -40,14 +39,14 @@
         <span class="sr-only">Previous</span>
       </a>
       <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-            <span class="sr-only">Next</span>
+        <span class="sr-only">Next</span>
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
       </a>
 
     {{else}}
       {{#if canEdit}}
         <div class="carousel-empty">
-            <h3>There are no images yet. <a href="/items/{{itemId}}/editPhotos" class="btn btn-primary">Click here</a> to add!</h3>
+          <h3>There are no images yet. <a href="/items/{{itemId}}/editPhotos" class="btn btn-primary">Click here</a> to add!</h3>
         </div>
       {{else}}
         <div class="carousel-empty">
