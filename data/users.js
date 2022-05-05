@@ -1,5 +1,6 @@
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const items = mongoCollections.items;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const userValidation = require('./validations/userValidations');
@@ -330,6 +331,49 @@ async function updatePassword(username, currentPassword, newPassword, newPasswor
   return { passwordUpdated: true };
 }
 
+async function hasAcceptedBids(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidUserId(id);
+
+  let user = await getUserById(id);
+
+  const itemCollection = await items();
+  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true }).toArray();
+
+  if (itemsList.length == 0) {
+    return false;
+  } else {
+    return itemsList;
+  }
+}
+
+async function createRating(raterId, rateeId, rating) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+
+  raterId = sharedValidation.isValidUserId(raterId);
+  rateeId = sharedValidation.isValidUserId(rateeId);
+  rating = sharedValidation.isValidRating(rating);
+
+  let rater = await getUserById(raterId);
+  let ratee = await getUserById(ratee);
+  
+  const userCollection = await users();
+
+  const newRating = {
+    userId: ObjectId(rater),
+    rating: rating
+  };
+  
+  const updatedInfo = await userCollection.updateOne({ _id: ObjectId(ratee._id) }, { $addToSet: { rating: newRating } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not create rating successfully';
+  }
+
+  return true;
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -338,5 +382,7 @@ module.exports = {
   updateUser,
   updatePassword,
   getUserById,
-  getAvgRating
+  getAvgRating,
+  hasAcceptedBids,
+  createRating
 };
