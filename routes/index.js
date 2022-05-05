@@ -3,6 +3,7 @@ const authRoutes = require('./auth');
 const itemsRoutes = require('./items');
 const profileRoutes = require('./profile');
 const searchRoutes = require('./search');
+const rateRoutes = require('./rate');
 const data = require('../data/index');
 const users = data.users;
 const universities = data.universities;
