@@ -33,6 +33,7 @@ footer {
 .item-list .card {
   margin: 20px;
   display: inline-flex;
+  vertical-align: top;
 }
 
 .card-img-top {

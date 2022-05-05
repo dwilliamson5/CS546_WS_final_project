@@ -19,7 +19,7 @@ const constructorMethod = (app) => {
     let universityList = [];
     let imageUrl = '';
     let acceptedBids;
-    
+
     try {
       if (req.session.user) {
         title += ', ' + req.session.user.username;
@@ -30,7 +30,7 @@ const constructorMethod = (app) => {
         itemsList = await items.getAllByUniversityId(user.universityId);
         acceptedBids = await users.hasAcceptedBids(user._id);
       }
-      else{
+      else {
         let universityCollection = await universities.getAll();
         universityCollection.forEach(university => universityList.push(university.name));
       }
@@ -47,8 +47,8 @@ const constructorMethod = (app) => {
       });
     } catch (e) {
       res.status(500).render('errors/500', {
-          title: '500',
-          message: 'Internal server error'
+        title: '500',
+        message: 'Internal server error'
       });
     }
   });

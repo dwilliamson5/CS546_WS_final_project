@@ -18,9 +18,13 @@ async function getAllByUniversityId(id) {
 
   itemList.forEach(item => {
     item._id = sharedValidation.stringifyId(item._id);
-    item.imageURL = item.photos && item.photos[0].imageUrl;
 
     let photos = item.photos;
+    item.imageURL = '/public/images/no_image_yet.jpg';
+
+    if (photos.length > 0) {
+      item.imageURL = photos[0].imageUrl;
+    }
 
     photos.forEach(photo => {
       photo._id = sharedValidation.stringifyId(photo._id);
@@ -46,9 +50,15 @@ async function getAllByUniversityIdAndKeyword(id, keyword) {
 
   itemList.forEach(item => {
     item._id = sharedValidation.stringifyId(item._id);
-    item.imageURL = item.photos && item.photos[0].imageUrl;
 
-    item.photos.forEach(photo => {
+    let photos = item.photos;
+    item.imageURL = '/public/images/no_image_yet.jpg';
+
+    if (photos.length > 0) {
+      item.imageURL = photos[0].imageUrl;
+    }
+
+    photos.forEach(photo => {
       photo._id = sharedValidation.stringifyId(photo._id);
     })
   });
@@ -338,15 +348,15 @@ async function editPhotoForItem(itemId, imageId, description, imageURL) {
   let photo = await getPhoto(sanitizedData.id, imageId);
 
   const updatedInfo = await itemCollection.updateOne(
-    { 
+    {
       "_id": ObjectId(sanitizedData.id),
       "photos._id": ObjectId(photo._id)
     },
-    { 
-      $set: { 
+    {
+      $set: {
         "photos.$.description": sanitizedData.description,
         "photos.$.imageUrl": sanitizedData.imageURL
-      } 
+      }
     }
   );
 
@@ -481,7 +491,7 @@ async function getBidForItem(itemId, bidId) {
     throw 'No bids for that item!'
   }
 
-  let matches = bids.filter(entry => entry._id.toString() == bidId );
+  let matches = bids.filter(entry => entry._id.toString() == bidId);
 
   if (matches.length == 0) {
     throw 'Bid is not under that item';
@@ -506,7 +516,7 @@ async function acceptBid(itemId, bidId) {
 
   // make sure bid exists
   await getBidForItem(itemId, bidId)
-  
+
   let item = await getItemById(itemId);
 
   let bids = item.bids;
@@ -567,7 +577,7 @@ async function hasAcceptedBidFor(itemId, userId) {
 
   let bids = item.bids;
 
-  let matches = bids.filter(entry => entry.userId.toString() == userId && entry.accepted == true );
+  let matches = bids.filter(entry => entry.userId.toString() == userId && entry.accepted == true);
 
   if (matches.length == 0) {
     return false;
