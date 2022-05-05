@@ -6,6 +6,15 @@
       </div>
 
       <p>Please take a moment to rate {{hasAcceptedBid.username}}:</p>
+
+      <form action="/rate/{{hasAcceptedBid.userGivingRatingId}}/{{hasAcceptedBid.userGettingRatedId}}" method="POST" id="new-rating-form">
+        <div class="mb-3">
+          <label id="rating-label" for="rating" class="form-label">Rating</label>
+          <input id="rating" name="rating" type="number" min="1" max="5" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit Rating</button>
+      </form>
     </div>
   </div>
   <br>
