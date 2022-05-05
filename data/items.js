@@ -205,6 +205,94 @@ async function getCommentsForItemId(id) {
   return output;
 }
 
+async function getImagesForItemId(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidItemId(id);
+
+  let item = await getItemById(id);
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  let photos = item.photos;
+
+  let output = []
+
+  for (let i = 0; i < photos.length; i++) {
+    let photo = photos[i];
+
+    let result = {
+      _id: photo._id,
+      description: photo.description,
+      imageURL: photo.imageUrl || '/public/images/blank.jpg'
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
+async function getPhoto(itemId, imageId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+
+  itemId = sharedValidation.isValidItemId(itemId);
+  imageId = sharedValidation.isValidItemId(imageId);
+
+  let item = await getItemById(itemId);
+
+  if (!item) {
+    throw 'Item does not exist!'
+  }
+
+  const itemCollection = await items();
+
+  let photo = await itemCollection.aggregate(
+    [
+      {
+        $match:
+        {
+          "photos._id": ObjectId(imageId)
+        }
+      },
+      {
+        $addFields:
+        {
+          photos:
+          {
+            $filter:
+            {
+              input: "$photos",
+              cond:
+              {
+                $eq: ["$$this._id", ObjectId(imageId)]
+              }
+            }
+          }
+        }
+      },
+      { $unwind: "$photos" },
+      {
+        $project:
+        {
+          _id: "$photos._id",
+          title: "$photos.description",
+          releaseDate: "$photos.imageUrl"
+        }
+      }
+    ]).toArray();
+
+  if (!photo || photo.length === 0) {
+    throw 'Photo does not exist!'
+  }
+
+  photo[0]._id = photo[0]._id.toString();
+
+  return photo[0];
+}
+
 async function createPhotoForItem(id, description, imageURL) {
   sharedValidation.checkArgumentLength(arguments, 3);
 
@@ -234,30 +322,40 @@ async function createPhotoForItem(id, description, imageURL) {
   return { photoAdded: true };
 }
 
-async function getImagesForItemId(id) {
-  sharedValidation.checkArgumentLength(arguments, 1);
+async function editPhotoForItem(itemId, imageId, description, imageURL) {
+  sharedValidation.checkArgumentLength(arguments, 4);
 
-  id = sharedValidation.isValidItemId(id);
+  let sanitizedData = itemValidation.isValidPhoto(itemId, description, imageURL);
+  imageId = sharedValidation.isValidItemId(imageId);
 
-  let item = await getItemById(id);
+  const itemCollection = await items();
 
-  let photos = item.photos;
+  let item = await itemCollection.findOne({ _id: ObjectId(sanitizedData.id) });
 
-  let output = []
-
-  for (let i = 0; i < photos.length; i++) {
-    let photo = photos[i];
-
-    let result = {
-      _id: photo._id,
-      description: photo.description,
-      imageURL: photo.imageUrl || '/public/images/blank.jpg'
-    };
-
-    output.push(result);
+  if (!item) {
+    throw 'Item does not exist!'
   }
 
-  return output;
+  let photo = await getPhoto(sanitizedData.id, imageId);
+
+  const updatedInfo = await itemCollection.updateOne(
+    { 
+      "_id": ObjectId(sanitizedData.id),
+      "photos._id": ObjectId(photo._id)
+    },
+    { 
+      $set: { 
+        "photos.$.description": sanitizedData.description,
+        "photos.$.imageUrl": sanitizedData.imageURL
+      } 
+    }
+  );
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not update photo successfully';
+  }
+
+  return { photoUpdated: true };
 }
 
 // async function createBids(itemId, bid, userId, accepted) {
@@ -309,8 +407,10 @@ module.exports = {
   updateItem,
   createComment,
   getCommentsForItemId,
+  getImagesForItemId,
+  getPhoto,
   createPhotoForItem,
-  getImagesForItemId
+  editPhotoForItem
   // createBids,
   // createRating
 };

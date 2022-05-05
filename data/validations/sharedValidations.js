@@ -77,6 +77,15 @@ function isValidItemId(id) {
   return id;
 }
 
+function isValidUrlString(url) {
+  checkParamPresent(url, 'url');
+  checkIsString(url);
+  url = cleanUpString(url);
+  checkStringLength(url, 'url');
+
+  return id;
+}
+
 module.exports = {
     stringifyId,
     validateObjectId,
@@ -87,5 +96,6 @@ module.exports = {
     checkStringLength,
     isValidUniversityId,
     isValidItemId,
-    isValidUserId
+    isValidUserId,
+    isValidUrlString
 };

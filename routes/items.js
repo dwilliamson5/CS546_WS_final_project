@@ -230,6 +230,140 @@ router.get('/:id/edit', async (req, res) => {
     });
 });
 
+router.get('/:id/editPhotos', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(itemId);
+    } catch (e) {
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
+        return;
+    }
+
+    res.render('items/editPhotos', {
+        title: 'Photos for ' + item.title,
+        id: item._id,
+        flash: req.flash('message')
+    });
+});
+
+router.get('/:id/photos', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        sharedValidation.isValidItemId(itemId);
+    } catch (e) {
+        req.flash('message', 'Bad item ID!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    if (req.session.user.username != user.username) {
+        req.flash('message', 'Cannot edit that item because you are not the owner!');
+        res.redirect('/');
+        return;
+    }
+
+    let photos;
+
+    try {
+        photos = await items.getImagesForItemId(itemId);
+        res.status(200).json(photos);
+    } catch (e) {
+        res.status(500).json(e);
+        return;
+    }
+});
+
 router.put('/:id', async (req, res) => {
     let params = req.params;
 
@@ -456,6 +590,106 @@ router.post('/:id/comment', async (req, res) => {
 
         res.render('partials/comment', { layout: null, ...commentResult });
     } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+router.put('/:id/photo', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        req.flash('message', 'You must supply a body to your request!');
+        res.redirect('/');
+        return;
+    }
+
+    let { imageId, description, imageURL } = body;
+    imageId = xss(imageId);
+    description = xss(description);
+    imageURL = xss(imageURL);
+
+    if (!imageId) {
+        req.flash('message', 'You must supply an image id!');
+        res.redirect('/');
+        return;
+    }
+
+    if (!description) {
+        req.flash('message', 'You must supply a description!');
+        res.redirect('/');
+        return;
+    }
+
+    if (!imageURL) {
+        req.flash('message', 'You must supply a image url!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        itemValidation.isValidPhoto(itemId, description, imageURL);
+    } catch (e) {
+        req.flash('message', 'Your param/body is not vaild!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        let photo = await items.getPhoto(itemId, imageId);
+    } catch (e) {
+        req.flash('message', 'Could not find that photo!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        const photoResult = await items.editPhotoForItem(itemId, imageId, description, imageURL);
+        res.status(200).json(photoResult);
+    } catch (e) {
+        console.log(e);
         res.status(500).json({ error: e });
     }
 });

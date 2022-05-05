@@ -30,6 +30,11 @@ footer {
   display: inline-flex;
 }
 
+.card-img-top {
+  width: 304px;
+  height: 236px;
+}
+
 #dropdownUser1 {
   padding-left: 20px;
 }

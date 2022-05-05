@@ -16,14 +16,17 @@ const constructorMethod = (app) => {
     let universityName;
     let itemsList;
     let universityList = [];
+    let imageUrl = '';
 
     if (req.session.user) {
       title += ', ' + req.session.user.username;
 
       let user = await users.getUser(req.session.user.username);
+      imageUrl = user.profileImageUrl || '/public/images/blank.jpg';
       let university = await universities.getUniversityById(user.universityId);
       universityName = university.name;
       itemsList = await items.getAllByUniversityId(user.universityId);
+
     }
     else{
       let universityCollection = await universities.getAll();
@@ -36,6 +39,7 @@ const constructorMethod = (app) => {
       universityName: universityName,
       universityList: universityList,
       itemsList: itemsList,
+      imageUrl: imageUrl,
       flash: req.flash('message')
     });
   });

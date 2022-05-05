@@ -49,7 +49,7 @@ async function testUsers() {
       'super_admin_password',
       'Super Admin User',
       'super_admin@stevens.edu',
-      'imageURL',
+      'https://cs546-ws-final-project-images.s3.amazonaws.com/1651637929121dog2.jpg',
       'This is my bio. I am an admin.'
     );
   } catch (e) {
@@ -79,7 +79,7 @@ async function testItems() {
     {
       _id: '933f9e946b766435325t424356',
       description: 'Pillow shot of futon',
-      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651634147322Heart.png'
+      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651636982290Heart.png'
     },
     {
       _id: '933f9e946b766435325t424357',
