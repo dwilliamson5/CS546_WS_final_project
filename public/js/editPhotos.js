@@ -15,7 +15,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         getPhotos();
     };
 
-    addPhotoForm.submit(function (event) 
+    addPhotoForm.submit(function (event)
     {
         event.preventDefault();
 
@@ -42,7 +42,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         var fileName = getUniqueName(file.name);
 
         uploadImage(fileName, file, updateInput);
-        
+
         return true;
     }
 
@@ -62,7 +62,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
 
         $.ajax(requestConfig).then(function(responseMessage) {
             console.log(responseMessage);
-            if (!responseMessage.photoAdded || 
+            if (!responseMessage.photoAdded ||
                 responseMessage.photoAdded !== true)
             {
                 showError('Error adding photo!');
@@ -71,7 +71,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
                 getPhotos();
             }
         });
-        
+
     }
 
     function getPhotos() {
@@ -96,7 +96,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         var html = '';
 
         if (!photos || photos.length === 0) {
-            html = '<p>There are no items yet. Click "Add photo" to add one.</p>';
+            html = '<p>There are no photos yet. Add your first photo below.</p>';
             previewImages.append(html);
             return;
         }
@@ -111,7 +111,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
                 var id = photos[i]._id;
                 var description = photos[i].description;
                 var imageURL = photos[i].imageURL;
-                
+
                 html += '<div class="card" style="width: 18rem;">';
                 html += '<img id="image-url-' + id + '" src="' + imageURL + '" class="card-img-top" alt="' + description + '">';
                 html += '<div class="card-body">';
@@ -154,7 +154,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             // get description
             var descriptionInput = '#description-' + id;
             var description = $(descriptionInput).val();
-            
+
             if (!description.trim().length) {
                 showError('You must provide a description!');
                 return;
@@ -172,7 +172,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             };
 
             $.ajax(requestConfig).then(function(responseMessage) {
-                if (!responseMessage.photoUpdated || 
+                if (!responseMessage.photoUpdated ||
                     responseMessage.photoUpdated !== true)
                 {
                     showError('Error updating photo!');
