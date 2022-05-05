@@ -77,6 +77,20 @@ function isValidItemId(id) {
   return id;
 }
 
+function isValidRating(rating){
+  if (isNaN(rating)) {
+    throw 'Must be a number'
+  }
+
+  rating = parseInt(rating);
+
+  if (rating < 1) {
+    throw 'rating cannot be below 1';
+  } else if (rating > 5) {
+    throw 'rating cannot be greater than 5'
+  }
+}
+
 module.exports = {
     stringifyId,
     validateObjectId,
@@ -87,5 +101,6 @@ module.exports = {
     checkStringLength,
     isValidUniversityId,
     isValidItemId,
-    isValidUserId
+    isValidUserId,
+    isValidRating
 };
