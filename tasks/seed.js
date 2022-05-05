@@ -65,18 +65,57 @@ async function testUsers() {
 }
 
 async function testItems() {
+
+  const photos = [{
+      _id: '933f9e946b766435325t424354',
+      description: 'Front shot of futon',
+      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668676289arch1.jpg'
+    },
+    {
+      _id: '933f9e946b766435325t424355',
+      description: 'Back shot of futon',
+      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651637929121dog2.jpg'
+    },
+    {
+      _id: '933f9e946b766435325t424356',
+      description: 'Pillow shot of futon',
+      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651634147322Heart.png'
+    },
+    {
+      _id: '933f9e946b766435325t424357',
+      description: 'Bottom shot of futon',
+      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668785467dog1.jpg'
+  }]
+
+  let itemId;
+
   try {
     let user = await users.getUser('superadmin');
 
-    await items.createItem(
+    const result = await items.createItem(
       'Black futon',
       'A black futon that can serve as a couch or bed. Futon is 5 feet by 2 feet. Originally paid 250 for it.',
       'futon, black, couch, bed, furniture',
       '100',
       user.username,
-      'image1, image2, image3',
+      photos,
       'Need to grab it from Dorm E Room 204. Call me at 215-245-2002'
     );
+
+    itemId = result.id;
+
+  } catch (e) {
+    console.log(e);
+  }
+  
+  try {
+
+    for (let i=0; i < photos.length; ++i) {
+
+      let photo = photos[i];
+
+      await items.createPhotoForItem(itemId, photo.description, photo.imageUrl);
+    }
   } catch (e) {
     console.log(e);
   }

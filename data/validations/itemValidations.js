@@ -14,7 +14,7 @@ function isValidItemParameters(title, description, keywords, price, username, ph
   sharedValidation.checkIsString(keywords, 'keywords');
   sharedValidation.checkIsString(price, 'price');
   sharedValidation.checkIsString(username, 'username');
-  sharedValidation.checkIsString(photos, 'photos');
+  // todo check photos is array of objects
   sharedValidation.checkIsString(pickUpMethod, 'pickUpMethod');
 
   title = sharedValidation.cleanUpString(title);
@@ -22,7 +22,6 @@ function isValidItemParameters(title, description, keywords, price, username, ph
   keywords = sharedValidation.cleanUpString(keywords);
   price = sharedValidation.cleanUpString(price);
   username = sharedValidation.cleanUpString(username);
-  photos = sharedValidation.cleanUpString(photos);
   pickUpMethod = sharedValidation.cleanUpString(pickUpMethod);
 
   sharedValidation.checkStringLength(title, 'title');
@@ -30,7 +29,6 @@ function isValidItemParameters(title, description, keywords, price, username, ph
   sharedValidation.checkStringLength(keywords, 'keywords');
   sharedValidation.checkStringLength(price, 'price');
   sharedValidation.checkStringLength(username, 'username');
-  sharedValidation.checkStringLength(photos, 'photos');
   sharedValidation.checkStringLength(pickUpMethod, 'pickUpMethod');
 
   keywords = keywords.split(',');
@@ -40,15 +38,6 @@ function isValidItemParameters(title, description, keywords, price, username, ph
     keyword = sharedValidation.cleanUpString(keyword);
     sharedValidation.checkStringLength(keyword, 'keyword');
     keywords[index] = keyword;
-  });
-
-  photos = photos.split(',');
-
-  photos.forEach((photo, index) => {
-    sharedValidation.checkIsString(photo, 'photo');
-    photo = sharedValidation.cleanUpString(photo);
-    sharedValidation.checkStringLength(photo, 'photo');
-    photos[index] = photo;
   });
 
   if (price < 0) {
@@ -169,8 +158,35 @@ function isValidComment(id, username, comment) {
   }
 }
 
+function isValidPhoto(id, description, imageURL) {
+  id = sharedValidation.isValidItemId(id);
+
+  sharedValidation.checkParamPresent(id, 'id');
+  sharedValidation.checkParamPresent(description, 'description');
+  sharedValidation.checkParamPresent(imageURL, 'imageURL');
+
+  sharedValidation.checkIsString(id, 'id');
+  sharedValidation.checkIsString(description, 'description');
+  sharedValidation.checkIsString(imageURL, 'imageURL');
+
+  id = sharedValidation.cleanUpString(id);
+  description = sharedValidation.cleanUpString(description);
+  imageURL = sharedValidation.cleanUpString(imageURL);
+
+  sharedValidation.checkStringLength(id, 'id');
+  sharedValidation.checkStringLength(description, 'description');
+  sharedValidation.checkStringLength(imageURL, 'imageURL');
+
+  return {
+    id: id,
+    description: description,
+    imageURL: imageURL
+  }
+}
+
 module.exports = {
   isValidItemParameters,
   isValidItemUpdateParameters,
-  isValidComment
+  isValidComment,
+  isValidPhoto
 };
