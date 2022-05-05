@@ -328,13 +328,11 @@ async function getBidForItem(itemId, bidId) {
   let bid = matches[0];
 
   let user = await users.getUserById(bid.userId.toString());
-  let currentUser = await users.getUser(req.session.user.username);
 
   return {
     username: user.username,
     email: user.email,
-    userGettingRatedId: bid.userId,
-    userGivingRatingId: currentUser._id,
+    bidOwner: bid.userId,
     price: bid.bid
   }
 }
