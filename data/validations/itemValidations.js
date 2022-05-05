@@ -40,9 +40,7 @@ function isValidItemParameters(title, description, keywords, price, username, ph
     keywords[index] = keyword;
   });
 
-  if (price < 0) {
-    throw 'price cannot be below 0 (free)';
-  }
+  isValidPrice(price);
 
   return {
     title: title,
@@ -108,9 +106,7 @@ function isValidItemUpdateParameters(id, title, description, keywords, price, ph
     photos[index] = photo;
   });
 
-  if (price < 0) {
-    throw 'price cannot be below 0 (free)';
-  }
+  isValidPrice(price);
 
   if (sold == 'true') {
     sold = true
@@ -184,9 +180,39 @@ function isValidPhoto(id, description, imageURL) {
   }
 }
 
+function isValidBid(itemId, bid, userId) {
+  sharedValidation.checkParamPresent(itemId, 'itemId');
+  sharedValidation.checkParamPresent(userId, 'userId');
+  sharedValidation.checkParamPresent(bid, 'bid');
+
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
+
+  sharedValidation.checkIsString(itemId, 'itemId');
+  sharedValidation.checkIsString(userId, 'userId');
+  sharedValidation.checkIsString(bid, 'bid');
+
+  itemId = sharedValidation.cleanUpString(itemId);
+  userId = sharedValidation.cleanUpString(userId);
+  bid = sharedValidation.cleanUpString(bid);
+
+  sharedValidation.checkStringLength(itemId, 'itemId');
+  sharedValidation.checkStringLength(userId, 'userId');
+  sharedValidation.checkStringLength(bid, 'bid');
+
+  isValidPrice(bid);
+
+  return {
+    itemId: itemId,
+    bid: bid,
+    userId: userId
+  }
+}
+
 module.exports = {
   isValidItemParameters,
   isValidItemUpdateParameters,
   isValidComment,
-  isValidPhoto
+  isValidPhoto,
+  isValidBid
 };

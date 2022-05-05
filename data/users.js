@@ -1,5 +1,6 @@
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const items = mongoCollections.items;
 const universities = require('./universities');
 const bcrypt = require('bcrypt');
 const userValidation = require('./validations/userValidations');
@@ -129,6 +130,30 @@ async function getUserById(id) {
   user._id = user._id.toString();
 
   return user;
+}
+
+async function getAvgRating(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidUserId(id);
+
+  let user = await getUserById(id);
+
+  let sumRating = 0;
+
+  let ratings = user.ratings;
+
+  if (ratings.length == 0) {
+    return sumRating;
+  } else {
+    for (let i = 0; i < ratings.length; i++) {
+      let rating = ratings[i];
+
+      sumRating += rating.rating;
+    }
+
+    return (Math.round((sumRating / ratings.length) * 10) / 10);
+  }
 }
 
 /**
@@ -306,6 +331,49 @@ async function updatePassword(username, currentPassword, newPassword, newPasswor
   return { passwordUpdated: true };
 }
 
+async function hasAcceptedBids(id) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+
+  id = sharedValidation.isValidUserId(id);
+
+  let user = await getUserById(id);
+
+  const itemCollection = await items();
+  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true, sold: false }).toArray();
+  
+  if (itemsList.length == 0) {
+    return false;
+  } else {
+    return itemsList;
+  }
+}
+
+async function createRating(raterId, rateeId, rating) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+
+  raterId = sharedValidation.isValidUserId(raterId);
+  rateeId = sharedValidation.isValidUserId(rateeId);
+  rating = sharedValidation.isValidRating(rating);
+
+  let rater = await getUserById(raterId);
+  let ratee = await getUserById(rateeId);
+  
+  const newRating = {
+    _id: ObjectId(),
+    userId: ObjectId(rater._id),
+    rating: rating
+  };
+
+  const userCollection = await users();
+  const updatedInfo = await userCollection.updateOne({ _id: ObjectId(ratee._id) }, { $addToSet: { ratings: newRating } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not create rating successfully';
+  }
+
+  return true;
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -313,5 +381,8 @@ module.exports = {
   makeSuperAdmin,
   updateUser,
   updatePassword,
-  getUserById
+  getUserById,
+  getAvgRating,
+  hasAcceptedBids,
+  createRating
 };

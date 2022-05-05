@@ -187,7 +187,6 @@ async function getCommentsForItemId(id) {
   let comments = item.comments;
 
   let output = []
-
   for (let i = 0; i < comments.length; i++) {
     comment = comments[i];
 
@@ -358,46 +357,234 @@ async function editPhotoForItem(itemId, imageId, description, imageURL) {
   return { photoUpdated: true };
 }
 
-// async function createBids(itemId, bid, userId, accepted) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newBid = {
-//         bid: bid,
-//         userId: userId,
-//         accepted: accepted
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { bids: newBid } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add bid';
-//
-//     return await this.getItem(itemId);
-// }
-//
-// async function createComment(itemId, comment, userId) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newComment = {
-//         comment: comment,
-//         userId: userId
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { comments: newComment } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add comment';
-//
-//     return await this.getItem(itemId);
-// }
-//
-// async function createRating(itemId, rating, userId) {
-//     const itemsCollection = await items();
-//     const item = await this.getItem(itemId);
-//     const newRating = {
-//         userId: userId,
-//         rating: rating
-//     };
-//     const updateInfo = await itemsCollection.updateOne({ _id: itemId }, { $push: { ratings: newRating } });
-//     if (updateInfo.modifiedCount === 0) throw 'Could not add rating';
-//
-//     return await this.getItem(itemId);
-// }
-//
+async function createBid(itemId, bid, userId) {
+  sharedValidation.checkArgumentLength(arguments, 3);
+  let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
+
+  let user = await users.getUserById(sanitizedData.userId);
+  let item = await getItemById(sanitizedData.itemId)
+
+  const newBid = {
+    _id: ObjectId(),
+    itemId: sanitizedData.itemId,
+    bid: sanitizedData.bid,
+    userId: sanitizedData.userId,
+    accepted: false
+  };
+
+  const itemCollection = await items();
+
+  const updatedInfo = await itemCollection.updateOne({ _id: ObjectId(item._id) }, { $addToSet: { bids: newBid } });
+
+  if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
+    throw 'Could not create bid successfully!';
+  }
+
+  const output = {
+    photo: user.profileImageUrl || '/public/images/blank.jpg',
+    bid: newBid.bid,
+    username: user.username
+  }
+
+  return output;
+}
+
+async function getBidsForSeller(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  itemId = sharedValidation.isValidItemId(itemId);
+
+  let item = await getItemById(itemId);
+
+  let bids = item.bids;
+
+  let output = []
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    let user = await users.getUserById(bid.userId.toString());
+    let rating = await users.getAvgRating(user._id);
+
+    let result = {
+      id: item._id,
+      bidId: bid._id,
+      photo: user.profileImageUrl || '/public/images/blank.jpg',
+      username: user.username,
+      bid: bid.bid,
+      rating: rating
+    };
+
+    output.push(result);
+  }
+
+  return output;
+}
+
+async function getBidsForBuyer(itemId, userId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
+
+  let item = await getItemById(itemId);
+  let user = await users.getUserById(userId);
+
+  let bids = item.bids;
+
+  let output = []
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    if (userId == bid.userId.toString()) {
+      let result = {
+        photo: user.profileImageUrl || '/public/images/blank.jpg',
+        username: user.username,
+        bid: bid.bid
+      };
+
+      output.push(result);
+    }
+  }
+
+  return output;
+}
+
+async function getHighestBid(itemId) {
+  sharedValidation.checkArgumentLength(arguments, 1);
+  let bids = await getBidsForSeller(itemId);
+
+  let max = 0;
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    bid = parseInt(bid.bid);
+
+    if (bid > max) {
+      max = bid
+    }
+  }
+
+  return max;
+}
+
+async function getBidForItem(itemId, bidId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  bidId = sharedValidation.isValidItemId(bidId);
+
+  let item = await getItemById(itemId);
+
+  let bids = item.bids;
+
+  if (bids.length == 0) {
+    throw 'No bids for that item!'
+  }
+
+  let matches = bids.filter(entry => entry._id.toString() == bidId );
+
+  if (matches.length == 0) {
+    throw 'Bid is not under that item';
+  }
+
+  let bid = matches[0];
+
+  let user = await users.getUserById(bid.userId.toString());
+
+  return {
+    username: user.username,
+    email: user.email,
+    bidOwner: bid.userId,
+    price: bid.bid
+  }
+}
+
+async function acceptBid(itemId, bidId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  bidId = sharedValidation.isValidItemId(bidId);
+
+  // make sure bid exists
+  await getBidForItem(itemId, bidId)
+  
+  let item = await getItemById(itemId);
+
+  let bids = item.bids;
+
+  if (bids.length == 0) {
+    throw 'No bids for that item!';
+  }
+
+  for (let i = 0; i < bids.length; i++) {
+    let bid = bids[i];
+
+    await resetBid(bid.itemId.toString(), bid._id.toString());
+  }
+
+  const itemCollection = await items();
+  const update = await itemCollection.updateOne(
+    { "_id": ObjectId(itemId), "bids._id": ObjectId(bidId) },
+    { $set: { "bids.$.accepted": true } }
+  );
+
+  if (!update.matchedCount && !update.modifiedCount) {
+    throw 'Cannot update the item!';
+  }
+
+  return { bidAccepted: true };
+}
+
+async function resetBid(itemId, bidId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  bidId = sharedValidation.isValidItemId(bidId);
+
+  const itemCollection = await items();
+  const bid = await itemCollection.findOne({ '_id': ObjectId(itemId), 'bids._id': ObjectId(bidId) });
+
+  if (!bid) {
+    throw 'No bid with that ID exists';
+  }
+
+  const update = await itemCollection.updateOne(
+    { "_id": ObjectId(itemId), "bids._id": ObjectId(bidId) },
+    { $set: { "bids.$.accepted": false } }
+  );
+
+  if (!update.matchedCount && !update.modifiedCount) {
+    throw 'Cannot update the item!';
+  }
+
+  return { bidReset: true };
+}
+
+async function hasAcceptedBidFor(itemId, userId) {
+  sharedValidation.checkArgumentLength(arguments, 2);
+  itemId = sharedValidation.isValidItemId(itemId);
+  userId = sharedValidation.isValidUserId(userId);
+
+  let item = await getItemById(itemId);
+
+  let bids = item.bids;
+
+  let matches = bids.filter(entry => entry.userId.toString() == userId && entry.accepted == true );
+
+  if (matches.length == 0) {
+    return false;
+  }
+
+  let bid = matches[0];
+
+  let user = await users.getUserById(item.userId.toString());
+
+  return {
+    username: user.username,
+    email: user.email,
+    userGettingRatedId: user._id,
+    userGivingRatingId: bid.userId,
+    price: bid.bid
+  }
+}
 
 module.exports = {
   getAllByUniversityId,
@@ -410,7 +597,12 @@ module.exports = {
   getImagesForItemId,
   getPhoto,
   createPhotoForItem,
-  editPhotoForItem
-  // createBids,
-  // createRating
+  editPhotoForItem,
+  createBid,
+  getBidsForBuyer,
+  getBidsForSeller,
+  getHighestBid,
+  getBidForItem,
+  acceptBid,
+  hasAcceptedBidFor
 };
