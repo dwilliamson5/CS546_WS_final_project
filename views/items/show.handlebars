@@ -26,9 +26,9 @@
       {{#each item.photos}}
         <div class="carousel-item {{#if @first }}active {{/if}}">
           <img class="carousel_image" src="{{this.imageUrl}}" alt="{{this.description}}">
-        
+
           <div class="carousel-caption d-none d-md-block">
-            <h3>{{this.description}}</h3>
+            <h2>{{this.description}}</h2>
           </div>
         </div>
       {{/each}}
@@ -54,7 +54,7 @@
         </div>
       {{/if}}
     {{/if}}
-  
+
 </div>
 
 <hr>
