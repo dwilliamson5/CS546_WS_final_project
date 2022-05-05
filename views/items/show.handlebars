@@ -35,7 +35,11 @@
       {{/each}}
 
     {{else}}
-      <p>There are no images yet. <a href="/items/{{itemId}}/editPhotos" class="btn btn-primary">Click here</a> to add!</p>
+      {{#if canEdit}}
+        <p>There are no images yet. <a href="/items/{{itemId}}/editPhotos" class="btn btn-primary">Click here</a> to add!</p>
+      {{else}}
+        <p>Ask the owner in the comments to add photos</p>
+      {{/if}}
     {{/if}}
   </div>
   <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
