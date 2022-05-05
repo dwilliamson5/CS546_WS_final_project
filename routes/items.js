@@ -594,6 +594,90 @@ router.post('/:id/comment', async (req, res) => {
     }
 });
 
+router.post('/:id/photo', async (req, res) => {
+    let params = req.params;
+
+    if (!params) {
+        req.flash('message', 'No params provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let itemId = params.id;
+    itemId = xss(itemId);
+
+    if (!itemId) {
+        req.flash('message', 'No ID param provided!');
+        res.redirect('/');
+        return;
+    }
+
+    let body = req.body;
+
+    if (!body) {
+        req.flash('message', 'You must supply a body to your request!');
+        res.redirect('/');
+        return;
+    }
+
+    let { description, imageURL } = body;
+    description = xss(description);
+    imageURL = xss(imageURL);
+
+    if (!description) {
+        req.flash('message', 'You must supply a description!');
+        res.redirect('/');
+        return;
+    }
+
+    if (!imageURL) {
+        req.flash('message', 'You must supply a image url!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        itemValidation.isValidPhoto(itemId, description, imageURL);
+    } catch (e) {
+        req.flash('message', 'Your param/body is not vaild!');
+        res.redirect('/');
+        return;
+    }
+
+    let item;
+
+    try {
+        item = await items.getItemById(itemId);
+    } catch (e) {
+        req.flash('message', 'Could not find that item!');
+        res.redirect('/');
+        return;
+    }
+
+    let user;
+
+    try {
+        user = await users.getUserById(item.userId.toString());
+    } catch (e) {
+        req.flash('message', 'Could not find item owner!');
+        res.redirect('/');
+        return;
+    }
+
+    if (item.universityId.toString() != user.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
+        return;
+    }
+
+    try {
+        const photoResult = await items.createPhotoForItem(itemId, description, imageURL);
+        res.status(200).json(photoResult);
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
 router.put('/:id/photo', async (req, res) => {
     let params = req.params;
 
@@ -689,7 +773,6 @@ router.put('/:id/photo', async (req, res) => {
         const photoResult = await items.editPhotoForItem(itemId, imageId, description, imageURL);
         res.status(200).json(photoResult);
     } catch (e) {
-        console.log(e);
         res.status(500).json({ error: e });
     }
 });

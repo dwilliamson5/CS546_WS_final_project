@@ -2,13 +2,77 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
 
 (function ($) {
 
-    var previewImages = $('#photos-preview'),
+    var addPhotoForm = $('#add-photo-form'),
+        alertMessage = $('#success-alert'),
+        errorMessage = $('#error-alert'),
+        descriptionInput = $('#description'),
+        previewImages = $('#photos-preview'),
         itemId = $('#itemId').val();
 
     window.onload = function () {
-
+        alertMessage.hide();
+        errorMessage.hide();
         getPhotos();
     };
+
+    addPhotoForm.submit(function (event) 
+    {
+        event.preventDefault();
+
+        var description = descriptionInput.val().trim();
+
+        if (!description.trim().length) {
+            showError('You need to provide a description!');
+        } else {
+            showSuccess('Successfully added photo!');
+            var success = addImage();
+        }
+    });
+
+    function addImage() {
+
+        var files = document.getElementById('image').files;
+
+        if (!files.length) {
+            showError('You need to provide a profile image!');
+            return false;
+        }
+
+        var file = files[0];
+        var fileName = getUniqueName(file.name);
+
+        uploadImage(fileName, file, updateInput);
+        
+        return true;
+    }
+
+    function updateInput(fileURL) {
+
+        var description = descriptionInput.val();
+
+        var requestConfig = {
+            method: 'POST',
+            url: addPhotoForm.attr('action'),
+            contentType: 'application/json',
+            data: JSON.stringify({
+                description: description,
+                imageURL: fileURL
+            })
+        };
+
+        $.ajax(requestConfig).then(function(responseMessage) {
+            console.log(responseMessage);
+            if (!responseMessage.photoAdded || 
+                responseMessage.photoAdded !== true)
+            {
+                showError('Error adding photo!');
+            } else {
+                showSuccess('Successfully updated photo');
+                getPhotos();
+            }
+        });
+        
+    }
 
     function getPhotos() {
         if (itemId) {
@@ -91,6 +155,11 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             var descriptionInput = '#description-' + id;
             var description = $(descriptionInput).val();
             
+            if (!description.trim().length) {
+                showError('You must provide a description!');
+                return;
+            }
+
             var requestConfig = {
                 method: 'PUT',
                 url: url,
@@ -103,16 +172,32 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             };
 
             $.ajax(requestConfig).then(function(responseMessage) {
-                if (!responseMessage.photoResult || 
-                    responseMessage.photoResult !== 'true')
+                if (!responseMessage.photoUpdated || 
+                    responseMessage.photoUpdated !== true)
                 {
-                    $('#error-message').text('Error updating photo!');
-                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    showError('Error updating photo!');
+                } else {
+                    showSuccess('Successfully updated photo!');
+                    getPhotos();
                 }
-
-                getPhotos();
             });
         });
+    }
+
+    function showSuccess(message) {
+        alertMessage.empty();
+        alertMessage.append(message);
+        alertMessage.show();
+        errorMessage.hide();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function showError(message) {
+        errorMessage.empty();
+        errorMessage.append(message);
+        errorMessage.show();
+        alertMessage.hide();
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
 })(window.jQuery);
