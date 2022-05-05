@@ -176,6 +176,16 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
+    let hasAcceptedBid;
+    
+    try {
+        hasAcceptedBid = await items.hasAcceptedBidFor(itemId, currentUser._id);
+    } catch (e) {
+        req.flash('message', 'Something went wrong with hasAcceptedBid');
+        res.redirect('/');
+        return;
+    }
+
     res.render('items/show', {
         title: item.title,
         item: item,
@@ -186,7 +196,8 @@ router.get('/:id', async (req, res) => {
         comments: comments,
         bids: bids,
         highest_bid: highest_bid,
-        avgRating: avgRating
+        avgRating: avgRating,
+        hasAcceptedBid: hasAcceptedBid
     });
 });
 
