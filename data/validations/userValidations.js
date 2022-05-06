@@ -271,6 +271,14 @@ function isValidUserUpdateParameters(currentUsername, username, name, email, bio
     }
 }
 
+function isValidImageURL(imageURL) {
+    sharedValidation.checkParamPresent(imageURL, 'image url');
+    sharedValidation.checkIsString(imageURL, 'image url');
+    imageURL = sharedValidation.cleanUpString(imageURL);
+
+    return imageURL;
+}
+
 module.exports = {
     isValidUserParameters,
     validateUsername,
@@ -278,5 +286,6 @@ module.exports = {
     validateDomainsMatch,
     isValidCheckUserParameters,
     validateUpdatePassword,
-    isValidUserUpdateParameters
+    isValidUserUpdateParameters,
+    isValidImageURL
 };
