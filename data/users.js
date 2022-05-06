@@ -243,9 +243,16 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
     username,
     name,
     email,
-    imageURL,
     bio
   )
+
+  let sanitizedDataImageURL = '';
+
+  try {
+    sanitizedDataImageURL = userValidation.isValidImageURL(imageURL);
+  } catch(e) {
+    // do nothing
+  }
 
   let user = await getUser(sanitizedData.currentUsername);
 
@@ -265,9 +272,13 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
     username: sanitizedData.username,
     name: sanitizedData.name,
     email: sanitizedData.email,
-    profileImageUrl: sanitizedData.imageURL,
+    profileImageUrl: sanitizedDataImageURL,
     bio: sanitizedData.bio
   };
+
+  if (sanitizedDataImageURL === '') {
+    delete updatedUser.profileImageUrl;
+  }
 
   const userCollection = await users();
   const updateInfo = await userCollection.updateOne(

@@ -7,7 +7,7 @@ const items = data.items;
 async function testUniversities() {
   try {
     let university = await universities.createUniversity(
-      'Stevens Institute of Technology',
+      'Stevens Institute',
       'stevens.edu'
     );
   } catch (e) {
@@ -29,7 +29,7 @@ async function testUniversities() {
 
     await universities.updateUniversity(
       university['_id'],
-      'Stevens Institute',
+      'Stevens Institute of Technology',
       'stevens.edu'
     );
   } catch (e) {
@@ -67,24 +67,24 @@ async function testUsers() {
 async function testItems() {
 
   const photos = [{
-      _id: '933f9e946b766435325t424354',
-      description: 'Front shot of futon',
-      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668676289arch1.jpg'
-    },
-    {
-      _id: '933f9e946b766435325t424355',
-      description: 'Back shot of futon',
-      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651637929121dog2.jpg'
-    },
-    {
-      _id: '933f9e946b766435325t424356',
-      description: 'Pillow shot of futon',
-      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651636982290Heart.png'
-    },
-    {
-      _id: '933f9e946b766435325t424357',
-      description: 'Bottom shot of futon',
-      imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668785467dog1.jpg'
+    _id: '933f9e946b766435325t424354',
+    description: 'Front shot of futon',
+    imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668676289arch1.jpg'
+  },
+  {
+    _id: '933f9e946b766435325t424355',
+    description: 'Back shot of futon',
+    imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651637929121dog2.jpg'
+  },
+  {
+    _id: '933f9e946b766435325t424356',
+    description: 'Pillow shot of futon',
+    imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651636982290Heart.png'
+  },
+  {
+    _id: '933f9e946b766435325t424357',
+    description: 'Bottom shot of futon',
+    imageUrl: 'https://cs546-ws-final-project-images.s3.amazonaws.com/1651668785467dog1.jpg'
   }]
 
   let itemId;
@@ -107,10 +107,10 @@ async function testItems() {
   } catch (e) {
     console.log(e);
   }
-  
+
   try {
 
-    for (let i=0; i < photos.length; ++i) {
+    for (let i = 0; i < photos.length; ++i) {
 
       let photo = photos[i];
 
