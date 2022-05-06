@@ -371,7 +371,7 @@ async function createRating(raterId, rateeId, rating) {
 
   const newRating = {
     _id: ObjectId(),
-    userId: ObjectId(rater._id),
+    ratersUserId: ObjectId(rater._id),
     rating: rating
   };
 

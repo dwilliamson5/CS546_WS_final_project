@@ -164,7 +164,7 @@ async function createComment(id, username, comment) {
 
   const newComment = {
     _id: ObjectId(),
-    commentersUserId: user._id,
+    commentersUserId: ObjectId(user._id),
     text: sanitizedData.comment
   };
 
