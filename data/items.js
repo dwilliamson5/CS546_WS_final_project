@@ -10,7 +10,7 @@ async function getAllByUniversityId(id) {
   id = sharedValidation.isValidUniversityId(id);
 
   const itemCollection = await items();
-  let itemList = await itemCollection.find({ sold: false, universityId: id }).toArray();
+  let itemList = await itemCollection.find({ sold: false, universityId: ObjectId(id) }).toArray();
 
   if (!itemList) {
     throw 'Could not get all items';
@@ -42,7 +42,7 @@ async function getAllByUniversityIdAndKeyword(id, keyword) {
   sharedValidation.checkStringLength(keyword, 'keyword');
 
   const itemCollection = await items();
-  let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: id }).toArray();
+  let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: ObjectId(id) }).toArray();
 
   if (!itemList) {
     throw 'No items for that keyword';
@@ -90,7 +90,6 @@ async function createItem(title, description, keywords, price, username, photos,
   let user = await users.getUser(sanitizedData.username);
 
   let userId = user._id;
-  let universityId = user.universityId.toString();
 
   let newItem = {
     title: sanitizedData.title,
@@ -98,7 +97,7 @@ async function createItem(title, description, keywords, price, username, photos,
     keywords: sanitizedData.keywords,
     price: sanitizedData.price,
     userId: userId,
-    universityId: universityId,
+    universityId: user.universityId,
     photos: [],
     pickUpMethod: sanitizedData.pickUpMethod,
     sold: false,

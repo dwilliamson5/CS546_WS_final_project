@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
     let user = await users.getUser(req.session.user.username);
 
     try {
-        id = sharedValidation.isValidUniversityId(user.universityId);
+        id = sharedValidation.isValidUniversityId(user.universityId.toString());
         sharedValidation.checkIsString(search_term);
         search_term = sharedValidation.cleanUpString(search_term);
         sharedValidation.checkStringLength(search_term, 'search_term');
