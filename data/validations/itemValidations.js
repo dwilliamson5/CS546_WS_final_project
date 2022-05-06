@@ -180,31 +180,31 @@ function isValidPhoto(id, description, imageURL) {
   }
 }
 
-function isValidBid(itemId, bid, userId) {
+function isValidBid(itemId, price, userId) {
   sharedValidation.checkParamPresent(itemId, 'itemId');
   sharedValidation.checkParamPresent(userId, 'userId');
-  sharedValidation.checkParamPresent(bid, 'bid');
+  sharedValidation.checkParamPresent(price, 'price');
 
   itemId = sharedValidation.isValidItemId(itemId);
   userId = sharedValidation.isValidUserId(userId);
 
   sharedValidation.checkIsString(itemId, 'itemId');
   sharedValidation.checkIsString(userId, 'userId');
-  sharedValidation.checkIsString(bid, 'bid');
+  sharedValidation.checkIsString(price, 'price');
 
   itemId = sharedValidation.cleanUpString(itemId);
   userId = sharedValidation.cleanUpString(userId);
-  bid = sharedValidation.cleanUpString(bid);
+  price = sharedValidation.cleanUpString(price);
 
   sharedValidation.checkStringLength(itemId, 'itemId');
   sharedValidation.checkStringLength(userId, 'userId');
-  sharedValidation.checkStringLength(bid, 'bid');
+  sharedValidation.checkStringLength(price, 'price');
 
-  isValidPrice(bid);
+  isValidPrice(price);
 
   return {
     itemId: itemId,
-    bid: bid,
+    price: price,
     userId: userId
   }
 }

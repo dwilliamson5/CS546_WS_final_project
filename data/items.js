@@ -89,14 +89,12 @@ async function createItem(title, description, keywords, price, username, photos,
 
   let user = await users.getUser(sanitizedData.username);
 
-  let userId = user._id;
-
   let newItem = {
     title: sanitizedData.title,
     description: sanitizedData.description,
     keywords: sanitizedData.keywords,
     price: sanitizedData.price,
-    userId: userId,
+    userId: user._id,
     universityId: user.universityId,
     photos: [],
     pickUpMethod: sanitizedData.pickUpMethod,
@@ -366,9 +364,9 @@ async function editPhotoForItem(itemId, imageId, description, imageURL) {
   return { photoUpdated: true };
 }
 
-async function createBid(itemId, bid, userId) {
+async function createBid(itemId, price, userId) {
   sharedValidation.checkArgumentLength(arguments, 3);
-  let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
+  let sanitizedData = itemValidation.isValidBid(itemId, price, userId);
 
   let user = await users.getUserById(sanitizedData.userId);
   let item = await getItemById(sanitizedData.itemId)
@@ -376,7 +374,7 @@ async function createBid(itemId, bid, userId) {
   const newBid = {
     _id: ObjectId(),
     itemId: sanitizedData.itemId,
-    bid: sanitizedData.bid,
+    price: sanitizedData.price,
     userId: sanitizedData.userId,
     accepted: false
   };
@@ -389,13 +387,11 @@ async function createBid(itemId, bid, userId) {
     throw 'Could not create bid successfully!';
   }
 
-  const output = {
+  return {
     photo: user.profileImageUrl || '/public/images/blank.jpg',
-    bid: newBid.bid,
+    price: newBid.price,
     username: user.username
-  }
-
-  return output;
+  };
 }
 
 async function getBidsForSeller(itemId) {
@@ -419,7 +415,7 @@ async function getBidsForSeller(itemId) {
       bidId: bid._id,
       photo: user.profileImageUrl || '/public/images/blank.jpg',
       username: user.username,
-      bid: bid.bid,
+      price: bid.price,
       rating: rating
     };
 
@@ -448,7 +444,7 @@ async function getBidsForBuyer(itemId, userId) {
       let result = {
         photo: user.profileImageUrl || '/public/images/blank.jpg',
         username: user.username,
-        bid: bid.bid
+        price: bid.price
       };
 
       output.push(result);
@@ -467,10 +463,10 @@ async function getHighestBid(itemId) {
   for (let i = 0; i < bids.length; i++) {
     let bid = bids[i];
 
-    bid = parseInt(bid.bid);
+    price = parseInt(bid.price);
 
-    if (bid > max) {
-      max = bid
+    if (price > max) {
+      max = price
     }
   }
 
@@ -504,7 +500,7 @@ async function getBidForItem(itemId, bidId) {
     username: user.username,
     email: user.email,
     bidOwner: bid.userId,
-    price: bid.bid
+    price: bid.price
   }
 }
 
@@ -591,7 +587,7 @@ async function hasAcceptedBidFor(itemId, userId) {
     email: user.email,
     userGettingRatedId: user._id,
     userGivingRatingId: bid.userId,
-    price: bid.bid
+    price: bid.price
   }
 }
 
