@@ -350,7 +350,7 @@ async function hasAcceptedBids(id) {
   let user = await getUserById(id);
 
   const itemCollection = await items();
-  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true, sold: false }).toArray();
+  const itemsList = await itemCollection.find({ 'bids.userId': ObjectId(user._id), 'bids.accepted': true, sold: false }).toArray();
 
   if (itemsList.length == 0) {
     return false;
