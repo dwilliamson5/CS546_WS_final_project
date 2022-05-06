@@ -98,6 +98,9 @@
         <h4>Comments</h4>
       </div>
       <div class="card-body">
+        {{#unless comments}}
+        <p id="no_comment_notice">There are no comments yet. Be the first to add one below!</p>
+        {{/unless}}
         <div id="comments-list">
           {{#if comments}}
           {{#each comments}}
@@ -110,8 +113,6 @@
           </div>
           <hr>
           {{/each}}
-          {{else}}
-          <p>There are no comments yet. Be the first to add one below!</p>
           {{/if}}
         </div>
 
@@ -133,9 +134,14 @@
     <div class="card">
       <div class="card-header">
         <h4>Bids</h4>
-        <p>Highest Bid: <span id="highest_bid">{{highest_bid}}</span></p>
+        <p>Highest Bid: $<span id="highest_bid">{{highest_bid}}</span></p>
       </div>
       <div class="card-body">
+        {{#unless bids}}
+        {{#unless canEdit}}
+        <p id="no_bids_notice">Interested in this item? Leave a bid!</p>
+        {{/unless}}
+        {{/unless}}
         <div id="bids-list">
           {{#if bids}}
           {{#each bids}}
@@ -143,15 +149,11 @@
             <img src="{{photo}}" alt="{{username}}" class="me-3 rounded-circle" style="width: 60px; height: 60px;" />
             <div>
               <h3 class="fw-bold">{{username}}</h3>
-              <p>${{bid}}</p>
+              <p>${{price}}</p>
             </div>
           </div>
           <hr>
           {{/each}}
-          {{else}}
-          {{#unless canEdit}}
-          <p>Interested in this item? Leave a bid!</p>
-          {{/unless}}
           {{/if}}
         </div>
 

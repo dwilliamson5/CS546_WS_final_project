@@ -48,7 +48,7 @@ async function createUser(universityId, username, password, passwordConfirmation
   const hash = await bcrypt.hash(sanitizedData.password, SALT_ROUNDS);
 
   let newUser = {
-    universityId: sanitizedData.universityId,
+    universityId: ObjectId(sanitizedData.universityId),
     username: sanitizedData.username,
     name: sanitizedData.name,
     email: sanitizedData.email,
@@ -250,7 +250,7 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
 
   try {
     sanitizedDataImageURL = userValidation.isValidImageURL(imageURL);
-  } catch(e) {
+  } catch (e) {
     // do nothing
   }
 
@@ -290,7 +290,7 @@ async function updateUser(currentUsername, username, name, email, imageURL, bio)
     throw 'Could not update user!';
   }
 
-  return { userUpdated: true, username: sanitizedData.username  };
+  return { userUpdated: true, username: sanitizedData.username };
 }
 
 /**
@@ -350,8 +350,8 @@ async function hasAcceptedBids(id) {
   let user = await getUserById(id);
 
   const itemCollection = await items();
-  const itemsList = await itemCollection.find({ 'bids.userId': user._id, 'bids.accepted': true, sold: false }).toArray();
-  
+  const itemsList = await itemCollection.find({ 'bids.userId': ObjectId(user._id), 'bids.accepted': true, sold: false }).toArray();
+
   if (itemsList.length == 0) {
     return false;
   } else {
@@ -368,10 +368,10 @@ async function createRating(raterId, rateeId, rating) {
 
   let rater = await getUserById(raterId);
   let ratee = await getUserById(rateeId);
-  
+
   const newRating = {
     _id: ObjectId(),
-    userId: ObjectId(rater._id),
+    ratersUserId: ObjectId(rater._id),
     rating: rating
   };
 

@@ -151,7 +151,7 @@ router.get('/:id', async (req, res) => {
     let currentUser = await users.getUser(req.session.user.username);
     let bids = await items.getBidsForBuyer(itemId, currentUser._id);
 
-    if (currentUser._id == item.userId) {
+    if (currentUser._id == item.userId.toString()) {
         // get bids for seller instead
         bids = await items.getBidsForSeller(itemId);
     }

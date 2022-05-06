@@ -2,13 +2,13 @@
   <table class="table">
     <tr>
       <th>Username</th>
-      <th>Bid</th>
+      <th>Bid Price</th>
       <th>Action</th>
     </tr>
     {{#each bids}}
       <tr>
           <td>{{ this.username }} (Rating: {{this.rating}})</td>
-          <td>${{ this.bid }}</td>
+          <td>${{ this.price }}</td>
           <td><a href="/items/{{this.id}}/bids/{{this.bidId}}/accept">Accept Bid</a></td>
       </tr>
     {{/each}}

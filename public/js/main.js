@@ -3,6 +3,8 @@
     var commentForm = $('#new-comment-form'),
         commentInput = $('#comment'),
         commentArea = $('#comments-list'),
+        noCommentNotice = $('#no_comment_notice'),
+        noBidNotice = $('#no_bids_notice'),
         commentAlert = $('#error-alert-comment'),
         bidAlert = $('#error-alert-bid'),
         bidsArea = $('#bids-list'),
@@ -32,6 +34,8 @@
                     return;
                 }
 
+                noCommentNotice.hide();
+
                 var newElement = $(responseMessage);
                 commentArea.append(newElement);
                 commentForm.trigger('reset');
@@ -60,6 +64,8 @@
                     showBidError(responseMessage.error);
                     return;
                 }
+
+                noBidNotice.hide();
 
                 var newElement = $(responseMessage);
                 bidsArea.append(newElement);

@@ -25,9 +25,9 @@ const constructorMethod = (app) => {
         title += ', ' + req.session.user.username;
 
         let user = await users.getUser(req.session.user.username);
-        let university = await universities.getUniversityById(user.universityId);
+        let university = await universities.getUniversityById(user.universityId.toString());
         universityName = university.name;
-        itemsList = await items.getAllByUniversityId(user.universityId);
+        itemsList = await items.getAllByUniversityId(user.universityId.toString());
         acceptedBids = await users.hasAcceptedBids(user._id);
       }
       else {

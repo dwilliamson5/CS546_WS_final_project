@@ -10,7 +10,7 @@ async function getAllByUniversityId(id) {
   id = sharedValidation.isValidUniversityId(id);
 
   const itemCollection = await items();
-  let itemList = await itemCollection.find({ sold: false, universityId: id }).toArray();
+  let itemList = await itemCollection.find({ sold: false, universityId: ObjectId(id) }).toArray();
 
   if (!itemList) {
     throw 'Could not get all items';
@@ -42,7 +42,7 @@ async function getAllByUniversityIdAndKeyword(id, keyword) {
   sharedValidation.checkStringLength(keyword, 'keyword');
 
   const itemCollection = await items();
-  let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: id }).toArray();
+  let itemList = await itemCollection.find({ sold: false, keywords: keyword, universityId: ObjectId(id) }).toArray();
 
   if (!itemList) {
     throw 'No items for that keyword';
@@ -89,16 +89,13 @@ async function createItem(title, description, keywords, price, username, photos,
 
   let user = await users.getUser(sanitizedData.username);
 
-  let userId = user._id;
-  let universityId = user.universityId.toString();
-
   let newItem = {
     title: sanitizedData.title,
     description: sanitizedData.description,
     keywords: sanitizedData.keywords,
     price: sanitizedData.price,
-    userId: userId,
-    universityId: universityId,
+    userId: ObjectId(user._id),
+    universityId: user.universityId,
     photos: [],
     pickUpMethod: sanitizedData.pickUpMethod,
     sold: false,
@@ -167,7 +164,7 @@ async function createComment(id, username, comment) {
 
   const newComment = {
     _id: ObjectId(),
-    commentersUserId: user._id,
+    commentersUserId: ObjectId(user._id),
     text: sanitizedData.comment
   };
 
@@ -367,18 +364,18 @@ async function editPhotoForItem(itemId, imageId, description, imageURL) {
   return { photoUpdated: true };
 }
 
-async function createBid(itemId, bid, userId) {
+async function createBid(itemId, price, userId) {
   sharedValidation.checkArgumentLength(arguments, 3);
-  let sanitizedData = itemValidation.isValidBid(itemId, bid, userId);
+  let sanitizedData = itemValidation.isValidBid(itemId, price, userId);
 
   let user = await users.getUserById(sanitizedData.userId);
   let item = await getItemById(sanitizedData.itemId)
 
   const newBid = {
     _id: ObjectId(),
-    itemId: sanitizedData.itemId,
-    bid: sanitizedData.bid,
-    userId: sanitizedData.userId,
+    itemId: ObjectId(sanitizedData.itemId),
+    price: sanitizedData.price,
+    userId: ObjectId(sanitizedData.userId),
     accepted: false
   };
 
@@ -390,13 +387,11 @@ async function createBid(itemId, bid, userId) {
     throw 'Could not create bid successfully!';
   }
 
-  const output = {
+  return {
     photo: user.profileImageUrl || '/public/images/blank.jpg',
-    bid: newBid.bid,
+    price: newBid.price,
     username: user.username
-  }
-
-  return output;
+  };
 }
 
 async function getBidsForSeller(itemId) {
@@ -417,10 +412,10 @@ async function getBidsForSeller(itemId) {
 
     let result = {
       id: item._id,
-      bidId: bid._id,
+      bidId: bid._id.toString(),
       photo: user.profileImageUrl || '/public/images/blank.jpg',
       username: user.username,
-      bid: bid.bid,
+      price: bid.price,
       rating: rating
     };
 
@@ -449,7 +444,7 @@ async function getBidsForBuyer(itemId, userId) {
       let result = {
         photo: user.profileImageUrl || '/public/images/blank.jpg',
         username: user.username,
-        bid: bid.bid
+        price: bid.price
       };
 
       output.push(result);
@@ -468,10 +463,10 @@ async function getHighestBid(itemId) {
   for (let i = 0; i < bids.length; i++) {
     let bid = bids[i];
 
-    bid = parseInt(bid.bid);
+    price = parseInt(bid.price);
 
-    if (bid > max) {
-      max = bid
+    if (price > max) {
+      max = price
     }
   }
 
@@ -504,8 +499,8 @@ async function getBidForItem(itemId, bidId) {
   return {
     username: user.username,
     email: user.email,
-    bidOwner: bid.userId,
-    price: bid.bid
+    bidOwner: bid.userId.toString(),
+    price: bid.price
   }
 }
 
@@ -515,7 +510,7 @@ async function acceptBid(itemId, bidId) {
   bidId = sharedValidation.isValidItemId(bidId);
 
   // make sure bid exists
-  await getBidForItem(itemId, bidId)
+  await getBidForItem(itemId, bidId);
 
   let item = await getItemById(itemId);
 
@@ -550,7 +545,12 @@ async function resetBid(itemId, bidId) {
   bidId = sharedValidation.isValidItemId(bidId);
 
   const itemCollection = await items();
-  const bid = await itemCollection.findOne({ '_id': ObjectId(itemId), 'bids._id': ObjectId(bidId) });
+  let item = await getItemById(itemId);
+
+  // make sure bid exists
+  await getBidForItem(itemId, bidId);
+
+  const bid = await itemCollection.findOne({ '_id': ObjectId(item._id), 'bids._id': ObjectId(bidId) });
 
   if (!bid) {
     throw 'No bid with that ID exists';
@@ -591,8 +591,8 @@ async function hasAcceptedBidFor(itemId, userId) {
     username: user.username,
     email: user.email,
     userGettingRatedId: user._id,
-    userGivingRatingId: bid.userId,
-    price: bid.bid
+    userGivingRatingId: bid.userId.toString(),
+    price: bid.price
   }
 }
 
