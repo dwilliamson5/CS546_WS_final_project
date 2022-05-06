@@ -117,6 +117,7 @@
         </div>
 
         <h4>Add a comment</h4>
+        <div id="error-alert-comment" class="alert alert-danger" role="alert" hidden></div>
 
         <form action="/items/{{itemId}}/comment" method="POST" id="new-comment-form">
           <div class="mb-3">
@@ -160,6 +161,7 @@
         <a href="/items/{{itemId}}/manage_bids" class="btn btn-success">Manage Bids</a>
         {{else}}
         <h4>Add a bid</h4>
+        <div id="error-alert-bid" class="alert alert-danger" role="alert" hidden></div>
 
         <form action="/items/{{itemId}}/bid" method="POST" id="new-bid-form">
           <div class="mb-3">
