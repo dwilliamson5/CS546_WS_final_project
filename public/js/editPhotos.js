@@ -61,7 +61,6 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
         };
 
         $.ajax(requestConfig).then(function(responseMessage) {
-            console.log(responseMessage);
             if (!responseMessage.photoAdded ||
                 responseMessage.photoAdded !== true)
             {
