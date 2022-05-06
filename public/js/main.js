@@ -33,7 +33,9 @@
         newUniversityForm = $("#new-university-form"),
         newItemForm = $("#new-item-form"),
         newRatingForm = $("#new-rating-form"),
-        ratingInput = $("#rating");
+        ratingInput = $("#rating"),
+        errorStatus = $("#error-status"),
+        errorMessage = $("#error-message");
 
     commentForm.submit((event) => {
         event.preventDefault();
@@ -96,6 +98,8 @@
 
         if (!username || !name || !email || !bio) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -105,16 +109,24 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Username can only contain alphanumeric characters."
+            );
             return;
         }
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Invalid Email.");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Username must be at least 4 characters.");
             return;
         }
 
@@ -147,16 +159,24 @@
 
         if (!currentPassword || !newPassword || !newPasswordConfirmation) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
 
         if (newPassword.length < 6 || newPassword.contains(" ")) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Password must be at least 6 characters, with no spaces."
+            );
             return;
         }
 
         if (newPassword !== newPasswordConfirmation) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Passwords do not match");
             return;
         }
 
@@ -201,6 +221,8 @@
             !universityId
         ) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -210,26 +232,40 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Username can only contain alphanumeric characters."
+            );
             return;
         }
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Invalid email address.");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.contains(" ")) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Password must be at least 6 characters, with no spaces."
+            );
             return;
         }
 
         if (password !== passwordConfirmation) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Passwords do not match");
             return;
         }
 
@@ -277,6 +313,8 @@
             !universityId
         ) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -286,26 +324,40 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Username can only contain alphanumeric characters"
+            );
             return;
         }
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Invalid email address");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.contains(" ")) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append(
+                "Password must be at least 6 characters, with no spaces."
+            );
             return;
         }
 
         if (password !== passwordConfirmation) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Passwords do not match");
             return;
         }
 
@@ -339,6 +391,8 @@
 
         if (!name || !emailDomain) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
 
@@ -348,6 +402,8 @@
 
         if (!emailRegex.test(emailDomain)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Invalid email domain");
             return;
         }
 
@@ -368,7 +424,7 @@
         });
     });
 
-    updateItem.submit((event) => {
+    updateItemForm.submit((event) => {
         event.preventDefault();
 
         var title = titleInput.val(),
@@ -387,11 +443,15 @@
             !sold
         ) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Price must be a number");
             return;
         }
 
@@ -412,6 +472,7 @@
         $.ajax(requestConfig).then((responseMessage) => {
             var newElement = $(responseMessage);
             //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
+            updateItemForm.trigger("reset");
         });
     });
 
@@ -423,6 +484,8 @@
 
         if (!name || !emailDomain) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
 
@@ -432,6 +495,8 @@
 
         if (!emailRegex.test(emailDomain)) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Invalid email domain");
             return;
         }
 
@@ -471,11 +536,15 @@
             !sold
         ) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Price must be a number");
             return;
         }
 
@@ -496,6 +565,7 @@
         $.ajax(requestConfig).then((responseMessage) => {
             var newElement = $(responseMessage);
             //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
+            newItemForm.trigger("reset");
         });
     });
 
@@ -504,6 +574,8 @@
         var rating = ratingInput.val();
         if (!rating) {
             //throw error on screen for user to see
+            errorStatus.append("400");
+            errorMessage.append("Missing required fields");
             return;
         }
         var requestConfig = {
@@ -517,6 +589,7 @@
         $.ajax(requestConfig).then((responseMessage) => {
             var newElement = $(responseMessage);
             //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
+            newRatingForm.trigger("reset");
         });
     });
 })(window.jQuery);
