@@ -177,7 +177,7 @@ router.get('/:id', async (req, res) => {
     }
 
     let hasAcceptedBid;
-
+    
     try {
         hasAcceptedBid = await items.hasAcceptedBidFor(itemId, currentUser._id);
     } catch (e) {
@@ -405,7 +405,7 @@ router.get('/:id/photos', async (req, res) => {
     }
 });
 
-router.put('/:id/update', async (req, res) => {
+router.put('/:id', async (req, res) => {
     let params = req.params;
 
     if (!params) {
@@ -561,8 +561,9 @@ router.post('/:id/comment', async (req, res) => {
     let params = req.params;
 
     if (!params) {
-        req.flash('message', 'No params provided!');
-        res.redirect('/');
+        const message = 'No params provided!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
@@ -570,16 +571,18 @@ router.post('/:id/comment', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        req.flash('message', 'No ID param provided!');
-        res.redirect('/');
+        const message = 'No ID param provided!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
     let body = req.body;
 
     if (!body) {
-        req.flash('message', 'You must supply a body to your request!');
-        res.redirect('/');
+        const message = 'You must supply a body to your request!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
@@ -587,16 +590,18 @@ router.post('/:id/comment', async (req, res) => {
     comment = xss(comment);
 
     if (!comment) {
-        req.flash('message', 'You must supply a comment!');
-        res.redirect('/');
+        const message = 'You must supply a comment!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
     try {
         itemValidation.isValidComment(itemId, req.session.user.username, comment);
     } catch (e) {
-        req.flash('message', 'Your param/body is not vaild!');
-        res.redirect('/');
+        const message = 'Your param/body is not vaild!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
@@ -605,8 +610,9 @@ router.post('/:id/comment', async (req, res) => {
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        req.flash('message', 'Could not find that item!');
-        res.redirect('/');
+        const message = 'Could not find that item!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
@@ -615,14 +621,16 @@ router.post('/:id/comment', async (req, res) => {
     try {
         user = await users.getUserById(item.userId.toString());
     } catch (e) {
-        req.flash('message', 'Could not find item owner!');
-        res.redirect('/');
+        const message = 'Could not find item owner!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        req.flash('message', 'Cannot view that item because it belongs to another school!');
-        res.redirect('/');
+        const message = 'Cannot view that item because it belongs to another school!';
+        req.flash('message', message);
+        res.json({ error: message });
         return;
     }
 
@@ -631,7 +639,7 @@ router.post('/:id/comment', async (req, res) => {
 
         res.render('partials/comment', { layout: null, ...commentResult });
     } catch (e) {
-        res.status(500).json({ error: e });
+        res.json({ error: 'Internal error!' });
     }
 });
 

@@ -3,13 +3,15 @@
 	var commentForm = $('#new-comment-form'),
         commentInput = $('#comment'),
         commentArea = $('#comments-list'),
+        commentAlert = $('#error-alert'),
         bidsArea = $('#bids-list'),
         bidForm = $('#new-bid-form'),
         bidInput = $('#bid'),
-				highestBid = $('#highest_bid');
+        highestBid = $('#highest_bid');
 
 	commentForm.submit(function(event) {
 		event.preventDefault();
+        hideCommentError();
 
 		var commment = commentInput.val();
 
@@ -24,6 +26,11 @@
             };
 
             $.ajax(requestConfig).then(function(responseMessage) {
+                if (responseMessage.error && responseMessage.error.length > 0) {
+                    showCommentError(responseMessage.error);
+                    return;
+                }
+
                 var newElement = $(responseMessage);
                 commentArea.append(newElement);
                 commentForm.trigger('reset');
@@ -57,4 +64,17 @@
             }
 		}
 	});
+
+    function showCommentError(message) {
+        commentInput.val('');
+        commentAlert.empty();
+        commentAlert.append(message);
+        commentAlert.removeClass('invisible');
+        commentAlert.addClass('visible');
+    }
+
+    function hideCommentError() {
+        commentAlert.removeClass('visible');
+        commentAlert.addClass('invisible');
+    }
 })(window.jQuery);
