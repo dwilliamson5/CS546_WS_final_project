@@ -857,7 +857,7 @@ router.post('/:id/bid', async (req, res) => {
     let item;
 
     try {
-        itemValidation.isValidBid(itemId, bid, user._id.toString());
+        itemValidation.isValidBid(itemId, bid, user._id;
     } catch (e) {
         req.flash('message', 'Your input is not vaild!');
         res.redirect('/');
@@ -887,7 +887,7 @@ router.post('/:id/bid', async (req, res) => {
     }
 
     try {
-        const bidResult = await items.createBid(itemId, bid, user._id.toString());
+        const bidResult = await items.createBid(itemId, bid, user._id;
 
         res.render('partials/bid', { layout: null, ...bidResult });
     } catch (e) {
