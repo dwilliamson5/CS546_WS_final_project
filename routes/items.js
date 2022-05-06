@@ -405,7 +405,7 @@ router.get('/:id/photos', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id/update', async (req, res) => {
     let params = req.params;
 
     if (!params) {

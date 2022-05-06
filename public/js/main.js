@@ -10,7 +10,7 @@
         highestBid = $('#highest_bid');
 
 	commentForm.submit(function(event) {
-		event.preventDefault();
+        event.preventDefault();
         hideCommentError();
 
 		var commment = commentInput.val();
