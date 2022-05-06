@@ -1,19 +1,22 @@
-(function($) {
+(function ($) {
 
-	var commentForm = $('#new-comment-form'),
+    var commentForm = $('#new-comment-form'),
         commentInput = $('#comment'),
         commentArea = $('#comments-list'),
+        commentAlert = $('#error-alert-comment'),
+        bidAlert = $('#error-alert-bid'),
         bidsArea = $('#bids-list'),
         bidForm = $('#new-bid-form'),
         bidInput = $('#bid'),
-				highestBid = $('#highest_bid');
+        highestBid = $('#highest_bid');
 
-	commentForm.submit(function(event) {
-		event.preventDefault();
+    commentForm.submit(function (event) {
+        event.preventDefault();
+        hideCommentError();
 
-		var commment = commentInput.val();
+        var commment = commentInput.val();
 
-		if (commment) {
+        if (commment) {
             var requestConfig = {
                 method: 'POST',
                 url: commentForm.attr('action'),
@@ -23,20 +26,26 @@
                 })
             };
 
-            $.ajax(requestConfig).then(function(responseMessage) {
+            $.ajax(requestConfig).then(function (responseMessage) {
+                if (responseMessage.error && responseMessage.error.length > 0) {
+                    showCommentError(responseMessage.error);
+                    return;
+                }
+
                 var newElement = $(responseMessage);
                 commentArea.append(newElement);
                 commentForm.trigger('reset');
             });
-		}
+        }
     });
 
-    bidForm.submit(function(event) {
-		event.preventDefault();
+    bidForm.submit(function (event) {
+        event.preventDefault();
+        hideBidError();
 
-		var bid = bidInput.val();
+        var bid = bidInput.val();
 
-		if (bid) {
+        if (bid) {
             var requestConfig = {
                 method: 'POST',
                 url: bidForm.attr('action'),
@@ -46,7 +55,12 @@
                 })
             };
 
-            $.ajax(requestConfig).then(function(responseMessage) {
+            $.ajax(requestConfig).then(function (responseMessage) {
+                if (responseMessage.error && responseMessage.error.length > 0) {
+                    showBidError(responseMessage.error);
+                    return;
+                }
+
                 var newElement = $(responseMessage);
                 bidsArea.append(newElement);
                 bidForm.trigger('reset');
@@ -55,6 +69,28 @@
             if (parseInt(bid) > parseInt(highestBid.text())) {
                 highestBid.text(bid);
             }
-		}
-	});
+        }
+    });
+
+    function showCommentError(message) {
+        commentInput.val('');
+        commentAlert.empty();
+        commentAlert.append(message);
+        commentAlert.removeAttr('hidden');
+    }
+
+    function hideCommentError() {
+        commentAlert.attr('hidden',true);
+    }
+
+    function showBidError(message) {
+        bidInput.val('');
+        bidAlert.empty();
+        bidAlert.append(message);
+        bidAlert.removeAttr('hidden');
+    }
+
+    function hideBidError() {
+        bidAlert.attr('hidden',true);
+    }
 })(window.jQuery);
