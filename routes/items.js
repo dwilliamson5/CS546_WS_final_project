@@ -815,8 +815,7 @@ router.post('/:id/bid', async (req, res) => {
     let user = await users.getUser(req.session.user.username);
 
     if (!params) {
-        req.flash('message', 'No params provided!');
-        res.redirect('/');
+        res.json({ error: 'No params provided!' });
         return;
     }
 
@@ -824,16 +823,14 @@ router.post('/:id/bid', async (req, res) => {
     itemId = xss(itemId);
 
     if (!itemId) {
-        req.flash('message', 'No ID param provided!');
-        res.redirect('/');
+        res.json({ error: 'No ID param provided!' });
         return;
     }
 
     let body = req.body;
 
     if (!body) {
-        req.flash('message', 'You must supply a body to your request!');
-        res.redirect('/');
+        res.json({ error: 'You must supply a body to your request!' });
         return;
     }
 
@@ -841,8 +838,7 @@ router.post('/:id/bid', async (req, res) => {
     bid = xss(bid);
 
     if (!bid) {
-        req.flash('message', 'You must supply a bid!');
-        res.redirect('/');
+        res.json({ error: 'You must supply a bid!' });
         return;
     }
 
@@ -851,30 +847,26 @@ router.post('/:id/bid', async (req, res) => {
     try {
         itemValidation.isValidBid(itemId, bid, user._id);
     } catch (e) {
-        req.flash('message', 'Your param/body is not vaild!');
-        res.redirect('/');
+        res.json({ error: 'Your param/body is not vaild!' });
         return;
     }
 
     try {
         item = await items.getItemById(itemId);
     } catch (e) {
-        req.flash('message', 'Could not find that item!');
-        res.redirect('/');
+        res.json({ error: 'Could not find that item!' });
         return;
     }
 
     try {
         await users.getUserById(item.userId.toString());
     } catch (e) {
-        req.flash('message', 'Could not find item owner!');
-        res.redirect('/');
+        res.json({ error: 'Could not find item owner!' });
         return;
     }
 
     if (item.universityId.toString() != user.universityId.toString()) {
-        req.flash('message', 'Cannot view that item because it belongs to another school!');
-        res.redirect('/');
+        res.json({ error: 'Cannot view that item because it belongs to another school!' });
         return;
     }
 
