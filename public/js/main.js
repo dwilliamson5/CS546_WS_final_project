@@ -1,16 +1,15 @@
 (function ($) {
-
-    var commentForm = $('#new-comment-form'),
-        commentInput = $('#comment'),
-        commentArea = $('#comments-list'),
-        noCommentNotice = $('#no_comment_notice'),
-        noBidNotice = $('#no_bids_notice'),
-        commentAlert = $('#error-alert-comment'),
-        bidAlert = $('#error-alert-bid'),
-        bidsArea = $('#bids-list'),
-        bidForm = $('#new-bid-form'),
-        bidInput = $('#bid'),
-        highestBid = $('#highest_bid'),
+    var commentForm = $("#new-comment-form"),
+        commentInput = $("#comment"),
+        commentArea = $("#comments-list"),
+        noCommentNotice = $("#no_comment_notice"),
+        noBidNotice = $("#no_bids_notice"),
+        commentAlert = $("#error-alert-comment"),
+        bidAlert = $("#error-alert-bid"),
+        bidsArea = $("#bids-list"),
+        bidForm = $("#new-bid-form"),
+        bidInput = $("#bid"),
+        highestBid = $("#highest_bid"),
         profileInfoForm = $("profile-form"),
         usernameInput = $("#username"),
         nameInput = $("#name"),
@@ -43,12 +42,11 @@
         errorMessage = $("#error-message");
 
     commentForm.submit(function (event) {
-        event.preventDefault();
         hideCommentError();
 
-        var commment = commentInput.val();
+        var comment = commentInput.val();
 
-        if (commment) {
+        if (comment) {
             var requestConfig = {
                 method: "POST",
                 url: commentForm.attr("action"),
@@ -74,7 +72,6 @@
     });
 
     bidForm.submit(function (event) {
-        event.preventDefault();
         hideBidError();
 
         var bid = bidInput.val();
@@ -109,8 +106,6 @@
     });
 
     profileInfoForm.submit((event) => {
-        event.preventDefault();
-
         var username = usernameInput.val(),
             name = nameInput.val(),
             email = emailInput.val(),
@@ -118,6 +113,7 @@
         //imageURL = profileImageInput.val();
 
         if (!username || !name || !email || !bio) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
@@ -128,94 +124,63 @@
         );
 
         if (!alphanumeric.test(username)) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Username can only contain alphanumeric characters."
             );
             return;
         }
 
         if (!emailFormat.test(email)) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Invalid Email.");
             return;
         }
 
         if (username.trim().length < 4) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Username must be at least 4 characters.");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: profileInfoForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                username: username,
-                name: name,
-                email: email,
-                bio: bio,
-                //imageURL: imageURL,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            profileInfoForm.trigger("reset");
-        });
     });
 
     passwordEditForm.submit((event) => {
-        event.preventDefault();
-
         var currentPassword = currentPasswordInput.val(),
             newPassword = newPasswordInput.val(),
             newPasswordConfirmation = newPasswordConfirmationInput.val();
 
         if (!currentPassword || !newPassword || !newPasswordConfirmation) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
         }
 
         if (newPassword.length < 6 || newPassword.includes(" ")) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
         }
 
         if (newPassword !== newPasswordConfirmation) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Passwords do not match");
             return;
         }
 
         //check that old password is correct
-
-        var requestConfig = {
-            method: "POST",
-            url: passwordEditForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                currentPassword: currentPassword,
-                newPassword: newPassword,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            passwordEditForm.trigger("reset");
-        });
     });
 
     signUpForm.submit((event) => {
-        event.preventDefault();
-
         var username = usernameInput.val(),
             name = nameInput.val(),
             email = emailInput.val(),
@@ -234,6 +199,7 @@
             !passwordConfirmation ||
             !universityId
         ) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
@@ -244,64 +210,48 @@
         );
 
         if (!alphanumeric.test(username)) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Username can only contain alphanumeric characters."
             );
             return;
         }
 
         if (!emailFormat.test(email)) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Invalid email address.");
             return;
         }
 
         if (username.trim().length < 4) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.includes(" ")) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
         }
 
         if (password !== passwordConfirmation) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Passwords do not match");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: signUpForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                username: username,
-                name: name,
-                email: email,
-                password: password,
-                bio: bio,
-                universityId: universityId,
-                //imageURL: imageURL,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            signUpForm.trigger("reset");
-        });
     });
 
     loginForm.submit((event) => {
-        event.preventDefault();
-
         var username = usernameInput.val(),
             name = nameInput.val(),
             email = emailInput.val(),
@@ -320,6 +270,7 @@
             !passwordConfirmation ||
             !universityId
         ) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
@@ -330,68 +281,53 @@
         );
 
         if (!alphanumeric.test(username)) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Username can only contain alphanumeric characters"
             );
             return;
         }
 
         if (!emailFormat.test(email)) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Invalid email address");
             return;
         }
 
         if (username.trim().length < 4) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.includes(" ")) {
+            event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", 
+            handleError(
+                "400",
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
         }
 
         if (password !== passwordConfirmation) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Passwords do not match");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: loginForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                username: username,
-                name: name,
-                email: email,
-                password: password,
-                bio: bio,
-                universityId: universityId,
-                //imageURL: imageURL,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            loginForm.trigger("reset");
-        });
     });
 
     editUniversityForm.submit((event) => {
-        event.preventDefault();
-
         var name = nameInput.val(),
             emailDomain = emailDomainInput.val();
 
         if (!name || !emailDomain) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
@@ -402,31 +338,14 @@
         );
 
         if (!emailRegex.test(emailDomain)) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Invalid email domain");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: editUniversityForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                name: name,
-                emailDomain: emailDomain,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            editUniversityForm.trigger("reset");
-        });
     });
 
     updateItemForm.submit((event) => {
-        event.preventDefault();
-
         var title = titleInput.val(),
             description = descriptionInput.val(),
             keywords = keywordsInput.val(),
@@ -442,45 +361,26 @@
             !pickUpMethod ||
             !sold
         ) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Price must be a number");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: updateItem.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                title: title,
-                description: description,
-                keywords: keywords,
-                price: price,
-                pickUpMethod: pickUpMethod,
-                sold: sold,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            updateItemForm.trigger("reset");
-        });
     });
 
     newUniversityForm.submit((event) => {
-        event.preventDefault();
-
         var name = nameInput.val(),
             emailDomain = emailDomainInput.val();
 
         if (!name || !emailDomain) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
@@ -491,31 +391,14 @@
         );
 
         if (!emailRegex.test(emailDomain)) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Invalid email domain");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: editUniversityForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                name: name,
-                emailDomain: emailDomain,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            editUniversityForm.trigger("reset");
-        });
     });
 
     newItemForm.submit((event) => {
-        event.preventDefault();
-
         var title = titleInput.val(),
             description = descriptionInput.val(),
             keywords = keywordsInput.val(),
@@ -531,81 +414,50 @@
             !pickUpMethod ||
             !sold
         ) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Price must be a number");
             return;
         }
-
-        var requestConfig = {
-            method: "POST",
-            url: updateItem.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                title: title,
-                description: description,
-                keywords: keywords,
-                price: price,
-                pickUpMethod: pickUpMethod,
-                sold: sold,
-            }),
-        };
-
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            newItemForm.trigger("reset");
-        });
     });
 
     newRatingForm.submit((event) => {
-        event.preventDefault();
         var rating = ratingInput.val();
         if (!rating) {
+            event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
         }
-        var requestConfig = {
-            method: "POST",
-            url: newRatingForm.attr("action"),
-            contentType: "application/json",
-            data: JSON.stringify({
-                rating: rating,
-            }),
-        };
-        $.ajax(requestConfig).then((responseMessage) => {
-            var newElement = $(responseMessage);
-            //I don't think there's any visual update to the form here, but it would make sense to add one so this can be a TODO
-            newRatingForm.trigger("reset");
-        });
     });
 
     function showCommentError(message) {
-        commentInput.val('');
+        commentInput.val("");
         commentAlert.empty();
         commentAlert.append(message);
-        commentAlert.removeAttr('hidden');
+        commentAlert.removeAttr("hidden");
     }
 
     function hideCommentError() {
-        commentAlert.attr('hidden',true);
+        commentAlert.attr("hidden", true);
     }
 
     function showBidError(message) {
-        bidInput.val('');
+        bidInput.val("");
         bidAlert.empty();
         bidAlert.append(message);
-        bidAlert.removeAttr('hidden');
+        bidAlert.removeAttr("hidden");
     }
 
     function hideBidError() {
-        bidAlert.attr('hidden',true);
+        bidAlert.attr("hidden", true);
     }
 
     function handleError(status, message) {
@@ -613,6 +465,6 @@
         errorMessage.empty();
         errorStatus.append(status);
         errorMessage.append(message);
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 })(window.jQuery);
