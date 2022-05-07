@@ -54,7 +54,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
 
         var comment = commentInput.val();
 
-        if (comment) {
+        if (comment && comment.trim().length) {
             var requestConfig = {
                 method: "POST",
                 url: commentForm.attr("action"),
@@ -76,6 +76,8 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
                 commentArea.append(newElement);
                 commentForm.trigger("reset");
             });
+        } else {
+            showCommentError('Comments cannot only contain spaces');
         }
     });
 
