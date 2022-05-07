@@ -87,7 +87,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
 
         var bid = bidInput.val();
 
-        if (bid) {
+        if (bid && bid >= 0) {
             var requestConfig = {
                 method: "POST",
                 url: bidForm.attr("action"),
@@ -113,6 +113,8 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             if (parseInt(bid) > parseInt(highestBid.text())) {
                 highestBid.text(bid);
             }
+        } else {
+            showBidError('Bids must be a whole number');
         }
     });
 
