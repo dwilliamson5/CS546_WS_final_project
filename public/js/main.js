@@ -411,15 +411,13 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             keywords = keywordsInput.val(),
             price = priceInput.val(),
             pickUpMethod = pickUpMethodInput.val(),
-            sold = soldInput.val();
 
         if (
             !title ||
             !description ||
             !keywords ||
             !price ||
-            !pickUpMethod ||
-            !sold
+            !pickUpMethod
         ) {
             event.preventDefault();
             //throw error on screen for user to see
