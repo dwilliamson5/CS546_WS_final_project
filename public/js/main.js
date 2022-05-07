@@ -253,32 +253,16 @@
 
     loginForm.submit((event) => {
         var username = usernameInput.val(),
-            name = nameInput.val(),
-            email = emailInput.val(),
             password = passwordInput.val(),
-            passwordConfirmation = passwordConfirmationInput.val(),
-            bio = bioInput.val(),
             universityId = universityInput.val();
-        //imageURL = profileImageInput.val();
 
-        if (
-            !username ||
-            !name ||
-            !email ||
-            !bio ||
-            !password ||
-            !passwordConfirmation ||
-            !universityId
-        ) {
+        if (!username || !password || !universityId) {
             event.preventDefault();
             //throw error on screen for user to see
             handleError("400", "Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
-        const emailFormat = new RegExp(
-            "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:[A-Z]{2}|edu)\\b"
-        );
 
         if (!alphanumeric.test(username)) {
             event.preventDefault();
@@ -287,13 +271,6 @@
                 "400",
                 "Username can only contain alphanumeric characters"
             );
-            return;
-        }
-
-        if (!emailFormat.test(email)) {
-            event.preventDefault();
-            //throw error on screen for user to see
-            handleError("400", "Invalid email address");
             return;
         }
 
@@ -311,13 +288,6 @@
                 "400",
                 "Password must be at least 6 characters, with no spaces."
             );
-            return;
-        }
-
-        if (password !== passwordConfirmation) {
-            event.preventDefault();
-            //throw error on screen for user to see
-            handleError("400", "Passwords do not match");
             return;
         }
     });
