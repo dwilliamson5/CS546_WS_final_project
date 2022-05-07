@@ -1,5 +1,5 @@
-<p class="error-status">{{error_status_code}}</p>
-<p class="error-message">{{error_messages}}</p>
+<p class="error-status" id="error-status">{{error_status_code}}</p>
+<p class="error-message" id="error-message">{{error_messages}}</p>
 
 <form action="/items/{{id}}/update" method="POST" id="update-item-form">
     <input name="_method" type="hidden" value="PUT" />
