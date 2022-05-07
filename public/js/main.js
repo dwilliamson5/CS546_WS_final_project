@@ -163,7 +163,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             handleError("400", "Username must be at least 4 characters.");
             return;
         }
-        
+
         // if there is no image, then just submit form
         if (!image) {
             return;
@@ -476,8 +476,6 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
     function addImage(callback) {
 
         var files = document.getElementById('image').files;
-
-        console.log(files);
 
         if (!files.length) {
             handleError("400", "Missing required fields");
