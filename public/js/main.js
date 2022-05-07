@@ -1,3 +1,5 @@
+import { uploadImage, getUniqueName } from './s3Operations.js';
+
 (function ($) {
     var commentForm = $("#new-comment-form"),
         commentInput = $("#comment"),
@@ -15,7 +17,7 @@
         nameInput = $("#name"),
         emailInput = $("#email"),
         bioInput = $("#bio"),
-        //profImageInput = $("#image"),
+        profileImageInput = $("#image"),
         passwordEditForm = $("password-form"),
         currentPasswordInput = $("#current_password"),
         newPasswordInput = $("#new_password"),
@@ -39,9 +41,15 @@
         newRatingForm = $("#new-rating-form"),
         ratingInput = $("#rating"),
         errorStatus = $("#error-status"),
-        errorMessage = $("#error-message");
+        errorMessage = $("#error-message"),
+        imageInput = $('#image'),
+        imageURLInput = $('#imageURL');
+
+    var shouldSubmitSignUpForm = false,
+        shouldSubmitProfileInfoForm = false;
 
     commentForm.submit(function (event) {
+        event.preventDefault();
         hideCommentError();
 
         var comment = commentInput.val();
@@ -72,6 +80,7 @@
     });
 
     bidForm.submit(function (event) {
+        event.preventDefault();
         hideBidError();
 
         var bid = bidInput.val();
@@ -106,11 +115,15 @@
     });
 
     profileInfoForm.submit((event) => {
+        if (shouldSubmitProfileInfoForm) {
+            return;
+        }
+
         var username = usernameInput.val(),
             name = nameInput.val(),
             email = emailInput.val(),
             bio = bioInput.val();
-        //imageURL = profileImageInput.val();
+            image = profileImageInput.val();
 
         if (!username || !name || !email || !bio) {
             event.preventDefault();
@@ -146,6 +159,16 @@
             handleError("400", "Username must be at least 4 characters.");
             return;
         }
+        
+        // if there is no image, then just submit form
+        if (!image) {
+            return;
+        }
+
+        event.preventDefault();
+
+        // upload image to s3
+        addImage(updateProfileInfoFormInput);
     });
 
     passwordEditForm.submit((event) => {
@@ -181,14 +204,18 @@
     });
 
     signUpForm.submit((event) => {
+        if (shouldSubmitSignUpForm) {
+            return;
+        }
+
         var username = usernameInput.val(),
             name = nameInput.val(),
             email = emailInput.val(),
             password = passwordInput.val(),
             passwordConfirmation = passwordConfirmationInput.val(),
             bio = bioInput.val(),
-            universityId = universityInput.val();
-        //imageURL = profileImageInput.val();
+            universityId = universityInput.val(),
+            image = profileImageInput.val();
 
         if (
             !username ||
@@ -197,7 +224,8 @@
             !bio ||
             !password ||
             !passwordConfirmation ||
-            !universityId
+            !universityId ||
+            !image
         ) {
             event.preventDefault();
             //throw error on screen for user to see
@@ -249,6 +277,11 @@
             handleError("400", "Passwords do not match");
             return;
         }
+
+        event.preventDefault();
+
+        // upload image to s3
+        addImage(updateSignUpFormInput);
     });
 
     loginForm.submit((event) => {
@@ -436,5 +469,40 @@
         errorStatus.append(status);
         errorMessage.append(message);
         window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function addImage(callback) {
+
+        var files = document.getElementById('image').files;
+
+        console.log(files);
+
+        if (!files.length) {
+            handleError("400", "Missing required fields");
+            return;
+        }
+
+        var file = files[0];
+        var fileName = getUniqueName(file.name);
+
+        uploadImage(fileName, file, callback);
+    }
+
+    function updateSignUpFormInput(fileURL) {
+
+        imageURLInput.val(fileURL);
+        imageInput.val('');
+
+        shouldSubmitSignUpForm = true;
+        signUpForm.submit();
+    }
+
+    function updateProfileInfoFormInput(fileURL) {
+
+        imageURLInput.val(fileURL);
+        imageInput.val('');
+
+        shouldSubmitProfileInfoForm = true;
+        profileInfoForm.submit();
     }
 })(window.jQuery);
