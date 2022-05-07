@@ -108,28 +108,6 @@
         }
     });
 
-    function showCommentError(message) {
-        commentInput.val('');
-        commentAlert.empty();
-        commentAlert.append(message);
-        commentAlert.removeAttr('hidden');
-    }
-
-    function hideCommentError() {
-        commentAlert.attr('hidden',true);
-    }
-
-    function showBidError(message) {
-        bidInput.val('');
-        bidAlert.empty();
-        bidAlert.append(message);
-        bidAlert.removeAttr('hidden');
-    }
-
-    function hideBidError() {
-        bidAlert.attr('hidden',true);
-    }
-
     profileInfoForm.submit((event) => {
         event.preventDefault();
 
@@ -141,8 +119,7 @@
 
         if (!username || !name || !email || !bio) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -152,8 +129,7 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Username can only contain alphanumeric characters."
             );
             return;
@@ -161,15 +137,13 @@
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Invalid Email.");
+            handleError("400", "Invalid Email.");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Username must be at least 4 characters.");
+            handleError("400", "Username must be at least 4 characters.");
             return;
         }
 
@@ -202,15 +176,13 @@
 
         if (!currentPassword || !newPassword || !newPasswordConfirmation) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
 
         if (newPassword.length < 6 || newPassword.contains(" ")) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
@@ -218,8 +190,7 @@
 
         if (newPassword !== newPasswordConfirmation) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Passwords do not match");
+            handleError("400", "Passwords do not match");
             return;
         }
 
@@ -264,8 +235,7 @@
             !universityId
         ) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -275,8 +245,7 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Username can only contain alphanumeric characters."
             );
             return;
@@ -284,22 +253,19 @@
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Invalid email address.");
+            handleError("400", "Invalid email address.");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Username must be at least 4 characters.");
+            handleError("400", "Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.contains(" ")) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
@@ -307,8 +273,7 @@
 
         if (password !== passwordConfirmation) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Passwords do not match");
+            handleError("400", "Passwords do not match");
             return;
         }
 
@@ -356,8 +321,7 @@
             !universityId
         ) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
         const alphanumeric = new RegExp(/^[a-z0-9]+$/i);
@@ -367,8 +331,7 @@
 
         if (!alphanumeric.test(username)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Username can only contain alphanumeric characters"
             );
             return;
@@ -376,22 +339,19 @@
 
         if (!emailFormat.test(email)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Invalid email address");
+            handleError("400", "Invalid email address");
             return;
         }
 
         if (username.trim().length < 4) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Username must be at least 4 characters.");
+            handleError("400", "Username must be at least 4 characters.");
             return;
         }
 
         if (password.length < 6 || password.contains(" ")) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append(
+            handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
             );
             return;
@@ -399,8 +359,7 @@
 
         if (password !== passwordConfirmation) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Passwords do not match");
+            handleError("400", "Passwords do not match");
             return;
         }
 
@@ -434,8 +393,7 @@
 
         if (!name || !emailDomain) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
 
@@ -445,8 +403,7 @@
 
         if (!emailRegex.test(emailDomain)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Invalid email domain");
+            handleError("400", "Invalid email domain");
             return;
         }
 
@@ -486,15 +443,13 @@
             !sold
         ) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Price must be a number");
+            handleError("400", "Price must be a number");
             return;
         }
 
@@ -527,8 +482,7 @@
 
         if (!name || !emailDomain) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
 
@@ -538,8 +492,7 @@
 
         if (!emailRegex.test(emailDomain)) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Invalid email domain");
+            handleError("400", "Invalid email domain");
             return;
         }
 
@@ -579,15 +532,13 @@
             !sold
         ) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
 
         if (parseInt(price) === NaN) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Price must be a number");
+            handleError("400", "Price must be a number");
             return;
         }
 
@@ -617,8 +568,7 @@
         var rating = ratingInput.val();
         if (!rating) {
             //throw error on screen for user to see
-            errorStatus.append("400");
-            errorMessage.append("Missing required fields");
+            handleError("400", "Missing required fields");
             return;
         }
         var requestConfig = {
@@ -635,4 +585,34 @@
             newRatingForm.trigger("reset");
         });
     });
+
+    function showCommentError(message) {
+        commentInput.val('');
+        commentAlert.empty();
+        commentAlert.append(message);
+        commentAlert.removeAttr('hidden');
+    }
+
+    function hideCommentError() {
+        commentAlert.attr('hidden',true);
+    }
+
+    function showBidError(message) {
+        bidInput.val('');
+        bidAlert.empty();
+        bidAlert.append(message);
+        bidAlert.removeAttr('hidden');
+    }
+
+    function hideBidError() {
+        bidAlert.attr('hidden',true);
+    }
+
+    function handleError(status, message) {
+        errorStatus.empty();
+        errorMessage.empty();
+        errorStatus.append(status);
+        errorMessage.append(message);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 })(window.jQuery);

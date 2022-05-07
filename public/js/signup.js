@@ -2,7 +2,7 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
 
 (function ($) {
 
-    var signupForm = $('#profile-form'),
+    var signupForm = $('#signup-form'),
         imageInput = $('#image'),
         imageURLInput = $('#imageURL');
 
