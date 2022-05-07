@@ -425,10 +425,10 @@ import { uploadImage, getUniqueName } from './s3Operations.js';
             return;
         }
 
-        if (parseInt(price) === NaN) {
+        if (parseInt(price) === NaN || price < 0) {
             event.preventDefault();
             //throw error on screen for user to see
-            handleError("400", "Price must be a number");
+            handleError("400", "Price must be a valid whole number");
             return;
         }
     });
