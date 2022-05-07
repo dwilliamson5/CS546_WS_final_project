@@ -23,7 +23,7 @@
         newPasswordConfirmationInput = $("#new_password_confirmation"),
         signUpForm = $("#signup-form"),
         passwordInput = $("#password"),
-        passwordConfirmationInput = $("#password-confirmation"),
+        passwordConfirmationInput = $("#password_confirmation"),
         universityInput = $("#universityId"),
         loginForm = $("#login-form"),
         emailDomainInput = $("#emailDomain"),
@@ -180,7 +180,7 @@
             return;
         }
 
-        if (newPassword.length < 6 || newPassword.contains(" ")) {
+        if (newPassword.length < 6 || newPassword.includes(" ")) {
             //throw error on screen for user to see
             handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
@@ -263,7 +263,7 @@
             return;
         }
 
-        if (password.length < 6 || password.contains(" ")) {
+        if (password.length < 6 || password.includes(" ")) {
             //throw error on screen for user to see
             handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
@@ -349,7 +349,7 @@
             return;
         }
 
-        if (password.length < 6 || password.contains(" ")) {
+        if (password.length < 6 || password.includes(" ")) {
             //throw error on screen for user to see
             handleError("400", 
                 "Password must be at least 6 characters, with no spaces."
