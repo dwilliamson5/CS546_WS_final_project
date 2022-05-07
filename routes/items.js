@@ -141,14 +141,15 @@ router.get('/:id', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let comments = await items.getCommentsForItemId(itemId);
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
     }
 
-    let comments = await items.getCommentsForItemId(itemId);
-    let currentUser = await users.getUser(req.session.user.username);
     let bids = await items.getBidsForBuyer(itemId, currentUser._id);
 
     if (currentUser._id == item.userId.toString()) {
@@ -247,7 +248,9 @@ router.get('/:id/edit', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -317,7 +320,9 @@ router.get('/:id/editPhotos', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -382,7 +387,9 @@ router.get('/:id/photos', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -451,7 +458,9 @@ router.put('/:id/update', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -613,8 +622,11 @@ router.post('/:id/comment', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
-        res.json({ error: 'Cannot view that item because it belongs to another school!' });
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
@@ -697,7 +709,9 @@ router.post('/:id/photo', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -796,7 +810,9 @@ router.put('/:id/photo', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -865,8 +881,11 @@ router.post('/:id/bid', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
-        res.json({ error: 'Cannot view that item because it belongs to another school!' });
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
+        req.flash('message', 'Cannot view that item because it belongs to another school!');
+        res.redirect('/');
         return;
     }
 
@@ -925,7 +944,9 @@ router.get('/:id/manage_bids', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -1017,7 +1038,9 @@ router.get('/:id/bids/:bidId/accept', async (req, res) => {
         return;
     }
 
-    if (item.universityId.toString() != user.universityId.toString()) {
+    let currentUser = await users.getUser(req.session.user.username);
+
+    if (item.universityId.toString() != currentUser.universityId.toString()) {
         req.flash('message', 'Cannot view that item because it belongs to another school!');
         res.redirect('/');
         return;
@@ -1035,16 +1058,6 @@ router.get('/:id/bids/:bidId/accept', async (req, res) => {
         bid = await items.getBidForItem(itemId, bidId);
     } catch (e) {
         req.flash('message', 'Something went wrong getting the bid!');
-        res.redirect('/');
-        return;
-    }
-
-    let currentUser;
-
-    try {
-        currentUser = await users.getUser(req.session.user.username);
-    } catch (e) {
-        req.flash('message', 'Something went wrong getting the current user!');
         res.redirect('/');
         return;
     }
