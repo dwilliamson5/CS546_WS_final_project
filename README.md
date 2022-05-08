@@ -1,12 +1,18 @@
 # cs546_w2_final_project_2022
 
-# Contributors: 
+# Contributors:
   <li>Derek Williamson</li>
   <li>GaYoung Park</li>
   <li>Matt Tarantino</li>
   <li>Sean Hicks</li>
   <li>Sydney Cardy</li>
-  
+
+# Super Admin Credentials:
+  ```
+  username: superadmin
+  password: super_admin_password
+  ```
+
 # Instructions: 
   ```
   npm install
